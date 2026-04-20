@@ -1,4 +1,4 @@
-# claude-swift-engineering
+# claude-swift-engineering [WIP]
 
 [![License](https://img.shields.io/badge/license-MIT-green)](#) [![Platform](https://img.shields.io/badge/platform-iOS%2026%2B%20%7C%20macOS-blue)](#)
 
