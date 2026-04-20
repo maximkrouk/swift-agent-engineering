@@ -20,24 +20,24 @@ Run these BEFORE changing code:
 ```swift
 // 1. Add NavigationPath logging
 NavigationStack(path: $path) {
-    RootView()
-        .onChange(of: path.count) { oldCount, newCount in
-            print("Path changed: \(oldCount) -> \(newCount)")
-        }
+	RootView()
+		.onChange(of: path.count) { oldCount, newCount in
+			print("Path changed: \(oldCount) -> \(newCount)")
+		}
 }
 
 // 2. Verify navigationDestination is evaluated
 .navigationDestination(for: Recipe.self) { recipe in
-    let _ = print("Destination for: \(recipe.name)")
-    RecipeDetail(recipe: recipe)
+	let _ = print("Destination for: \(recipe.name)")
+	RecipeDetail(recipe: recipe)
 }
 
 // 3. Test minimal case in isolation
 NavigationStack {
-    NavigationLink("Test", value: "test")
-        .navigationDestination(for: String.self) { str in
-            Text("Pushed: \(str)")
-        }
+	NavigationLink("Test", value: "test")
+		.navigationDestination(for: String.self) { str in
+			Text("Pushed: \(str)")
+		}
 }
 ```
 
@@ -68,19 +68,19 @@ Navigation problem?
 ```swift
 // WRONG - Link outside stack
 VStack {
-    NavigationLink("Go", value: "test")  // Won't work
-    NavigationStack {
-        Text("Root")
-    }
+	NavigationLink("Go", value: "test")  // Won't work
+	NavigationStack {
+		Text("Root")
+	}
 }
 
 // CORRECT - Link inside stack
 NavigationStack {
-    VStack {
-        NavigationLink("Go", value: "test")
-        Text("Root")
-    }
-    .navigationDestination(for: String.self) { Text($0) }
+	VStack {
+		NavigationLink("Go", value: "test")
+		Text("Root")
+	}
+	.navigationDestination(for: String.self) { Text($0) }
 }
 ```
 
@@ -89,20 +89,20 @@ NavigationStack {
 ```swift
 // WRONG - Destination may not be loaded
 LazyVStack {
-    ForEach(items) { item in
-        NavigationLink(item.name, value: item)
-            .navigationDestination(for: Item.self) { /* ... */ }
-    }
+	ForEach(items) { item in
+		NavigationLink(item.name, value: item)
+			.navigationDestination(for: Item.self) { /* ... */ }
+	}
 }
 
 // CORRECT - Destination outside lazy container
 LazyVStack {
-    ForEach(items) { item in
-        NavigationLink(item.name, value: item)
-    }
+	ForEach(items) { item in
+		NavigationLink(item.name, value: item)
+	}
 }
 .navigationDestination(for: Item.self) { item in
-    ItemDetail(item: item)
+	ItemDetail(item: item)
 }
 ```
 
@@ -111,19 +111,26 @@ LazyVStack {
 ```swift
 // WRONG - Path reset on every body evaluation
 struct ContentView: View {
-    var body: some View {
-        let path = NavigationPath()  // Recreated!
-        NavigationStack(path: .constant(path)) { /* ... */ }
-    }
+	var body: some View {
+		let path: NavigationPath = .init() // Recreated!
+		NavigationStack(path: .constant(path)) { /* ... */ }
+	}
 }
 
-// CORRECT - @State persists across renders
+// CORRECT - @SwiftUI.State persists across renders
 struct ContentView: View {
-    @State private var path = NavigationPath()
+	@SwiftUI.State
+	private var path: NavigationPath
 
-    var body: some View {
-        NavigationStack(path: $path) { /* ... */ }
-    }
+	init(
+		path: NavigationPath = .init()
+	) {
+		self._path = SwiftUI.State(wrappedValue: path)
+	}
+
+	var body: some View {
+		NavigationStack(path: self.$path) { /* ... */ }
+	}
 }
 ```
 
@@ -132,15 +139,15 @@ struct ContentView: View {
 ```swift
 // WRONG - May fail silently
 func loadAndNavigate() async {
-    let recipe = await fetchRecipe()
-    path.append(recipe)  // Not on MainActor
+	let recipe = await fetchRecipe()
+	path.append(recipe)  // Not on MainActor
 }
 
 // CORRECT - Explicit MainActor
 @MainActor
 func loadAndNavigate() async {
-    let recipe = await fetchRecipe()
-    path.append(recipe)
+	let recipe = await fetchRecipe()
+	path.append(recipe)
 }
 ```
 
@@ -149,31 +156,41 @@ func loadAndNavigate() async {
 ```swift
 // WRONG - NavigationStack may not exist yet
 .onOpenURL { url in
-    handleDeepLink(url)  // Too early on cold start
+	handleDeepLink(url)  // Too early on cold start
 }
 
 // CORRECT - Queue until ready
-@State private var pendingDeepLink: URL?
-@State private var isReady = false
+@SwiftUI.State
+private var pendingDeepLink: URL?
+@SwiftUI.State
+private var isReady: Bool
+
+init(
+	pendingDeepLink: URL? = nil,
+	isReady: Bool = false
+) {
+	self._pendingDeepLink = SwiftUI.State(wrappedValue: pendingDeepLink)
+	self._isReady = SwiftUI.State(wrappedValue: isReady)
+}
 
 var body: some View {
-    NavigationStack(path: $path) {
-        RootView()
-            .onAppear {
-                isReady = true
-                if let url = pendingDeepLink {
-                    handleDeepLink(url)
-                    pendingDeepLink = nil
-                }
-            }
-    }
-    .onOpenURL { url in
-        if isReady {
-            handleDeepLink(url)
-        } else {
-            pendingDeepLink = url
-        }
-    }
+	NavigationStack(path: self.$path) {
+		RootView()
+			.onAppear {
+				self.isReady = true
+				if let url = self.pendingDeepLink {
+					self.handleDeepLink(url)
+					self.pendingDeepLink = nil
+				}
+			}
+	}
+	.onOpenURL { url in
+		if self.isReady {
+			self.handleDeepLink(url)
+		} else {
+			self.pendingDeepLink = url
+		}
+	}
 }
 ```
 
@@ -182,24 +199,24 @@ var body: some View {
 ```swift
 // WRONG - All tabs share navigation state
 NavigationStack(path: $path) {
-    TabView {
-        Tab("Home") { HomeView() }
-        Tab("Settings") { SettingsView() }
-    }
+	TabView {
+		Tab("Home") { HomeView() }
+		Tab("Settings") { SettingsView() }
+	}
 }
 
 // CORRECT - Each tab has own stack
 TabView {
-    Tab("Home", systemImage: "house") {
-        NavigationStack {
-            HomeView()
-        }
-    }
-    Tab("Settings", systemImage: "gear") {
-        NavigationStack {
-            SettingsView()
-        }
-    }
+	Tab("Home", systemImage: "house") {
+		NavigationStack {
+			HomeView()
+		}
+	}
+	Tab("Settings", systemImage: "gear") {
+		NavigationStack {
+			SettingsView()
+		}
+	}
 }
 ```
 
@@ -211,12 +228,12 @@ NavigationLink(recipe.name, value: recipe)  // Recipe type
 
 // This won't work if destination is for Recipe.ID
 .navigationDestination(for: Recipe.ID.self) { id in  // Wrong!
-    RecipeDetail(id: id)
+	RecipeDetail(id: id)
 }
 
 // Types must match
 .navigationDestination(for: Recipe.self) { recipe in  // Correct
-    RecipeDetail(recipe: recipe)
+	RecipeDetail(recipe: recipe)
 }
 ```
 
