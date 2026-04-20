@@ -6,7 +6,7 @@
 ```swift
 // WRONG - Race condition
 if SCNetworkReachabilityGetFlags(reachability, &flags).contains(.reachable) {
-    connection.start()
+	connection.start()
 }
 ```
 **Fix**: Use `.waiting` state instead.
@@ -28,7 +28,7 @@ getaddrinfo("example.com", "443", &hints, &results)
 ### 4. Hardcoded IP Addresses
 ```swift
 // WRONG - Breaks proxy/VPN
-let host = "192.168.1.1"
+let host: String = "192.168.1.1"
 ```
 **Fix**: Use hostnames.
 
@@ -97,7 +97,7 @@ openssl s_client -connect example.com:443 | openssl x509 -noout -dates
 ```swift
 #if DEBUG
 sec_protocol_options_set_verify_block(tlsOptions.securityProtocolOptions,
-    { _, _, complete in complete(true) }, .main)
+	{ _, _, complete in complete(true) }, .main)
 #endif
 ```
 
@@ -116,7 +116,7 @@ NetworkConnection(to: endpoint) { TLV { TLS() } }
 
 **Fix (iOS 12+)**: Length prefix
 ```swift
-var length = UInt32(data.count).bigEndian
+var length: UInt32 = .init(data.count).bigEndian
 connection.send(content: Data(bytes: &length, count: 4) + data, ...)
 ```
 
