@@ -627,15 +627,28 @@ super.viewDidAppear(animated: animated)
 But functions calls with multiple arguments (especially with labels) should place args on separate lines:
 
 ```swift
-let cardView = CardView(
+let cardView: CardView = .init(
 	model: cardModel,
 	style: cardStyle
 )
 ```
 
-When using `swift-declarative-configuration` package the shape of the trailing closure should be
+Since types should be specified explicitly it's fine to omit type on the right side:
 
 ```swift
+let value: Value = .custom(0)
+let view: SomeView = .init()
+let manager: SomeManager = .init(
+	param1: 0,
+	param2: "test"
+)
+```
+
+Specifically when using `swift-declarative-configuration` package the shape of the trailing closure should be
+
+```swift
+// Type is explicit on the right side
+// instead of the left side
 let redRoundedView = CocoaView() { $0 
 	.backgroundColor(.red)
 	.layer.scope { $0 
