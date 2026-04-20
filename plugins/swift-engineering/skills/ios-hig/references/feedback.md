@@ -20,12 +20,12 @@ Apple Human Interface Guidelines for motion, haptics, loading states, and error 
 ```swift
 // ✅ Subtle animation tied to state change
 withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-    model.isExpanded.toggle()
+	model.isExpanded.toggle()
 }
 
 // ❌ Excessive motion for routine UI; feels noisy and fatiguing
 withAnimation(.easeInOut(duration: 2.0)) {
-    model.isExpanded.toggle()
+	model.isExpanded.toggle()
 }
 // Plus additional scale/rotation/blur effects on the entire screen
 ```
@@ -62,23 +62,23 @@ withAnimation(.easeInOut(duration: 2.0)) {
 ```swift
 // ✅ Clear empty state and recoverable error with retry
 Group {
-    if model.isLoading {
-        ProgressView("Loading…")
-    } else if model.items.isEmpty {
-        ContentUnavailableView(
-            "No items",
-            systemImage: "tray",
-            description: Text("Add your first item to get started.")
-        )
-    } else {
-        List(model.items) { item in Text(item.title) }
-    }
+	if model.isLoading {
+		ProgressView("Loading…")
+	} else if model.items.isEmpty {
+		ContentUnavailableView(
+			"No items",
+			systemImage: "tray",
+			description: Text("Add your first item to get started.")
+		)
+	} else {
+		List(model.items) { item in Text(item.title) }
+	}
 }
 .alert("Couldn't load items", isPresented: $model.isShowingError) {
-    Button("Retry", action: model.reload)
-    Button("Cancel", role: .cancel) {}
+	Button("Retry", action: model.reload)
+	Button("Cancel", role: .cancel) {}
 } message: {
-    Text("Check your connection and try again.")
+	Text("Check your connection and try again.")
 }
 
 // ❌ Silent failures and raw errors; no next step

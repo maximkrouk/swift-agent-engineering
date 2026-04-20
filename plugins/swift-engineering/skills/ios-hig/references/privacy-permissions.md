@@ -16,16 +16,16 @@ Apple Human Interface Guidelines for requesting permissions and handling sensiti
 ```swift
 // ✅ Ask in context and handle denial gracefully
 Button("Enable notifications") {
-    model.requestNotifications()
+	model.requestNotifications()
 }
 // On denial: show a non-blocking explanation + "Open Settings" action
 
 // ❌ Permission request on launch with no context
 struct AppStart {
-    func start() {
-        model.requestNotifications()
-        model.requestLocation()
-    }
+	func start() {
+		model.requestNotifications()
+		model.requestLocation()
+	}
 }
 ```
 
@@ -34,47 +34,50 @@ struct AppStart {
 ```swift
 // ✅ Full permission flow with context and fallback
 struct NotificationSettingsView: View {
-    @State private var showingDeniedAlert = false
+	@SwiftUI.State
+	private var showingDeniedAlert: Bool
 
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Get notified when items are shared with you")
-                .font(.headline)
+	init(
+		showingDeniedAlert: Bool = false
+	) {
+		self._showingDeniedAlert = SwiftUI.State(wrappedValue: showingDeniedAlert)
+	}
 
-            Text("Turn on notifications to stay updated when friends share links and notes.")
-                .font(.body)
-                .foregroundStyle(.secondary)
+	var body: some View {
+		VStack(spacing: 16) {
+			Text("Get notified when items are shared with you")
+				.font(.headline)
 
-            Button("Enable Notifications") {
-                Task {
-                    let granted = await requestNotificationPermission()
-                    if !granted {
-                        showingDeniedAlert = true
-                    }
-                }
-            }
-            .buttonStyle(.borderedProminent)
-        }
-        .alert("Notifications Disabled", isPresented: $showingDeniedAlert) {
-            Button("Open Settings") {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
-                }
-            }
-            Button("Not Now", role: .cancel) {}
-        } message: {
-            Text("To receive notifications, enable them in Settings.")
-        }
-    }
+			Text("Turn on notifications to stay updated when friends share links and notes.")
+				.font(.body)
+				.foregroundStyle(.secondary)
 
-    func requestNotificationPermission() async -> Bool {
-        let center = UNUserNotificationCenter.current()
-        do {
-            return try await center.requestAuthorization(options: [.alert, .sound, .badge])
-        } catch {
-            return false
-        }
-    }
+			Button("Enable Notifications") {
+				Task {
+					let granted = await self.requestNotificationPermission()
+					if !granted {
+						self.showingDeniedAlert = true
+					}
+				}
+			}
+			.buttonStyle(.borderedProminent)
+		}
+		.alert("Notifications Disabled", isPresented: self.$showingDeniedAlert) {
+			Button("Open Settings") {
+				if let url = URL(string: UIApplication.openSettingsURLString) {
+					UIApplication.shared.open(url)
+				}
+			}
+			Button("Not Now", role: .cancel) {}
+		} message: {
+			Text("To receive notifications, enable them in Settings.")
+		}
+	}
+
+	func requestNotificationPermission() async -> Bool {
+		let center = UNUserNotificationCenter.current()
+		return (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+	}
 }
 ```
 
@@ -136,8 +139,8 @@ struct NotificationSettingsView: View {
 
 ```swift
 // Request with UNUserNotificationCenter
-let granted = try await UNUserNotificationCenter.current()
-    .requestAuthorization(options: [.alert, .sound, .badge])
+let granted: Bool = try await UNUserNotificationCenter.current()
+	.requestAuthorization(options: [.alert, .sound, .badge])
 ```
 
 **When to ask**: Before subscribing to notification topics or when user enables a notification-dependent feature
@@ -155,7 +158,7 @@ locationManager.requestWhenInUseAuthorization()
 
 ```swift
 // Request with PHPhotoLibrary
-let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+let status: PHAuthorizationStatus = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
 ```
 
 **When to ask**: When user taps "Add photo" or similar action
@@ -164,7 +167,7 @@ let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
 
 ```swift
 // Request with AVCaptureDevice
-let granted = await AVCaptureDevice.requestAccess(for: .video)
+let granted: Bool = await AVCaptureDevice.requestAccess(for: .video)
 ```
 
 **When to ask**: Right before showing camera interface

@@ -21,12 +21,12 @@ Apple Human Interface Guidelines for content, empty states, writing, and typogra
 ```swift
 // ✅ Helpful empty state with a clear next step
 ContentUnavailableView {
-    Label("No links yet", systemImage: "link")
+	Label("No links yet", systemImage: "link")
 } description: {
-    Text("Save links to find them quickly later.")
+	Text("Save links to find them quickly later.")
 } actions: {
-    Button("Add link", systemImage: "plus") { model.presentAddLink() }
-        .buttonStyle(.borderedProminent)
+	Button("Add link", systemImage: "plus") { model.presentAddLink() }
+		.buttonStyle(.borderedProminent)
 }
 
 // ❌ Empty UI with no explanation
@@ -90,26 +90,26 @@ Text("Error: Save failed")
 ```swift
 // ✅ Dynamic Type + predictable wrapping for important content
 VStack(alignment: .leading, spacing: 8) {
-    Text(item.title)
-        .font(.headline)
-        .lineLimit(2)
+	Text(item.title)
+		.font(.headline)
+		.lineLimit(2)
 
-    if let summary = item.summary {
-        Text(summary)
-            .font(.body)
-            .foregroundStyle(.secondary)
-            .lineLimit(3)
-    }
+	if let summary = item.summary {
+		Text(summary)
+			.font(.body)
+			.foregroundStyle(.secondary)
+			.lineLimit(3)
+	}
 }
 
 // ❌ Hard-coded sizes and single-line truncation for critical info
 VStack(alignment: .leading) {
-    Text(item.title)
-        .font(.system(size: 14))
-        .lineLimit(1)
-    Text(item.summary ?? "")
-        .font(.system(size: 11))
-        .lineLimit(1)
+	Text(item.title)
+		.font(.system(size: 14))
+		.lineLimit(1)
+	Text(item.summary ?? "")
+		.font(.system(size: 11))
+		.lineLimit(1)
 }
 ```
 
@@ -123,12 +123,12 @@ Use system text styles that scale with Dynamic Type:
 ```swift
 // ✅ System styles that scale
 Text("Main heading")
-    .font(.title2)
+	.font(.title2)
 Text("Body content")
-    .font(.body)
+	.font(.body)
 Text("Supporting detail")
-    .font(.caption)
-    .foregroundStyle(.secondary)
+	.font(.caption)
+	.foregroundStyle(.secondary)
 ```
 
 ## Summary
