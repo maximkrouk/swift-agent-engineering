@@ -15,7 +15,7 @@ Apple's next-generation material that dynamically bends light (lensing) rather t
 ```swift
 // Glass warps and bends light in real-time
 Text("Hello")
-    .glassEffect() // Lensing effect, not blur
+	.glassEffect() // Lensing effect, not blur
 ```
 - Concentrates and shapes light dynamically
 - Elements feel ultra-lightweight yet distinguishable
@@ -41,13 +41,13 @@ Text("Hello")
 ```swift
 // Regular is the default — most versatile
 NavigationView {
-    Content()
+	Content()
 }
 .glassEffect() // Full adaptive effects, auto-legibility
 
 // With custom shape
 Button("Tap Me") { }
-    .glassEffect(in: RoundedRectangle(cornerRadius: 12))
+	.glassEffect(in: RoundedRectangle(cornerRadius: 12))
 ```
 - Works in any size, over any content
 - Provides legibility regardless of context
@@ -61,11 +61,11 @@ Button("Tap Me") { }
 // 3. Content above is bold and bright
 
 ZStack {
-    VideoPlayer(player: player)
-        .overlay(.black.opacity(0.3)) // Required dimming layer
+	VideoPlayer(player: player)
+		.overlay(.black.opacity(0.3)) // Required dimming layer
 
-    PlayButton()
-        .glassEffect(.clear) // Clear variant
+	PlayButton()
+		.glassEffect(.clear) // Clear variant
 }
 ```
 
@@ -77,10 +77,10 @@ ZStack {
 ```swift
 // Correct — glass on navigation elements
 .toolbar {
-    ToolbarItem {
-        Button("Add") { }
-            .glassEffect()
-    }
+	ToolbarItem {
+		Button("Add") { }
+			.glassEffect()
+	}
 }
 ```
 
@@ -88,8 +88,8 @@ ZStack {
 ```swift
 // Wrong — don't apply glass to content
 List(items) { item in
-    ItemRow(item)
-        .glassEffect() // Never do this
+	ItemRow(item)
+		.glassEffect() // Never do this
 }
 ```
 
@@ -101,17 +101,17 @@ TabView { ... } // Gets glass automatically
 
 // Use fills for elements ON TOP of glass
 ZStack {
-    NavigationBar()
-        .glassEffect()
+	NavigationBar()
+		.glassEffect()
 
-    FloatingButton()
-        .foregroundStyle(.primary) // Fills, not glass
+	FloatingButton()
+		.foregroundStyle(.primary) // Fills, not glass
 }
 
 // Use adaptive tinting for primary actions
 Button("View Bag") { }
-    .tint(.red)
-    .glassEffect()
+	.tint(.red)
+	.glassEffect()
 ```
 
 ## DON'T: Common Mistakes
@@ -119,19 +119,19 @@ Button("View Bag") { }
 ```swift
 // Don't stack glass on glass
 ZStack {
-    Toolbar().glassEffect()
-    Button().glassEffect() // Wrong
+	Toolbar().glassEffect()
+	Button().glassEffect() // Wrong
 }
 
 // Don't use solid fills on glass
 Button("Action") { }
-    .background(.red) // Breaks glass character
-    .glassEffect()
+	.background(.red) // Breaks glass character
+	.glassEffect()
 
 // Don't tint everything
 VStack {
-    Button("A").tint(.blue).glassEffect()
-    Button("B").tint(.green).glassEffect() // No hierarchy
+	Button("A").tint(.blue).glassEffect()
+	Button("B").tint(.green).glassEffect() // No hierarchy
 }
 ```
 
@@ -139,7 +139,7 @@ VStack {
 
 ```swift
 ScrollView {
-    Content()
+	Content()
 }
 .scrollEdgeEffectStyle(.hard, for: .top) // Uniform effect
 
@@ -161,15 +161,15 @@ Group multiple glass effects for performance and morphing animations:
 
 ```swift
 GlassEffectContainer(spacing: 8) {
-    HStack(spacing: 8) {
-        Button { } label: { Image(systemName: "plus") }
-            .glassEffect()
-            .glassEffectID("add", in: namespace)
+	HStack(spacing: 8) {
+		Button { } label: { Image(systemName: "plus") }
+			.glassEffect()
+			.glassEffectID("add", in: namespace)
 
-        Button { } label: { Image(systemName: "share") }
-            .glassEffect()
-            .glassEffectID("share", in: namespace)
-    }
+		Button { } label: { Image(systemName: "share") }
+			.glassEffect()
+			.glassEffectID("share", in: namespace)
+	}
 }
 ```
 
@@ -182,17 +182,18 @@ GlassEffectContainer(spacing: 8) {
 Use `@Namespace` and `.glassEffectID()` for smooth morphing transitions:
 
 ```swift
-@Namespace var namespace
+@Namespace
+var namespace
 
 // Elements with same ID morph into each other during transitions
 if isExpanded {
-    ExpandedView()
-        .glassEffect()
-        .glassEffectID("panel", in: namespace)
+	ExpandedView()
+		.glassEffect()
+		.glassEffectID("panel", in: namespace)
 } else {
-    CollapsedView()
-        .glassEffect()
-        .glassEffectID("panel", in: namespace)
+	CollapsedView()
+		.glassEffect()
+		.glassEffectID("panel", in: namespace)
 }
 ```
 
@@ -203,15 +204,15 @@ Add touch response with `.interactive()` chained on the glass variant:
 ```swift
 // Correct - chain .interactive() on the variant
 Button("Tap") { }
-    .glassEffect(.regular.interactive())
+	.glassEffect(.regular.interactive())
 
 // With tint
 Button("Tap") { }
-    .glassEffect(.regular.interactive().tint(.blue))
+	.glassEffect(.regular.interactive().tint(.blue))
 
 // With custom shape
 Button("Tap") { }
-    .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 12))
+	.glassEffect(.regular.interactive(), in: .rect(cornerRadius: 12))
 ```
 
 **Caution**: Avoid `.interactive()` on draggable rows - it can interfere with drag gestures.
@@ -223,8 +224,8 @@ Button("Tap") { }
 ```swift
 // Glass won't show in drag preview - this is expected
 MyGlassCard()
-    .glassEffect()
-    .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 12))
+	.glassEffect()
+	.contentShape(.dragPreview, RoundedRectangle(cornerRadius: 12))
 ```
 
 ## API Reference
@@ -232,8 +233,8 @@ MyGlassCard()
 ```swift
 // Basic glass effect
 func glassEffect<S: Shape>(
-    _ glass: Glass = .regular,
-    in shape: S = Capsule()
+	_ glass: Glass = .regular,
+	in shape: S = .init()
 ) -> some View
 
 // Glass variant modifiers (chainable)

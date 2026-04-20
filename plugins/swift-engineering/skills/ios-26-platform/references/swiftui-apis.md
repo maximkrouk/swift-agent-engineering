@@ -9,11 +9,17 @@
 import WebKit
 
 struct ArticleView: View {
-    let articleURL: URL
+	let articleURL: URL
 
-    var body: some View {
-        WebView(url: articleURL)
-    }
+	init(
+		articleURL: URL
+	) {
+		self.articleURL = articleURL
+	}
+
+	var body: some View {
+		WebView(url: articleURL)
+	}
 }
 ```
 
@@ -22,23 +28,30 @@ struct ArticleView: View {
 import WebKit
 
 struct BrowserView: View {
-    @State private var webPage = WebPage()
+	@SwiftUI.State
+	private var webPage: WebPage
 
-    var body: some View {
-        VStack {
-            Text(webPage.title ?? "Loading...")
+	init(
+		webPage: WebPage = .init()
+	) {
+		self._webPage = SwiftUI.State(wrappedValue: webPage)
+	}
 
-            WebView(page: webPage)
+	var body: some View {
+		VStack {
+			Text(self.webPage.title ?? "Loading...")
 
-            HStack {
-                Button("Back") { webPage.goBack() }
-                    .disabled(!webPage.canGoBack)
+			WebView(page: self.webPage)
 
-                Button("Forward") { webPage.goForward() }
-                    .disabled(!webPage.canGoForward)
-            }
-        }
-    }
+			HStack {
+				Button("Back") { self.webPage.goBack() }
+					.disabled(!self.webPage.canGoBack)
+
+				Button("Forward") { self.webPage.goForward() }
+					.disabled(!self.webPage.canGoForward)
+			}
+		}
+	}
 }
 ```
 
@@ -47,23 +60,27 @@ struct BrowserView: View {
 ### Before (Manual animatableData)
 ```swift
 struct HikingRouteShape: Shape {
-    var startPoint: CGPoint
-    var endPoint: CGPoint
-    var elevation: Double
+	var startPoint: CGPoint
+	var endPoint: CGPoint
+	var elevation: Double
 
-    // Tedious manual declaration
-    var animatableData: AnimatablePair<CGPoint.AnimatableData,
-                        AnimatablePair<Double, CGPoint.AnimatableData>> {
-        get {
-            AnimatablePair(startPoint.animatableData,
-                          AnimatablePair(elevation, endPoint.animatableData))
-        }
-        set {
-            startPoint.animatableData = newValue.first
-            elevation = newValue.second.first
-            endPoint.animatableData = newValue.second.second
-        }
-    }
+	// Tedious manual declaration
+	var animatableData: AnimatablePair<
+		CGPoint.AnimatableData,
+		AnimatablePair<Double, CGPoint.AnimatableData>
+	> {
+		get {
+			AnimatablePair(
+				startPoint.animatableData,
+				AnimatablePair(elevation, endPoint.animatableData)
+			)
+		}
+		set {
+			startPoint.animatableData = newValue.first
+			elevation = newValue.second.first
+			endPoint.animatableData = newValue.second.second
+		}
+	}
 }
 ```
 
@@ -71,14 +88,14 @@ struct HikingRouteShape: Shape {
 ```swift
 @Animatable
 struct HikingRouteShape: Shape {
-    var startPoint: CGPoint
-    var endPoint: CGPoint
-    var elevation: Double
+	var startPoint: CGPoint
+	var endPoint: CGPoint
+	var elevation: Double
 
-    @AnimatableIgnored
-    var fillColor: Color // Excluded from animation
+	@AnimatableIgnored
+	var fillColor: Color // Excluded from animation
 
-    // animatableData automatically synthesized!
+	// animatableData automatically synthesized!
 }
 ```
 
@@ -92,22 +109,28 @@ struct HikingRouteShape: Shape {
 import Charts
 
 struct ElevationChart: View {
-    let hikingData: [HikeDataPoint]
+	let hikingData: [HikeDataPoint]
+	
+	init(
+		hikingData: [HikeDataPoint]
+	) {
+		self.hikingData = hikingData
+	}
 
-    var body: some View {
-        Chart3D {
-            ForEach(hikingData) { point in
-                LineMark3D(
-                    x: .value("Distance", point.distance),
-                    y: .value("Elevation", point.elevation),
-                    z: .value("Time", point.timestamp)
-                )
-            }
-        }
-        .chartXScale(domain: 0...10)
-        .chartYScale(domain: 0...3000)
-        .chartZScale(domain: startTime...endTime)
-    }
+	var body: some View {
+		Chart3D {
+			ForEach(hikingData) { point in
+				LineMark3D(
+					x: .value("Distance", point.distance),
+					y: .value("Elevation", point.elevation),
+					z: .value("Time", point.timestamp)
+				)
+			}
+		}
+		.chartXScale(domain: 0...10)
+		.chartYScale(domain: 0...3000)
+		.chartZScale(domain: startTime...endTime)
+	}
 }
 ```
 
@@ -115,12 +138,19 @@ struct ElevationChart: View {
 
 ```swift
 struct CommentView: View {
-    @State private var comment = AttributedString("Enter your comment")
+	@SwiftUI.State
+	private var comment: AttributedString
 
-    var body: some View {
-        TextEditor(text: $comment)
-        // Built-in formatting controls (bold, italic, etc.)
-    }
+	init(
+		comment: AttributedString = .init("Enter your comment")
+	) {
+		self._comment = SwiftUI.State(wrappedValue: comment)
+	}
+
+	var body: some View {
+		TextEditor(text: self.$comment)
+		// Built-in formatting controls (bold, italic, etc.)
+	}
 }
 ```
 
@@ -134,27 +164,28 @@ struct CommentView: View {
 ### sliderThumbVisibility
 ```swift
 Slider(value: $progress)
-    .sliderThumbVisibility(.hidden)
+	.sliderThumbVisibility(.hidden)
 // For media players, progress indicators
 ```
 
 ### safeAreaBar
 ```swift
 List { ... }
-    .safeAreaBar(edge: .bottom) {
-        Text("Bottom Action Bar")
-            .padding(.vertical, 15)
-    }
-    .scrollEdgeEffectStyle(.soft, for: .bottom)
+	.safeAreaBar(edge: .bottom) {
+		Text("Bottom Action Bar")
+			.padding(.vertical, 15)
+	}
+	.scrollEdgeEffectStyle(.soft, for: .bottom)
 // Sticky bars with progressive blur
 ```
 
 ### In-App URL Opening
 ```swift
-@Environment(\.openURL) var openURL
+@Environment(\.openURL)
+var openURL
 
 Button("Open In-App") {
-    openURL(website, prefersInApp: true) // SFSafariViewController style
+	openURL(website, prefersInApp: true) // SFSafariViewController style
 }
 // Default Link opens in Safari app
 ```
@@ -162,12 +193,12 @@ Button("Open In-App") {
 ### Button Roles
 ```swift
 Button(role: .close) {
-    showSheet = false
+	showSheet = false
 }
 // Renders as X icon with glass effect in toolbars
 
 Button(role: .confirm) {
-    confirmAction()
+	confirmAction()
 }
 // System-styled confirmation button
 ```
@@ -175,56 +206,65 @@ Button(role: .confirm) {
 ### GlassButtonStyle (iOS 26.1+)
 ```swift
 Button("Clear Glass") { }
-    .buttonStyle(GlassButtonStyle(.clear))
+	.buttonStyle(GlassButtonStyle(.clear))
 
 Button("Regular Glass") { }
-    .buttonStyle(GlassButtonStyle(.glass))
+	.buttonStyle(GlassButtonStyle(.glass))
 
 Button("Tinted Glass") { }
-    .buttonStyle(GlassButtonStyle(.tint))
-    .tint(.blue)
+	.buttonStyle(GlassButtonStyle(.tint))
+	.tint(.blue)
 ```
 
 ### buttonSizing
 ```swift
 Button("Fit") { }
-    .buttonSizing(.fit)      // Shrinks to label
+	.buttonSizing(.fit)      // Shrinks to label
 
 Button("Stretch") { }
-    .buttonSizing(.stretch)  // Fills available width
+	.buttonSizing(.stretch)  // Fills available width
 
 Button("Flexible") { }
-    .buttonSizing(.flexible) // Balanced
+	.buttonSizing(.flexible) // Balanced
 ```
 
 ## Drag and Drop Enhancements
 
 ```swift
 struct PhotoGrid: View {
-    @State private var selection: Set<Photo.ID> = []
-    let photos: [Photo]
+	@SwiftUI.State
+	private var selection: Set<Photo.ID>
+	let photos: [Photo]
 
-    var body: some View {
-        LazyVGrid(columns: columns) {
-            ForEach(photos) { photo in
-                PhotoCell(photo: photo)
-                    .draggable(photo)
-            }
-        }
-        .dragContainer {
-            // Return selected items
-            selection.compactMap { id in
-                photos.first { $0.id == id }
-            }
-        }
-        .dragConfiguration(.init(supportedOperations: [.copy, .delete]))
-        .dragPreviewFormation(.stack)
-        .onDragSessionUpdated { session in
-            if case .ended(.delete) = session.phase {
-                deleteSelectedPhotos()
-            }
-        }
-    }
+	init(
+		photos: [Photo],
+		selection: Set<Photo.ID> = []
+	) {
+		self.photos = photos
+		self._selection = SwiftUI.State(wrappedValue: selection)
+	}
+
+	var body: some View {
+		LazyVGrid(columns: self.columns) {
+			ForEach(self.photos) { photo in
+				PhotoCell(photo: photo)
+					.draggable(photo)
+			}
+		}
+		.dragContainer {
+			// Return selected items
+			self.selection.compactMap { id in
+				self.photos.first { $0.id == id }
+			}
+		}
+		.dragConfiguration(.init(supportedOperations: [.copy, .delete]))
+		.dragPreviewFormation(.stack)
+		.onDragSessionUpdated { session in
+			if case .ended(.delete) = session.phase {
+				self.deleteSelectedPhotos()
+			}
+		}
+	}
 }
 ```
 
@@ -233,32 +273,33 @@ struct PhotoGrid: View {
 ### Alignment3D
 ```swift
 HikingRouteView()
-    .overlay(alignment: sunAlignment) {
-        SunView()
-    }
+	.overlay(alignment: sunAlignment) {
+		SunView()
+	}
 
 var sunAlignment: Alignment3D {
-    Alignment3D(horizontal: .center, vertical: .top, depth: .back)
+	Alignment3D(horizontal: .center, vertical: .top, depth: .back)
 }
 ```
 
 ### Manipulable Objects
 ```swift
 Model3D(named: "WaterBottle")
-    .manipulable() // Users can pick up and move
+	.manipulable() // Users can pick up and move
 ```
 
 ### Scene Snapping
 ```swift
-@Environment(\.sceneSnapping) var sceneSnapping
+@Environment(\.sceneSnapping)
+var sceneSnapping
 
 var body: some View {
-    Model3D(named: item.modelName)
-        .overlay(alignment: .bottom) {
-            if sceneSnapping.isSnapped {
-                Pedestal()
-            }
-        }
+	Model3D(named: item.modelName)
+		.overlay(alignment: .bottom) {
+			if self.sceneSnapping.isSnapped {
+				Pedestal()
+			}
+		}
 }
 ```
 
@@ -267,11 +308,11 @@ var body: some View {
 ```swift
 // Optimize multiple glass effects
 GlassEffectContainer {
-    HStack {
-        Button("Action 1") { }.glassEffect()
-        Button("Action 2") { }.glassEffect()
-        Button("Action 3") { }.glassEffect()
-    }
+	HStack {
+		Button("Action 1") { }.glassEffect()
+		Button("Action 2") { }.glassEffect()
+		Button("Action 3") { }.glassEffect()
+	}
 }
 // Benefits: Performance optimization, fluid morphing between shapes
 ```
