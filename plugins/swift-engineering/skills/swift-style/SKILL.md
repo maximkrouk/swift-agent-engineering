@@ -400,6 +400,27 @@ override func _init() {
   > }
   > ```
 
+  Other exceptions are:
+
+  - Some property wrappers where type is inferred with provided keyPath (i.e. `@Environment`, `@Dependency`)
+
+  - Local variables with long tho simple initialization code:
+
+    ```swift
+    // WRONG ❌: Expression is too long
+    let statuses: [Product.SubscriptionInfo.Status] = try await Product.SubscriptionInfo.status(for: groupID)
+    
+    // CORRECT ✅: This code is easier to reed and type
+    // is not as important for local variables as for properties
+    let statuses = try await Product.SubscriptionInfo.status(for: groupID)
+    
+    // CORRECT ✅: Type can be kept if we move initilization code to the next line
+    let statuses: [Product.SubscriptionInfo.Status] =
+    try await Product.SubscriptionInfo.status(for: groupID)
+    ```
+    
+    
+
 - Use syntactic sugar for first-class swift types
 
   - `Value?` instead of `Optional<Value`
@@ -439,6 +460,12 @@ override func _init() {
   @SwiftUI.State
   private var value: Int = 0
   
+  // If type is inferred from the propertyWrapper
+  // initializer, it should be omitted from the variable
+  // Usually only applicable to @Environment and @Dependency
+  @Dependency(\.someDependency)
+  private var someDependency
+  
   @inlinable
   func test() {}
   
@@ -457,16 +484,36 @@ override func _init() {
   ```
 
   - In general-purpose packages mark public functions as `@inlinable` and internal properties/functions as `@usableFromInline` attributes
+
   - SwiftUI `State` attribute must always be prefixed with module name `@SwiftUI.State` instead of `@State`
+
+  - Attributed declarations should be separated from other declarations with a blank line
+
+    ```swift
+    // WRONG ❌
+    @Dependency(\.someDependency1)
+    var someDependency1
+    @Dependency(\.someDependency2)
+    var someDependency2
+    
+    // Correct ✅
+    @Dependency(\.someDependency1)
+    var someDependency1
+    
+    @Dependency(\.someDependency2)
+    var someDependency2
+    ```
+
+    
 
 - For readonly computed properties omit `get` keyword
 
   - Simple readonly computed properties can be declared as one-liners
-  
+
     ```swift
     var diameter: Double { radius * 2 }
     ```
-  
+
 
 ### Structure
 
@@ -477,6 +524,7 @@ override func _init() {
 - `override` keyword
 - `static`/`final` keyword
 - identifier
+- type
 
 ```swift
 open override static var value: Int
@@ -694,6 +742,71 @@ let redRoundedView = CocoaView() { $0
 >   ```
 >
 >   - `objc` notation doesn't work well with tabs indentation
+
+## Operators
+
+Ternary operators indentation:
+
+```swift
+// WRONG: Fights Xcode indentation
+let value = condition
+  ? true
+	: false
+
+// CORRECT: Matches Xcode indentation
+let value = condition
+? true
+: false
+
+// CORRECT: It's ok to keep ternary as one-liner for simple expressions
+let value = condition ? true : false
+```
+
+Operators chaining:
+
+```swift
+// WRONG: Trailing operators chaining
+let value = condition1 && (
+	condition2 ||
+	condition3 ||
+	condition4
+) && condition5
+
+let f = f3 <<<
+f2 <<<
+f1 <<<
+f0
+
+// CORRECT: Leading operators chaining
+let value = condition1
+&& (
+	condition2
+  || condition3
+  || condition4
+)
+&& !condition5
+
+let f = f3
+<<< f2
+<<< f1
+<<< f0
+
+// CORRECT: Often times leading chaining can be restructured a bit
+// Note - restructure only if it doesn't affect performace
+let value = condition1
+&& !condition5
+&& (
+	condition2
+  || condition3
+  || condition4
+)
+
+// CORRECT: Simple expressions can be one-liners
+let value = condition1 && (condition2 || condition3)
+let f = f3 <<< f2 <<< f1 <<< f0
+```
+
+
 
 ## Memory Management
 
