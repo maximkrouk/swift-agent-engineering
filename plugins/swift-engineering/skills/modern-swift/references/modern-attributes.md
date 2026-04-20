@@ -19,12 +19,12 @@ Suppresses strict concurrency warnings for legacy code during migration.
 // Allow non-Sendable types to conform during migration
 @preconcurrency
 protocol DataSource {
-    func fetchData() async -> Data
+	func fetchData() async -> Data
 }
 
 // Classes can conform without Sendable requirement
 class LocalDataSource: DataSource {
-    func fetchData() async -> Data { ... }
+	func fetchData() async -> Data { ... }
 }
 ```
 
@@ -33,7 +33,13 @@ class LocalDataSource: DataSource {
 // Mark type as "will be Sendable eventually"
 @preconcurrency
 class LegacyManager {
-    var state: String = ""
+	var state: String
+
+	init(
+		state: String = ""
+	) {
+		self.state = state
+	}
 }
 ```
 
@@ -43,12 +49,12 @@ Makes new API implementations available on older OS versions.
 
 ```swift
 extension String {
-    // Available on iOS 13+, but implemented on iOS 17+
-    @backDeployed(before: iOS 17)
-    @available(iOS 13, *)
-    func trimmed() -> String {
-        trimmingCharacters(in: .whitespaces)
-    }
+	// Available on iOS 13+, but implemented on iOS 17+
+	@backDeployed(before: iOS 17)
+	@available(iOS 13, *)
+	func trimmed() -> String {
+		trimmingCharacters(in: .whitespaces)
+	}
 }
 
 // iOS 13-16: Uses the provided implementation
@@ -67,13 +73,13 @@ New access level between `internal` and `public`.
 ```swift
 // MyLibrary/Sources/Core/User.swift
 package struct User {
-    package let id: String
-    package let name: String
+	package let id: String
+	package let name: String
 }
 
 // MyLibrary/Sources/Networking/API.swift
 package func fetchUser() -> User {
-    // Visible within MyLibrary package
+	// Visible within MyLibrary package
 }
 
 // App/main.swift
@@ -102,13 +108,13 @@ Prevents async usage of specific APIs.
 ```swift
 @available(*, noasync)
 func dangerousBlockingOperation() {
-    // Blocks thread - don't call from async context
-    Thread.sleep(forTimeInterval: 5)
+	// Blocks thread - don't call from async context
+	Thread.sleep(forTimeInterval: 5)
 }
 
 // ❌ Compile error in async context
 async {
-    dangerousBlockingOperation()
+	dangerousBlockingOperation()
 }
 ```
 

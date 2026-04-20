@@ -21,11 +21,11 @@ Start with `@`, modify or add to declarations.
 // Usage
 @OptionSet
 struct Permission {
-    private enum Options: Int {
-        case read = 1
-        case write = 2
-        case delete = 4
-    }
+	private enum Options: Int {
+		case read = 1
+		case write = 2
+		case delete = 4
+	}
 }
 
 // Expands to add conformance, properties, initializers
@@ -57,11 +57,11 @@ Generates RawRepresentable conformance for option sets.
 ```swift
 @OptionSet<UInt8>
 struct ShippingOptions {
-    private enum Options: Int {
-        case nextDay
-        case priority
-        case gift
-    }
+	private enum Options: Int {
+		case nextDay
+		case priority
+		case gift
+	}
 }
 
 // Generated: init, contains, insert, remove, etc.
@@ -74,7 +74,13 @@ Generates observation infrastructure for SwiftUI.
 ```swift
 @Observable
 class ViewModel {
-    var count = 0
+	var count: Int
+
+	init(
+		count: Int = 0
+	) {
+		self.count = count
+	}
 }
 
 // No need for @Published or ObservableObject
@@ -116,9 +122,9 @@ Macros expand at compile time. View expansions in Xcode:
 ```swift
 @OptionSet
 struct Permissions {
-    private enum Options: Int {
-        case read, write
-    }
+	private enum Options: Int {
+		case read, write
+	}
 }
 
 // Expand to see:
