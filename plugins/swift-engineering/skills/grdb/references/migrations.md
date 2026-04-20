@@ -5,25 +5,25 @@
 ```swift
 import GRDB
 
-var migrator = DatabaseMigrator()
+var migrator: DatabaseMigrator = .init()
 
 migrator.registerMigration("v1_initial") { db in
-    try db.create(table: "tracks") { t in
-        t.column("id", .text).primaryKey()
-        t.column("title", .text).notNull()
-        t.column("artist", .text).notNull()
-        t.column("duration", .real).notNull()
-    }
+	try db.create(table: "tracks") { t in
+		t.column("id", .text).primaryKey()
+		t.column("title", .text).notNull()
+		t.column("artist", .text).notNull()
+		t.column("duration", .real).notNull()
+	}
 }
 
 migrator.registerMigration("v2_add_genre") { db in
-    try db.alter(table: "tracks") { t in
-        t.add(column: "genre", .text)
-    }
+	try db.alter(table: "tracks") { t in
+		t.add(column: "genre", .text)
+	}
 }
 
 migrator.registerMigration("v3_add_indexes") { db in
-    try db.create(index: "idx_tracks_genre", on: "tracks", columns: ["genre"])
+	try db.create(index: "idx_tracks_genre", on: "tracks", columns: ["genre"])
 }
 
 try migrator.migrate(dbQueue)
@@ -53,13 +53,13 @@ No need for `IF NOT EXISTS` - GRDB handles versioning.
 
 ```swift
 migrator.registerMigration("create_albums") { db in
-    try db.create(table: "albums") { t in
-        t.column("id", .text).primaryKey()
-        t.column("title", .text).notNull()
-        t.column("artistId", .text)
-            .references("artists", onDelete: .cascade)
-        t.column("createdAt", .datetime).defaults(to: Date())
-    }
+	try db.create(table: "albums") { t in
+		t.column("id", .text).primaryKey()
+		t.column("title", .text).notNull()
+		t.column("artistId", .text)
+			.references("artists", onDelete: .cascade)
+		t.column("createdAt", .datetime).defaults(to: Date())
+	}
 }
 ```
 
@@ -80,25 +80,25 @@ try db.create(index: "idx_external_id", on: "tracks", columns: ["externalId"], u
 
 ```swift
 migrator.registerMigration("normalize_artists") { db in
-    try db.create(table: "artists") { t in
-        t.column("id", .text).primaryKey()
-        t.column("name", .text).notNull()
-    }
+	try db.create(table: "artists") { t in
+		t.column("id", .text).primaryKey()
+		t.column("name", .text).notNull()
+	}
 
-    try db.execute(sql: """
-        INSERT INTO artists (id, name)
-        SELECT DISTINCT lower(replace(artist, ' ', '_')), artist FROM tracks
-        """)
+	try db.execute(sql: """
+		INSERT INTO artists (id, name)
+		SELECT DISTINCT lower(replace(artist, ' ', '_')), artist FROM tracks
+		""")
 
-    try db.alter(table: "tracks") { t in
-        t.add(column: "artistId", .text).references("artists")
-    }
+	try db.alter(table: "tracks") { t in
+		t.add(column: "artistId", .text).references("artists")
+	}
 
-    try db.execute(sql: """
-        UPDATE tracks SET artistId = (
-            SELECT id FROM artists WHERE artists.name = tracks.artist
-        )
-        """)
+	try db.execute(sql: """
+		UPDATE tracks SET artistId = (
+			SELECT id FROM artists WHERE artists.name = tracks.artist
+		)
+		""")
 }
 ```
 

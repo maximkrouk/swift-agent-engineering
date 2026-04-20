@@ -5,19 +5,19 @@
 ### Enable Tracing
 
 ```swift
-var config = Configuration()
+var config: Configuration = .init()
 config.trace = { print($0) }
-let dbQueue = try DatabaseQueue(path: dbPath, configuration: config)
+let dbQueue: DatabaseQueue = try DatabaseQueue(path: dbPath, configuration: config)
 ```
 
 ### EXPLAIN QUERY PLAN
 
 ```swift
 try dbQueue.read { db in
-    let plan = try String.fetchOne(db, sql: """
-        EXPLAIN QUERY PLAN SELECT * FROM tracks WHERE artist = ?
-        """, arguments: ["Artist"])
-    print(plan)
+	let plan = try String.fetchOne(db, sql: """
+		EXPLAIN QUERY PLAN SELECT * FROM tracks WHERE artist = ?
+		""", arguments: ["Artist"])
+	print(plan)
 }
 ```
 
@@ -55,7 +55,7 @@ try db.create(index: "idx_genre_artist", on: "tracks", columns: ["genre", "artis
 
 ```swift
 for track in tracks {
-    try dbQueue.write { db in try track.insert(db) }  // Slow!
+	try dbQueue.write { db in try track.insert(db) }  // Slow!
 }
 ```
 
@@ -63,7 +63,7 @@ for track in tracks {
 
 ```swift
 try dbQueue.write { db in
-    for track in tracks { try track.insert(db) }
+	for track in tracks { try track.insert(db) }
 }
 ```
 
@@ -71,10 +71,10 @@ try dbQueue.write { db in
 
 ```swift
 try dbQueue.write { db in
-    let stmt = try db.makeStatement(sql: "INSERT INTO tracks VALUES (?, ?, ?)")
-    for track in tracks {
-        try stmt.execute(arguments: [track.id, track.title, track.artist])
-    }
+	let stmt = try db.makeStatement(sql: "INSERT INTO tracks VALUES (?, ?, ?)")
+	for track in tracks {
+		try stmt.execute(arguments: [track.id, track.title, track.artist])
+	}
 }
 ```
 
@@ -85,14 +85,14 @@ try dbQueue.write { db in
 ```swift
 let tracks = try Track.fetchAll(db)
 for track in tracks {
-    let album = try Album.fetchOne(db, key: track.albumId)  // N queries!
+	let album = try Album.fetchOne(db, key: track.albumId) // N queries!
 }
 ```
 
 ### Right: Use JOIN
 
 ```swift
-let sql = "SELECT tracks.*, albums.title as albumTitle FROM tracks JOIN albums ON ..."
+let sql: String = "SELECT tracks.*, albums.title as albumTitle FROM tracks JOIN albums ON ..."
 let results = try TrackWithAlbum.fetchAll(db, sql: sql)
 ```
 
@@ -108,7 +108,7 @@ let tracks = try dbQueue.read { db in try Track.fetchAll(db) }  // Blocks UI
 
 ```swift
 Task {
-    let tracks = try await dbQueue.read { db in try Track.fetchAll(db) }
+	let tracks = try await dbQueue.read { db in try Track.fetchAll(db) }
 }
 ```
 
@@ -118,7 +118,7 @@ Task {
 // Stream instead of loading all
 let cursor = try Track.fetchCursor(db)
 while let track = try cursor.next() {
-    process(track)
+	process(track)
 }
 ```
 

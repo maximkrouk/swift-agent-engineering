@@ -9,25 +9,25 @@ import GRDB
 import Combine
 
 let observation = ValueObservation.tracking { db in
-    try Track.fetchAll(db)
+	try Track.fetchAll(db)
 }
 
 let cancellable = observation.publisher(in: dbQueue)
-    .sink(
-        receiveCompletion: { _ in },
-        receiveValue: { tracks in
-            print("Tracks updated: \(tracks.count)")
-        }
-    )
+	.sink(
+		receiveCompletion: { _ in },
+		receiveValue: { tracks in
+			print("Tracks updated: \(tracks.count)")
+		}
+	)
 ```
 
 ## Filtered Observation
 
 ```swift
 func observeGenre(_ genre: String) -> ValueObservation<[Track]> {
-    ValueObservation.tracking { db in
-        try Track.filter(Column("genre") == genre).fetchAll(db)
-    }
+	ValueObservation.tracking { db in
+		try Track.filter(Column("genre") == genre).fetchAll(db)
+	}
 }
 ```
 
@@ -37,23 +37,25 @@ func observeGenre(_ genre: String) -> ValueObservation<[Track]> {
 import GRDBQuery
 
 struct TracksRequest: Queryable {
-    static var defaultValue: [Track] { [] }
+	static var defaultValue: [Track] { [] }
 
-    func publisher(in dbQueue: DatabaseQueue) -> AnyPublisher<[Track], Error> {
-        ValueObservation
-            .tracking { db in try Track.fetchAll(db) }
-            .publisher(in: dbQueue)
-            .eraseToAnyPublisher()
-    }
+	func publisher(in dbQueue: DatabaseQueue) -> AnyPublisher<[Track], Error> {
+		ValueObservation
+			.tracking { db in try Track.fetchAll(db) }
+			.publisher(in: dbQueue)
+			.eraseToAnyPublisher()
+	}
 }
 
 struct TrackListView: View {
-    @Query(TracksRequest())
-    var tracks: [Track]
+	@Query(TracksRequest())
+	var tracks: [Track]
 
-    var body: some View {
-        List(tracks) { track in Text(track.title) }
-    }
+	init() {}
+
+	var body: some View {
+		List(tracks) { track in Text(track.title) }
+	}
 }
 ```
 
@@ -61,9 +63,9 @@ struct TrackListView: View {
 
 ```swift
 let observer = observation.start(
-    in: dbQueue,
-    onError: { error in print("Error: \(error)") },
-    onChange: { tracks in print("Changed: \(tracks.count)") }
+	in: dbQueue,
+	onError: { error in print("Error: \(error)") },
+	onChange: { tracks in print("Changed: \(tracks.count)") }
 )
 
 observer.cancel()  // When done
@@ -75,7 +77,7 @@ observer.cancel()  // When done
 
 ```swift
 ValueObservation.tracking { db in
-    try Track.fetchAll(db)  // CPU spike on unrelated changes
+	try Track.fetchAll(db)  // CPU spike on unrelated changes
 }
 ```
 
@@ -89,15 +91,15 @@ observation.removeDuplicates().publisher(in: dbQueue)
 
 ```swift
 observation.removeDuplicates()
-    .publisher(in: dbQueue)
-    .debounce(for: 0.5, scheduler: DispatchQueue.main)
+	.publisher(in: dbQueue)
+	.debounce(for: 0.5, scheduler: DispatchQueue.main)
 ```
 
 ### Solution 3: Region Tracking
 
 ```swift
 ValueObservation.tracking(region: Track.all()) { db in
-    try Track.fetchAll(db)  // Only Track changes trigger
+	try Track.fetchAll(db)  // Only Track changes trigger
 }
 ```
 
@@ -113,8 +115,8 @@ ValueObservation.tracking(region: Track.all()) { db in
 
 ```swift
 for try await tracks in ValueObservation
-    .tracking { db in try Track.fetchAll(db) }
-    .values(in: dbQueue) {
-    print("Updated: \(tracks.count)")
-}
+	.tracking { db in try Track.fetchAll(db) }
+	.values(in: dbQueue) {
+		print("Updated: \(tracks.count)")
+	}
 ```
