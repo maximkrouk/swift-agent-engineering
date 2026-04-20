@@ -34,12 +34,15 @@ Text("Welcome")
 Button("Continue") { }
 
 // Explicit localization with context
-let title = String(localized: "Settings", comment: "Navigation title")
+let title: String = .init(
+	localized: "Settings",
+	comment: "Navigation title"
+)
 
 // Deferred localization for custom views
 struct CardView: View {
-    let title: LocalizedStringResource
-    var body: some View { Text(title) }
+	let title: LocalizedStringResource
+	var body: some View { Text(title) }
 }
 ```
 

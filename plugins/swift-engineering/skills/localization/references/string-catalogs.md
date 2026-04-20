@@ -33,21 +33,27 @@ Button("Checkout") { }
 
 ```swift
 // Basic
-let title = String(localized: "Welcome")
+let title: String = .init(localized: "Welcome")
 
 // With translator comment (recommended)
-let title = String(localized: "Welcome",
-                   comment: "Main screen greeting")
+let title: String = .init(
+	localized: "Welcome",
+	comment: "Main screen greeting"
+)
 
 // With custom table
-let title = String(localized: "Welcome",
-                   table: "Onboarding",
-                   comment: "First launch greeting")
+let title: String = .init(
+	localized: "Welcome",
+	table: "Onboarding",
+	comment: "First launch greeting"
+)
 
 // With default value (key != English text)
-let title = String(localized: "WELCOME_TITLE",
-                   defaultValue: "Welcome to the App!",
-                   comment: "Main screen title")
+let title: String = .init(
+	localized: "WELCOME_TITLE",
+	defaultValue: "Welcome to the App!",
+	comment: "Main screen title"
+)
 ```
 
 ### LocalizedStringResource (Deferred Lookup)
@@ -56,21 +62,29 @@ Use when passing localizable strings to custom views:
 
 ```swift
 struct CardView: View {
-    let title: LocalizedStringResource
-    let subtitle: LocalizedStringResource
+	let title: LocalizedStringResource
+	let subtitle: LocalizedStringResource
 
-    var body: some View {
-        VStack {
-            Text(title)      // Resolved at render time
-            Text(subtitle)
-        }
-    }
+	init(
+		title: LocalizedStringResource,
+		subtitle: LocalizedStringResource
+	) {
+		self.title = title
+		self.subtitle = subtitle
+  }
+
+	var body: some View {
+		VStack {
+			Text(title)      // Resolved at render time
+			Text(subtitle)
+		}
+	}
 }
 
 // Usage
 CardView(
-    title: "Recent Purchases",
-    subtitle: "Items from the past week"
+	title: "Recent Purchases",
+	subtitle: "Items from the past week"
 )
 ```
 
@@ -78,7 +92,7 @@ CardView(
 
 ```swift
 // Markdown preserved across localizations
-let styled = AttributedString(localized: "**Bold** and _italic_ text")
+let styled: AttributedString = .init(localized: "**Bold** and _italic_ text")
 ```
 
 ## String Catalog Structure
@@ -130,23 +144,27 @@ Each entry contains:
 ### NSLocalizedString
 
 ```swift
-let title = NSLocalizedString("Recent Purchases",
-                              comment: "Section header")
+let title = NSLocalizedString(
+	"Recent Purchases",
+	comment: "Section header"
+)
 
 // With table
-let title = NSLocalizedString("Recent Purchases",
-                              tableName: "Shopping",
-                              comment: "Section header")
+let title = NSLocalizedString(
+	"Recent Purchases",
+	tableName: "Shopping",
+	comment: "Section header"
+)
 ```
 
 ### Bundle.localizedString
 
 ```swift
-let customBundle = Bundle(for: MyFramework.self)
+let customBundle: Bundle = .init(for: MyFramework.self)
 let text = customBundle.localizedString(
-    forKey: "Welcome",
-    value: nil,
-    table: "MyFramework"
+	forKey: "Welcome",
+	value: nil,
+	table: "MyFramework"
 )
 ```
 
@@ -169,16 +187,16 @@ let text = customBundle.localizedString(
 
 ```swift
 // WRONG - not localizable
-let title = "Settings"
+let title: String = "Settings"
 
 // CORRECT - localizable
-let title = String(localized: "Settings")
+let title: String = .init(localized: "Settings")
 
 // WRONG - concatenation breaks word order
-let msg = String(localized: "You have") + " \(count) " + String(localized: "items")
+let msg: String = .init(localized: "You have") + " \(count) " + .init(localized: "items")
 
 // CORRECT - single string with substitution
-let msg = String(localized: "You have \(count) items")
+let msg: String = .init(localized: "You have \(count) items")
 
 // WRONG - no context for translator
 String(localized: "Confirm")

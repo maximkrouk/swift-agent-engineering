@@ -60,7 +60,7 @@ In the String Catalog, Xcode generates entries for each plural form:
 When strings have multiple numeric placeholders, Xcode creates variations for each:
 
 ```swift
-let message = String(localized: "\(songCount) songs on \(albumCount) albums")
+let message: String = .init(localized: "\(songCount) songs on \(albumCount) albums")
 ```
 
 **Combinations generated**:
@@ -89,22 +89,22 @@ Before String Catalogs, plurals used .stringsdict files:
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>%lld items</key>
+  <key>%lld items</key>
+  <dict>
+    <key>NSStringLocalizedFormatKey</key>
+    <string>%#@items@</string>
+    <key>items</key>
     <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@items@</string>
-        <key>items</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>lld</string>
-            <key>one</key>
-            <string>%lld item</string>
-            <key>other</key>
-            <string>%lld items</string>
-        </dict>
+      <key>NSStringFormatSpecTypeKey</key>
+      <string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key>
+      <string>lld</string>
+      <key>one</key>
+      <string>%lld item</string>
+      <key>other</key>
+      <string>%lld items</string>
     </dict>
+  </dict>
 </dict>
 </plist>
 ```
@@ -126,11 +126,13 @@ Before String Catalogs, plurals used .stringsdict files:
 
 ```swift
 // Let String Catalog handle plurals
-let itemLabel = String(localized: "\(itemCount) items",
-                       comment: "Shopping cart item count")
+let itemLabel: String = .init(
+	localized: "\(itemCount) items",
+	comment: "Shopping cart item count"
+)
 
 // For complex cases, use AttributedString
-let styled = AttributedString(localized: "You have **\(count)** items")
+let styled: AttributedString = .init(localized: "You have **\(count)** items")
 ```
 
 ### Avoiding Plural Mistakes
@@ -168,13 +170,13 @@ When exporting for translation, plural forms appear cleanly:
 
 ```xml
 <trans-unit id="%lld items|==|plural.one">
-    <source>%lld item</source>
-    <target>%lld elemento</target>
+  <source>%lld item</source>
+  <target>%lld elemento</target>
 </trans-unit>
 
 <trans-unit id="%lld items|==|plural.other">
-    <source>%lld items</source>
-    <target>%lld elementos</target>
+  <source>%lld items</source>
+  <target>%lld elementos</target>
 </trans-unit>
 ```
 
@@ -187,15 +189,15 @@ When exporting for translation, plural forms appear cleanly:
 **Preview Testing**:
 ```swift
 struct ItemCountView_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            ItemCountView(count: 0)
-            ItemCountView(count: 1)
-            ItemCountView(count: 2)
-            ItemCountView(count: 5)
-            ItemCountView(count: 21)  // Tests Russian "one" form
-        }
-    }
+	static var previews: some View {
+		Group {
+			ItemCountView(count: 0)
+			ItemCountView(count: 1)
+			ItemCountView(count: 2)
+			ItemCountView(count: 5)
+			ItemCountView(count: 21)  // Tests Russian "one" form
+		}
+	}
 }
 ```
 

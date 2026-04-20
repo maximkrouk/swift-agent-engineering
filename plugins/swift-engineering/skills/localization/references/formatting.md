@@ -7,12 +7,12 @@ Proper formatting of dates, numbers, and currencies adapts automatically to the 
 ### DateFormatter (Foundation)
 
 ```swift
-let formatter = DateFormatter()
+let formatter: DateFormatter = .init()
 formatter.locale = Locale.current  // Always use current locale
 formatter.dateStyle = .long
 formatter.timeStyle = .short
 
-let dateString = formatter.string(from: Date())
+let dateString = formatter.string(from: .init())
 
 // US: "January 15, 2024 at 3:30 PM"
 // France: "15 janvier 2024 a 15:30"
@@ -25,7 +25,7 @@ let dateString = formatter.string(from: Date())
 Modern, type-safe formatting:
 
 ```swift
-let date = Date()
+let date: Date = .init()
 
 // Date styles
 date.formatted(date: .long, time: .shortened)
@@ -47,14 +47,14 @@ date.formatted(.relative(presentation: .named))
 
 ```swift
 // WRONG - US-only format, breaks in other locales
-let formatter = DateFormatter()
+let formatter: DateFormatter = .init()
 formatter.dateFormat = "MM/dd/yyyy"
 
 // CORRECT - adapts to locale
 formatter.dateStyle = .short
 
 // WRONG - hardcoded separator
-let dateStr = "\(month)/\(day)/\(year)"
+let dateStr: String = "\(month)/\(day)/\(year)"
 
 // CORRECT - use formatter
 let dateStr = date.formatted(date: .numeric, time: .omitted)
@@ -65,11 +65,11 @@ let dateStr = date.formatted(date: .numeric, time: .omitted)
 ### NumberFormatter
 
 ```swift
-let formatter = NumberFormatter()
+let formatter: NumberFormatter = .init()
 formatter.locale = Locale.current
 formatter.numberStyle = .decimal
 
-let number = 1234567.89
+let number: Double = 1234567.89
 formatter.string(from: NSNumber(value: number))
 
 // US: "1,234,567.89"
@@ -80,7 +80,7 @@ formatter.string(from: NSNumber(value: number))
 ### FormatStyle (iOS 15+)
 
 ```swift
-let value = 1234567.89
+let value: Double = 1234567.89
 
 // Decimal
 value.formatted(.number)
@@ -100,11 +100,11 @@ value.formatted(.number.precision(.fractionLength(0...2)))
 ### NumberFormatter
 
 ```swift
-let formatter = NumberFormatter()
+let formatter: NumberFormatter = .init()
 formatter.locale = Locale.current
 formatter.numberStyle = .currency
 
-let price = 29.99
+let price: Double = 29.99
 formatter.string(from: NSNumber(value: price))
 
 // US: "$29.99"
@@ -116,7 +116,7 @@ formatter.string(from: NSNumber(value: price))
 ### FormatStyle (iOS 15+)
 
 ```swift
-let price = 29.99
+let price: Double = 29.99
 
 // User's currency
 price.formatted(.currency(code: "USD"))
@@ -135,9 +135,9 @@ price.formatted(.currency(code: "USD").presentation(.narrow))
 
 ```swift
 // Currency amounts should use Decimal, not Double
-let price = Decimal(string: "29.99")!
+let price: Decimal = .init(string: "29.99")!
 
-let formatter = NumberFormatter()
+let formatter: NumberFormatter = .init()
 formatter.numberStyle = .currency
 formatter.string(from: price as NSDecimalNumber)
 ```
@@ -147,9 +147,9 @@ formatter.string(from: price as NSDecimalNumber)
 ### MeasurementFormatter
 
 ```swift
-let distance = Measurement(value: 100, unit: UnitLength.meters)
+let distance: Measurement<UnitLength> = .init(value: 100, unit: UnitLength.meters)
 
-let formatter = MeasurementFormatter()
+let formatter: MeasurementFormatter = .init()
 formatter.locale = Locale.current
 
 formatter.string(from: distance)
@@ -161,7 +161,7 @@ formatter.string(from: distance)
 ### FormatStyle (iOS 15+)
 
 ```swift
-let distance = Measurement(value: 5, unit: UnitLength.kilometers)
+let distance: Measurement<UnitLength> = .init(value: 5, unit: UnitLength.kilometers)
 
 // Natural units for locale
 distance.formatted(.measurement(width: .abbreviated))
@@ -178,9 +178,9 @@ distance.formatted(.measurement(width: .abbreviated, usage: .asProvided))
 ### ListFormatter
 
 ```swift
-let items = ["apples", "oranges", "bananas"]
+let items: [String] = ["apples", "oranges", "bananas"]
 
-let formatter = ListFormatter()
+let formatter: ListFormatter = .init()
 formatter.locale = Locale.current
 formatter.string(from: items)
 
@@ -192,7 +192,7 @@ formatter.string(from: items)
 ### FormatStyle (iOS 15+)
 
 ```swift
-let names = ["Alice", "Bob", "Charlie"]
+let names: [String] = ["Alice", "Bob", "Charlie"]
 
 names.formatted(.list(type: .and))
 // "Alice, Bob, and Charlie"
@@ -204,11 +204,11 @@ names.formatted(.list(type: .or))
 ## Person Name Formatting
 
 ```swift
-var components = PersonNameComponents()
+var components: PersonNameComponents = .init()
 components.givenName = "John"
 components.familyName = "Smith"
 
-let formatter = PersonNameComponentsFormatter()
+let formatter: PersonNameComponentsFormatter = .init()
 formatter.style = .default
 formatter.string(from: components)
 
@@ -219,16 +219,16 @@ formatter.string(from: components)
 ## Locale-Specific Sorting
 
 ```swift
-let names = ["Angstrom", "Zebra", "Apple", "aardvark"]
+let names: [String] = ["Angstrom", "Zebra", "Apple", "aardvark"]
 
 // Locale-aware sort
 let sorted = names.sorted { (lhs, rhs) in
-    lhs.localizedStandardCompare(rhs) == .orderedAscending
+	lhs.localizedStandardCompare(rhs) == .orderedAscending
 }
 
 // Case-insensitive, locale-aware
 let sorted2 = names.sorted {
-    $0.localizedCaseInsensitiveCompare($1) == .orderedAscending
+	$0.localizedCaseInsensitiveCompare($1) == .orderedAscending
 }
 ```
 
@@ -238,27 +238,27 @@ let sorted2 = names.sorted {
 
 ```swift
 struct PriceView: View {
-    let price: Decimal
+	let price: Decimal
 
-    var body: some View {
-        Text(price, format: .currency(code: "USD"))
-    }
+	var body: some View {
+		Text(price, format: .currency(code: "USD"))
+	}
 }
 
 struct DateView: View {
-    let date: Date
+	let date: Date
 
-    var body: some View {
-        Text(date, format: .dateTime.month().day().year())
-    }
+	var body: some View {
+		Text(date, format: .dateTime.month().day().year())
+	}
 }
 
 struct CountView: View {
-    let count: Int
+	let count: Int
 
-    var body: some View {
-        Text(count, format: .number)
-    }
+	var body: some View {
+		Text(count, format: .number)
+	}
 }
 ```
 
@@ -266,20 +266,21 @@ struct CountView: View {
 
 ```swift
 struct FormattedView: View {
-    @Environment(\.locale) var locale
+	@Environment(\.locale)
+	var locale
 
-    var body: some View {
-        // Format using environment locale
-        Text(Date(), format: .dateTime.locale(locale))
-    }
+	var body: some View {
+		// Format using environment locale
+		Text(Date(), format: .dateTime.locale(locale))
+	}
 }
 
 // Preview with specific locale
 struct FormattedView_Previews: PreviewProvider {
-    static var previews: some View {
-        FormattedView()
-            .environment(\.locale, Locale(identifier: "fr_FR"))
-    }
+	static var previews: some View {
+		FormattedView()
+			.environment(\.locale, Locale(identifier: "fr_FR"))
+	}
 }
 ```
 
@@ -296,12 +297,12 @@ struct FormattedView_Previews: PreviewProvider {
 ```swift
 // Unit test with specific locale
 func testGermanCurrency() {
-    let formatter = NumberFormatter()
-    formatter.locale = Locale(identifier: "de_DE")
-    formatter.numberStyle = .currency
+	let formatter: NumberFormatter = .init()
+	formatter.locale = .init(identifier: "de_DE")
+	formatter.numberStyle = .currency
 
-    let result = formatter.string(from: 1234.56)
-    XCTAssertEqual(result, "1.234,56 EUR")
+	let result = formatter.string(from: 1234.56)
+	XCTAssertEqual(result, "1.234,56 EUR")
 }
 ```
 
