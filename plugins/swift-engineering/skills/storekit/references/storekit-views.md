@@ -15,7 +15,7 @@ ProductView(for: product)
 
 // Custom icon
 ProductView(id: productID) {
-    Image(systemName: "star.fill")
+	Image(systemName: "star.fill")
 }
 
 // Styles
@@ -39,10 +39,10 @@ StoreView(products: products)
 
 ```swift
 SubscriptionStoreView(groupID: "pro_tier") {
-    VStack {
-        Image("app-icon")
-        Text("Go Pro").font(.largeTitle.bold())
-    }
+	VStack {
+		Image("app-icon")
+		Text("Go Pro").font(.largeTitle.bold())
+	}
 }
 
 // Control styles
@@ -62,12 +62,12 @@ SubscriptionOfferView(id: productID, prefersPromotionalIcon: true)
 
 // Custom icon
 SubscriptionOfferView(id: productID) {
-    Image("custom-icon").resizable().frame(width: 60, height: 60)
+	Image("custom-icon").resizable().frame(width: 60, height: 60)
 }
 
 // Detail action
 SubscriptionOfferView(id: productID)
-    .subscriptionOfferViewDetailAction { showStore = true }
+	.subscriptionOfferViewDetailAction { showStore = true }
 ```
 
 ### Visible Relationship
@@ -84,12 +84,15 @@ SubscriptionOfferView(groupID: "pro_tier", visibleRelationship: .all)
 
 ```swift
 SubscriptionStoreView(groupID: groupID)
-    .subscriptionPromotionalOffer(
-        for: { $0.promotionalOffers.first },
-        signature: { subscription, offer in
-            try await server.signOffer(productID: subscription.id, offerID: offer.id)
-        }
-    )
+	.subscriptionPromotionalOffer(
+		for: { $0.promotionalOffers.first },
+		signature: { subscription, offer in
+			try await server.signOffer(
+				productID: subscription.id,
+				offerID: offer.id
+			)
+		}
+	)
 ```
 
 ## Offer Code Redemption
@@ -97,7 +100,7 @@ SubscriptionStoreView(groupID: groupID)
 ```swift
 // SwiftUI
 Button("Redeem") { showRedeemSheet = true }
-    .offerCodeRedemption(isPresented: $showRedeemSheet)
+	.offerCodeRedemption(isPresented: $showRedeemSheet)
 
 // UIKit
 AppStore.presentOfferCodeRedeemSheet(in: scene)
@@ -113,24 +116,37 @@ try? await AppStore.showManageSubscriptions(in: scene)
 
 ```swift
 struct CustomProductCard: View {
-    let product: Product
-    @Environment(\.purchase) private var purchase
-    @State private var isPurchasing = false
+	let product: Product
+	@Environment(\.purchase)
+	private var purchase
 
-    var body: some View {
-        VStack {
-            Text(product.displayName)
-            Button {
-                Task {
-                    isPurchasing = true
-                    defer { isPurchasing = false }
-                    _ = try? await purchase(product)
-                }
-            } label: {
-                isPurchasing ? AnyView(ProgressView()) : AnyView(Text("Buy \(product.displayPrice)"))
-            }
-        }
-    }
+	@SwiftUI.State
+	private var isPurchasing: Bool
+
+	init(
+		product: Product,
+		isPurchasing: Bool = false
+	) {
+		self.product = product
+		self._isPurchasing = SwiftUI.State(wrappedValue: isPurchasing)
+	}
+
+	var body: some View {
+		VStack {
+			Text(product.displayName)
+			Button {
+				Task {
+					self.isPurchasing = true
+					defer { self.isPurchasing = false }
+					_ = try? await self.purchase(self.product)
+				}
+			} label: {
+				self.isPurchasing
+				? AnyView(ProgressView())
+				: AnyView(Text("Buy \(self.product.displayPrice)"))
+			}
+		}
+	}
 }
 ```
 

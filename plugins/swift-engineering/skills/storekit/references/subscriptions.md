@@ -6,8 +6,8 @@ Auto-renewable subscription management with StoreKit 2.
 
 ```swift
 if let info = product.subscription {
-    let groupID = info.subscriptionGroupID
-    let period = info.subscriptionPeriod  // .day, .week, .month, .year
+	let groupID: String = info.subscriptionGroupID
+	let period: Product.SubscriptionPeriod = info.subscriptionPeriod  // .day, .week, .month, .year
 }
 ```
 
@@ -17,14 +17,14 @@ if let info = product.subscription {
 let statuses = try await Product.SubscriptionInfo.status(for: groupID)
 
 for status in statuses {
-    switch status.state {
-    case .subscribed:        // Active - full access
-    case .expired:           // Show resubscribe/win-back
-    case .inGracePeriod:     // Billing issue, access maintained
-    case .inBillingRetryPeriod:  // Apple retrying payment
-    case .revoked:           // Family Sharing removed
-    @unknown default: break
-    }
+	switch status.state {
+	case .subscribed:            // Active - full access
+	case .expired:               // Show resubscribe/win-back
+	case .inGracePeriod:         // Billing issue, access maintained
+	case .inBillingRetryPeriod:  // Apple retrying payment
+	case .revoked:               // Family Sharing removed
+	@unknown default: break
+	}
 }
 ```
 
@@ -32,7 +32,7 @@ for status in statuses {
 
 ```swift
 for await statuses in Product.SubscriptionInfo.Status.updates(for: groupID) {
-    for status in statuses { updateUI(for: status.state) }
+	for status in statuses { updateUI(for: status.state) }
 }
 ```
 
@@ -40,11 +40,14 @@ for await statuses in Product.SubscriptionInfo.Status.updates(for: groupID) {
 
 ```swift
 switch status.renewalInfo {
-case .verified(let renewalInfo):
-    renewalInfo.willAutoRenew       // Will subscription renew?
-    renewalInfo.autoRenewPreference // Product ID for next renewal
-    renewalInfo.expirationReason    // Why expired?
-case .unverified: break
+
+case let .verified(renewalInfo):
+	renewalInfo.willAutoRenew       // Will subscription renew?
+	renewalInfo.autoRenewPreference // Product ID for next renewal
+	renewalInfo.expirationReason    // Why expired?
+
+case .unverified:
+	break
 }
 ```
 
@@ -61,7 +64,7 @@ case .unverified: break
 
 ```swift
 if let expiration = renewalInfo.gracePeriodExpirationDate {
-    // Show update payment method UI
+	// Show update payment method UI
 }
 ```
 
@@ -71,9 +74,9 @@ if let expiration = renewalInfo.gracePeriodExpirationDate {
 
 ```swift
 if let intro = product.subscription?.introductoryOffer {
-    intro.period       // Duration
-    intro.displayPrice // Price
-    intro.paymentMode  // .freeTrial, .payAsYouGo, .payUpFront
+	intro.period       // Duration
+	intro.displayPrice // Price
+	intro.paymentMode  // .freeTrial, .payAsYouGo, .payUpFront
 }
 ```
 
@@ -81,13 +84,13 @@ if let intro = product.subscription?.introductoryOffer {
 
 ```swift
 for offer in product.subscription?.promotionalOffers ?? [] {
-    offer.id, offer.displayPrice, offer.period
+	offer.id, offer.displayPrice, offer.period
 }
 
 // Apply with server-signed JWS
 let result = try await product.purchase(
-    confirmIn: scene,
-    options: [.promotionalOffer(offerID: offer.id, signature: jwsSignature)]
+	confirmIn: scene,
+	options: [.promotionalOffer(offerID: offer.id, signature: jwsSignature)]
 )
 ```
 
@@ -96,7 +99,9 @@ let result = try await product.purchase(
 Users have one active subscription per group. Use for tier levels (Basic/Pro/Premium) or billing periods (Monthly/Annual).
 
 ```swift
-let activeStatus = statuses.filter { $0.state == .subscribed }.first
+let activeStatus: Product.SubscriptionInfo.Status? = statuses
+	.filter { $0.state == .subscribed }
+	.first
 ```
 
 ## Family Sharing
@@ -109,12 +114,15 @@ Enable: **App Store Connect > Subscriptions > Enable Family Sharing**
 
 ```swift
 extension StoreManager {
-    var isSubscribed: Bool {
-        get async {
-            let state = try? await Product.SubscriptionInfo.status(for: "pro_tier").first?.state
-            return state == .subscribed || state == .inGracePeriod || state == .inBillingRetryPeriod
-        }
-    }
+	var isSubscribed: Bool {
+		get async {
+			let state: Product.SubscriptionInfo.RenewalState? = try? await Product.SubscriptionInfo
+				.status(for: "pro_tier")
+				.first?
+				.state
+			return state == .subscribed || state == .inGracePeriod || state == .inBillingRetryPeriod
+		}
+	}
 }
 ```
 
@@ -122,6 +130,6 @@ extension StoreManager {
 
 ```swift
 if renewalInfo.expirationReason == .didNotConsentToPriceIncrease {
-    showWinBackOffer()
+	showWinBackOffer()
 }
 ```
