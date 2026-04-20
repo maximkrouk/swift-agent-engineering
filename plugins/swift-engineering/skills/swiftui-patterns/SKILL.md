@@ -26,10 +26,14 @@ SwiftUI 17+ removes ObservableObject boilerplate with @Observable, simplifies en
 ## Core Workflow
 
 1. Use `@Observable` for model classes (no @Published needed)
-2. Use `@State` for view-owned models, `@Bindable` for passed models
+2. Use `@SwiftUI.State` for view-owned models, `@Bindable` for passed models
+   - Always add module prefix to SwiftUI `State` attribute (`@SwiftUI.State` instead of `@State`)
 3. Use `.task { }` for async work (auto-cancels on disappear)
 4. Use `NavigationStack` with `NavigationPath` for programmatic navigation
 5. Apply `.accessibilityLabel()` and `.accessibilityHint()` to interactive elements
+6. Always generate explicit initializers for the views
+7. Always use `self` prefix when accessing properties at least for modification, prefer using `self` when accessing methods as well
+8. Always mark SwiftUI `View` non-`body` functions and properties that return `some View`  with `@ViewBuilder` attribute and keep them private
 
 ## Reference Loading Guide
 
@@ -38,14 +42,14 @@ SwiftUI 17+ removes ObservableObject boilerplate with @Observable, simplifies en
 | Reference | Load When |
 |-----------|-----------|
 | **[Observable](references/observable.md)** | Creating new `@Observable` model classes |
-| **[State Management](references/state-management.md)** | Deciding between `@State`, `@Bindable`, `@Environment` |
+| **[State Management](references/state-management.md)** | Deciding between `@SwiftUI.State`, `@Bindable`, `@Environment` |
 | **[Environment](references/environment.md)** | Injecting dependencies into view hierarchy |
 | **[View Modifiers](references/view-modifiers.md)** | Using `onChange`, `task`, or iOS 17+ modifiers |
 | **[Migration Guide](references/migration-guide.md)** | Updating iOS 16 code to iOS 17+ |
 | **[MVVM Observable](references/mvvm-observable.md)** | Setting up view model architecture |
 | **[Navigation](references/navigation.md)** | Programmatic or deep-link navigation |
 | **[Performance](references/performance.md)** | Lists with 100+ items or excessive re-renders |
-| **[UIKit Interop](references/uikit-interop.md)** | Wrapping UIKit components (WKWebView, PHPicker) |
+| **[Cocoa Interop](references/cocoa-interop.md)** | Wrapping Cocoa (UIKit/AppKit) components (WKWebView, PHPicker) |
 | **[Accessibility](references/accessibility.md)** | VoiceOver, Dynamic Type, accessibility actions |
 | **[Async Patterns](references/async-patterns.md)** | Loading states, refresh, background tasks |
 | **[Composition](references/composition.md)** | Reusable view modifiers or complex conditional UI |
@@ -63,3 +67,11 @@ SwiftUI 17+ removes ObservableObject boilerplate with @Observable, simplifies en
 5. **Ignoring environment invalidation** — Changing environment values at parent doesn't invalidate child views automatically. Use `@Environment` consistently and understand when re-renders happen based on observation.
 
 6. **UIKit interop memory leaks** — `UIViewRepresentable` and `UIViewControllerRepresentable` can leak if delegate cycles aren't broken. Weak references and explicit cleanup are required.
+
+7. **View relies on implicit initializer** — even if a view is internal or private, declare explicit initializers.
+
+8. **View state uses `@State` attribute** — `State` is very generic identifier and may conflict with other stuff, so ensure that all `@State` properties are using more specific `@SwiftUI.State` attribute.
+
+9. **View properties or functions are accessed without `self`** — make access to state of `self` explict.
+
+10. **Local non-`body` view properties or functions that return `some View` are not marked with `@ViewBuilder` or are not `private`** — Always mark SwiftUI `View` non-`body` functions and properties that return `some View`  with `@ViewBuilder` attribute and keep them private

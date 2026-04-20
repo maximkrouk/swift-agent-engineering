@@ -25,8 +25,8 @@ SwiftUI picks the first variant that fits.
 
 ```swift
 ViewThatFits {
-    HStack { Image(systemName: "star"); Text("Favorite"); Button("Add") { } }
-    VStack { Image(systemName: "star"); Text("Favorite"); Button("Add") { } }
+	HStack { Image(systemName: "star"); Text("Favorite"); Button("Add") { } }
+	VStack { Image(systemName: "star"); Text("Favorite"); Button("Add") { } }
 }
 ```
 
@@ -35,17 +35,18 @@ ViewThatFits {
 Animated transitions between layouts.
 
 ```swift
-@Environment(\.horizontalSizeClass) var sizeClass
+@Environment(\.horizontalSizeClass)
+var sizeClass
 
 var layout: AnyLayout {
-    sizeClass == .compact
-        ? AnyLayout(VStackLayout(spacing: 12))
-        : AnyLayout(HStackLayout(spacing: 20))
+	sizeClass == .compact
+		? AnyLayout(VStackLayout(spacing: 12))
+		: AnyLayout(HStackLayout(spacing: 20))
 }
 
 var body: some View {
-    layout { content }
-        .animation(.default, value: sizeClass)
+	layout { content }
+		.animation(.default, value: sizeClass)
 }
 ```
 
@@ -54,14 +55,22 @@ var body: some View {
 Read dimensions without GeometryReader side effects.
 
 ```swift
-@State private var columnCount = 2
+@State
+private var columnCount = 2
 
-LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: columnCount)) {
-    ForEach(items) { ItemView(item: $0) }
+LazyVGrid(
+	columns: Array(
+		repeating: GridItem(.flexible()),
+		count: columnCount
+	)
+) {
+	ForEach(items) { ItemView(item: $0) }
 }
 .onGeometryChange(for: Int.self) { proxy in
-    max(1, Int(proxy.size.width / 150))
-} action: { columnCount = $0 }
+	max(1, Int(proxy.size.width / 150))
+} action: { 
+	columnCount = $0
+}
 ```
 
 ## Size Class on iPad
@@ -79,7 +88,8 @@ LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: columnCount)) 
 
 **Device orientation observer:**
 ```swift
-// WRONG - reports device, not window
+// WRONG (for adaptive layout) - reports device, not window
+// tho might be useful for manual rotation of elements if needed
 UIDevice.current.orientation
 
 // CORRECT - read actual dimensions
@@ -97,11 +107,13 @@ UIScreen.main.bounds.width
 
 **Device model checks:**
 ```swift
-// WRONG - fails in multitasking
+// WRONG (for adaptive layout) - fails in multitasking
+// Tho might be useful for specific device overrides
 if UIDevice.current.userInterfaceIdiom == .pad { }
 
 // CORRECT - respond to space
-@Environment(\.horizontalSizeClass) var sizeClass
+@Environment(\.horizontalSizeClass)
+var sizeClass
 ```
 
 **Unconstrained GeometryReader:**
@@ -111,7 +123,7 @@ GeometryReader { geo in Text("\(geo.size)") }
 
 // CORRECT - constrain it
 GeometryReader { geo in Text("\(geo.size)") }
-    .frame(height: 44)
+	.frame(height: 44)
 ```
 
 ## iOS 26 Changes

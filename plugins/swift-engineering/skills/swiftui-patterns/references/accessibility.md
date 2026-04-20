@@ -6,30 +6,36 @@
 
 ```swift
 struct ArticleRow: View {
-    let article: Article
+	let article: Article
 
-    var body: some View {
-        HStack {
-            AsyncImage(url: article.imageURL) { image in
-                image.resizable()
-            } placeholder: {
-                ProgressView()
-            }
-            .frame(width: 80, height: 80)
-            .accessibilityHidden(true) // Decorative image
+	init(
+		article: Article
+	) {
+		self.article = article
+	}
 
-            VStack(alignment: .leading) {
-                Text(article.title)
-                    .font(.headline)
-                Text(article.author)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(article.title), by \(article.author)")
-        .accessibilityHint("Double tap to read article")
-    }
+	var body: some View {
+		HStack {
+			AsyncImage(url: article.imageURL) { image in
+				image.resizable()
+			} placeholder: {
+				ProgressView()
+			}
+			.frame(width: 80, height: 80)
+			.accessibilityHidden(true) // Decorative image
+
+			VStack(alignment: .leading) {
+				Text(article.title)
+					.font(.headline)
+				Text(article.author)
+					.font(.subheadline)
+					.foregroundColor(.secondary)
+			}
+			.accessibilityElement(children: .combine)
+			.accessibilityLabel("\(article.title), by \(article.author)")
+			.accessibilityHint("Double tap to read article")
+		}
+	}
 }
 ```
 
@@ -39,30 +45,39 @@ struct ArticleRow: View {
 
 ```swift
 struct ArticleContent: View {
-    let article: Article
-    @ScaledMetric private var imageHeight: CGFloat = 200
+	let article: Article
 
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                AsyncImage(url: article.imageURL) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(height: imageHeight) // Scales with Dynamic Type
-                .clipped()
+	@ScaledMetric
+	private var imageHeight: CGFloat = 200
 
-                Text(article.title)
-                    .font(.title)
 
-                Text(article.content)
-                    .font(.body)
-            }
-        }
-    }
+	init(
+		article: Article
+	) {
+		self.article = article
+	}
+
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				AsyncImage(url: article.imageURL) { image in
+					image
+						.resizable()
+						.aspectRatio(contentMode: .fill)
+				} placeholder: {
+					ProgressView()
+				}
+				.frame(height: imageHeight) // Scales with Dynamic Type
+				.clipped()
+
+				Text(article.title)
+					.font(.title)
+
+				Text(article.content)
+					.font(.body)
+			}
+		}
+	}
 }
 ```
 
@@ -72,22 +87,33 @@ struct ArticleContent: View {
 
 ```swift
 struct ArticleCard: View {
-    let article: Article
-    @State private var isSaved = false
-    @State private var isShared = false
+	let article: Article
+  
+	@SwiftUI.State
+	private var isSaved: Bool = false
 
-    var body: some View {
-        VStack {
-            Text(article.title)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(article.title)
-        .accessibilityAction(named: "Save") {
-            isSaved.toggle()
-        }
-        .accessibilityAction(named: "Share") {
-            isShared = true
-        }
-    }
+	@SwiftUI.State
+	private var isShared: Bool = false
+  
+
+	init(
+		article: Article
+	) {
+		self.article = article
+	}
+
+	var body: some View {
+		VStack {
+			Text(article.title)
+		}
+		.accessibilityElement(children: .combine)
+		.accessibilityLabel(article.title)
+		.accessibilityAction(named: "Save") {
+			isSaved.toggle()
+		}
+		.accessibilityAction(named: "Share") {
+			isShared = true
+		}
+	}
 }
 ```

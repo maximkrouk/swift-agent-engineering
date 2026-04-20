@@ -11,57 +11,71 @@ import Observation
 @Observable
 @MainActor
 final class ArticleListViewModel {
-    var articles: [Article] = []
-    var isLoading = false
-    var errorMessage: String?
+	var articles: [Article]
+	var isLoading: Bool
+	var errorMessage: String?
+	
+	private let articleService: ArticleService
 
-    private let articleService: ArticleService
+	public init(
+		articles: [Article] = []
+		isLoading: Bool = false
+		errorMessage: String? = nil,
+		articleService: ArticleService
+	) {
+		self.articles = articles
+		self.isLoading = isLoading
+		self.errorMessage = errorMessage
+		self.articleService = articleService
+	}
 
-    init(articleService: ArticleService) {
-        self.articleService = articleService
-    }
+	func loadArticles() async {
+		isLoading = true
+		defer { isLoading = false }
+		
+		errorMessage = nil
 
-    func loadArticles() async {
-        isLoading = true
-        errorMessage = nil
-
-        do {
-            articles = try await articleService.fetchArticles()
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-
-        isLoading = false
-    }
+		do {
+			articles = try await articleService.fetchArticles()
+		} catch {
+			errorMessage = error.localizedDescription
+		}
+	}
 }
 
 struct ArticleListView: View {
-    @State private var viewModel: ArticleListViewModel
+	@SwiftUI.State
+	private var viewModel: ArticleListViewModel
 
-    init(articleService: ArticleService) {
-        _viewModel = State(wrappedValue: ArticleListViewModel(articleService: articleService))
-    }
+	init(
+		_ viewModel: ArticleListViewModel
+	) {
+		_viewModel = State(wrappedValue: viewModel)
+	}
 
-    var body: some View {
-        List(viewModel.articles) { article in
-            ArticleRow(article: article)
-        }
-        .overlay {
-            if viewModel.isLoading {
-                ProgressView()
-            }
-        }
-        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-            Button("OK") { viewModel.errorMessage = nil }
-        } message: {
-            if let message = viewModel.errorMessage {
-                Text(message)
-            }
-        }
-        .task {
-            await viewModel.loadArticles()
-        }
-    }
+	var body: some View {
+		List(viewModel.articles) { article in
+			ArticleRow(article: article)
+		}
+		.overlay {
+			if viewModel.isLoading {
+				ProgressView()
+			}
+		}
+		.alert(
+			"Error", 
+			isPresented: .constant(viewModel.errorMessage != nil)
+		) {
+			Button("OK") { viewModel.errorMessage = nil }
+		} message: {
+			if let message = viewModel.errorMessage {
+				Text(message)
+			}
+		}
+		.task {
+			await viewModel.loadArticles()
+		}
+	}
 }
 ```
 
@@ -70,3 +84,7 @@ struct ArticleListView: View {
 - Fine-grained observation (only tracks accessed properties)
 - Better performance than ObservableObject
 - Less boilerplate
+
+> [!Note]
+> 
+> Prefer [`swift-navigation`](https://github.com/pointfreeco/swift-navigation) APIs over plain SwiftUI for managing presentation including alerts

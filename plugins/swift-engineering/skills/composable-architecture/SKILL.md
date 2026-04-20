@@ -2,7 +2,6 @@
 name: composable-architecture
 description: Use when building features with TCA (The Composable Architecture), structuring reducers, managing state, handling effects, navigation, or testing TCA features. Covers @Reducer, Store, Effect, TestStore, reducer composition, and TCA patterns.
 ---
-
 # The Composable Architecture (TCA)
 
 TCA provides architecture for building complex, testable features through composable reducers, centralized state management, and side effect handling. The core principle: predictable state evolution with clear dependencies and testable effects.

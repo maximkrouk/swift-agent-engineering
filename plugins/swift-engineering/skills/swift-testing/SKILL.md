@@ -34,22 +34,38 @@ let user = try #require(await fetchUser(id: "123"))
 
 ## Test Structure
 
+> [!Note]
+>
+> Always mark test functions as `async throws` even if it's redundant.
+
 ```swift
 import Testing
 @testable import YourModule
 
 @Suite
 struct FeatureTests {
-    let sut: FeatureType
+	let sut: FeatureType
     
-    init() throws {
-        sut = FeatureType()
-    }
-    
-    @Test("Description of behavior")
-    func testBehavior() {
-        #expect(sut.someProperty == expected)
-    }
+	init() throws {
+		sut = FeatureType()
+	}
+
+	@Test("Description of behavior")
+	func testBehavior() async throws {
+		#expect(sut.someProperty == expected)
+	}
+}
+```
+
+If it makes sense you can also use nested suites
+
+```swift
+@Suite
+struct FeatureTests {
+  @Suite
+  struct Subdomain {
+    ...
+  }
 }
 ```
 
@@ -78,11 +94,11 @@ struct FeatureTests {
 
 ```swift
 @Test("Validates inputs", arguments: zip(
-    ["a", "b", "c"],
-    [1, 2, 3]
+	["a", "b", "c"],
+	[1, 2, 3]
 ))
 func testInputs(input: String, expected: Int) {
-    #expect(process(input) == expected)
+	#expect(process(input) == expected)
 }
 ```
 
@@ -90,21 +106,23 @@ func testInputs(input: String, expected: Int) {
 
 ## Async Testing
 
+Since test functions should always be marked as `async throws` - async tests are supported out of the box
+
 ```swift
 @Test func testAsync() async throws {
-    let result = try await fetchData()
-    #expect(!result.isEmpty)
+	let result = try await fetchData()
+	#expect(!result.isEmpty)
 }
 ```
 
 ### Confirmations
 
 ```swift
-@Test func testCallback() async {
-    await confirmation("callback received") { confirm in
-        let sut = SomeType { confirm() }
-        sut.triggerCallback()
-    }
+@Test func testCallback() async throws {
+	await confirmation("callback received") { confirm in
+		let sut = SomeType { confirm() }
+		sut.triggerCallback()
+	}
 }
 ```
 
@@ -112,12 +130,12 @@ func testInputs(input: String, expected: Int) {
 
 ```swift
 extension Tag {
-    @Tag static var fast: Self
-    @Tag static var networking: Self
+	@Tag static var fast: Self
+	@Tag static var networking: Self
 }
 
 @Test(.tags(.fast, .networking))
-func testNetworkCall() { }
+func testNetworkCall() async throws { }
 ```
 
 ## Common Pitfalls
@@ -126,6 +144,7 @@ func testNetworkCall() { }
 2. **Forgetting state isolation** — Each test gets a NEW instance
 3. **Accidental Cartesian product** — Always use `zip` for paired inputs
 4. **Not using `.serialized`** — Apply for thread-unsafe legacy tests
+5. **Not marking test functions as `async throws`** — apply to all test functions
 
 ## Common Mistakes
 

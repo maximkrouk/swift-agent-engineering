@@ -22,17 +22,17 @@ Ensure view bodies update quickly and only when needed.
 ```swift
 // WRONG - creates every render
 var body: some View {
-    let formatter = NumberFormatter()
-    Text(formatter.string(from: price)!)
+	let formatter = NumberFormatter()
+	Text(formatter.string(from: price)!)
 }
 
 // CORRECT - cache formatters
 class Formatters {
-    static let currency: NumberFormatter = {
-        let f = NumberFormatter()
-        f.numberStyle = .currency
-        return f
-    }()
+	static let currency: NumberFormatter = {
+		let f = NumberFormatter()
+		f.numberStyle = .currency
+		return f
+	}()
 }
 ```
 
@@ -41,13 +41,14 @@ class Formatters {
 ```swift
 // WRONG
 var body: some View {
-    Text("\(data.sorted().last ?? 0)")
+	Text("\(data.sorted().last ?? 0)")
 }
 
 // CORRECT - compute in model
-@Observable class ViewModel {
-    var data: [Int] { didSet { maxValue = data.max() ?? 0 } }
-    private(set) var maxValue = 0
+@Observable
+class ViewModel {
+	var data: [Int] { didSet { maxValue = data.max() ?? 0 } }
+	private(set) var maxValue = 0
 }
 ```
 
@@ -56,7 +57,7 @@ var body: some View {
 ```swift
 // NEVER
 var body: some View {
-    let data = try? Data(contentsOf: url)
+	let data: Data? = try? .init(contentsOf: url)
 }
 
 // CORRECT
@@ -72,14 +73,17 @@ Many small updates add up to miss frame deadline.
 ```swift
 // WRONG - all views depend on whole array
 func isFavorite(_ item: Item) -> Bool {
-    favorites.contains(item)  // Depends on entire array
+	favorites.contains(item)  // Depends on entire array
 }
 
 // CORRECT - per-item view models
-@Observable class ItemViewModel { var isFavorite = false }
+@Observable
+class ItemViewModel {
+	var isFavorite: Bool
+}
 
 class ModelData {
-    var itemViewModels: [ID: ItemViewModel] = [:]
+	var itemViewModels: [ID: ItemViewModel] = [:]
 }
 ```
 
@@ -124,7 +128,10 @@ Rebuild with iOS 26 SDK:
 **Per-item dependencies:**
 ```swift
 // Each view depends only on its model
-@Observable class ItemViewModel { var item: Item }
+@Observable
+class ItemViewModel {
+	var item: Item
+}
 ```
 
 **Formatter reuse:**

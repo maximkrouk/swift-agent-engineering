@@ -73,7 +73,7 @@ See [plugins/swift-engineering/README.md](plugins/swift-engineering/README.md) f
 | **Implementation** | @tca-engineer, @swift-engineer, @swiftui-specialist, @swift-test-creator, @documentation-generator, @swift-code-reviewer, @swift-modernizer | Code creation and review (Inherit) |
 | **Utilities** | @swift-documenter, @search | API documentation and code search (Haiku) |
 
-### 18 Knowledge Skills
+### 20 Knowledge Skills
 
 Architecture patterns (TCA, SwiftUI, modern Swift, advanced gestures), frameworks (SQLite, GRDB, StoreKit, networking), platform design (iOS 26, HIG, localization, haptics), and development tools (testing, style, diagnostics). Each skill provides deep guidance on modern patterns and best practices.
 

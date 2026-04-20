@@ -1,0 +1,219 @@
+{
+  "main": {
+    "id": "cc32e9ace63c2726",
+    "type": "split",
+    "children": [
+      {
+        "id": "dddbfff8fc731a40",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f51854d9d4b8bb80",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "plugins/swift-engineering/skills/swift-style/SKILL.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "SKILL"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "8da1772df1da0636",
+    "type": "split",
+    "children": [
+      {
+        "id": "d0a68333e0700177",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8193b2a53e1efe8a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "e9d8be913107e13d",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "9f877c21aecc7793",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "ff0d16f9978320b9",
+    "type": "split",
+    "children": [
+      {
+        "id": "2216b7bc50687038",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "af649d3b50927fea",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "plugins/swift-engineering/skills/swift-style/SKILL.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for SKILL"
+            }
+          },
+          {
+            "id": "8ef11ebdaa7a47c0",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "plugins/swift-engineering/skills/swift-style/SKILL.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from SKILL"
+            }
+          },
+          {
+            "id": "5e9fd5bb975d368e",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "c37b9386722e9679",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "3b057c0026885bed",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "plugins/swift-engineering/skills/swift-style/SKILL.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of SKILL"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "f51854d9d4b8bb80",
+  "lastOpenFiles": [
+    "plugins/swift-engineering/skills/swiftui-patterns/references/view-modifiers~.md",
+    "plugins/swift-engineering/skills/swiftui-patterns/references/cocoa-interop.md",
+    "plugins/swift-engineering/skills/swiftui-patterns/references/uikit-interop~.md",
+    "plugins/swift-engineering/skills/composable-architecture/references/reducer-structure.md",
+    "plugins/swift-engineering/skills/composable-architecture/references/dependencies.md",
+    "plugins/swift-engineering/skills/swift-style/SKILL.md",
+    "plugins/swift-engineering/skills/swift-capture",
+    "plugins/swift-engineering/skills/foundation-models/references/getting-started.md",
+    "plugins/swift-engineering/skills/foundation-models/SKILL.md",
+    "plugins/swift-engineering/skills/swift-dependencies/references/using-dependencies.md",
+    "plugins/swift-engineering/skills/declarative-configuration",
+    "plugins/swift-engineering/skills/swift-dependencies/references/using-dependencies~.md",
+    "plugins/swift-engineering/skills/swift-dependencies/references/testing-with-dependencies.md",
+    "plugins/swift-engineering/skills/swift-dependencies/references/dependency-lifetimes.md",
+    "plugins/swift-engineering/skills/swift-dependencies/references/overriding-dependencies.md",
+    "plugins/swift-engineering/skills/swift-dependencies/references/designing-dependencies.md",
+    "plugins/swift-engineering/skills/swift-dependencies/references/registering-dependencies.md",
+    "plugins/swift-engineering/skills/swift-dependencies/SKILL.md",
+    "plugins/swift-engineering/skills/swift-dependencies/references",
+    "plugins/swift-engineering/skills/storekit/SKILL.md",
+    "plugins/swift-engineering/skills/swift-dependencies/SKILL~.md",
+    "plugins/swift-engineering/skills/composable-architecture/SKILL.md",
+    "plugins/swift-engineering/skills/swift-dependencies",
+    "plugins/swift-engineering/rules/thinking-partner.md",
+    "plugins/swift-engineering/rules/five-whys.md",
+    "plugins/swift-engineering/skills/modern-swift/references/concurrency-essentials.md",
+    "plugins/swift-engineering/skills/swift-networking/references/getting-started.md",
+    "plugins/swift-engineering/skills/swift-networking/references/troubleshooting.md",
+    "plugins/swift-engineering/skills/swift-networking/references/migration.md",
+    "plugins/swift-engineering/skills/swift-networking/references/connection-states.md"
+  ]
+}

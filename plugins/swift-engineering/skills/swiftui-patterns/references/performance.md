@@ -7,26 +7,26 @@
 ```swift
 // Bad: Loads all items immediately
 ScrollView {
-    VStack {
-        ForEach(articles) { article in
-            ArticleCard(article: article)
-        }
-    }
+	VStack {
+		ForEach(articles) { article in
+			ArticleCard(article: article)
+		}
+	}
 }
 
 // Good: Loads items on-demand
 ScrollView {
-    LazyVStack(spacing: 16) {
-        ForEach(articles) { article in
-            ArticleCard(article: article)
-                .onAppear {
-                    // Pagination trigger
-                    if article == articles.last {
-                        loadMoreArticles()
-                    }
-                }
-        }
-    }
+	LazyVStack(spacing: 16) {
+		ForEach(articles) { article in
+			ArticleCard(article: article)
+				.onAppear {
+					// Pagination trigger
+					if article == articles.last {
+						loadMoreArticles()
+					}
+			}
+		}
+	}
 }
 ```
 
@@ -37,18 +37,26 @@ ScrollView {
 ```swift
 // Ensure all items are Identifiable
 struct Article: Identifiable {
-    let id: String
-    let title: String
+	let id: String
+	let title: String
+	
+	init(
+		id: String,
+		title: String = ""
+	) {
+		self.id = id
+		self.title = title
+	}
 }
 
 // SwiftUI can efficiently diff changes
 ForEach(articles) { article in
-    ArticleRow(article: article)
+	ArticleRow(article: article)
 }
 
 // Or provide manual ID
 ForEach(articles, id: \.id) { article in
-    ArticleRow(article: article)
+	ArticleRow(article: article)
 }
 ```
 
@@ -58,26 +66,32 @@ ForEach(articles, id: \.id) { article in
 
 ```swift
 struct ArticleRow: View, Equatable {
-    let article: Article
+	static func == (lhs: ArticleRow, rhs: ArticleRow) -> Bool {
+		lhs.article.id == rhs.article.id
+	}
 
-    static func == (lhs: ArticleRow, rhs: ArticleRow) -> Bool {
-        lhs.article.id == rhs.article.id
-    }
+	let article: Article
+	
+	init(
+		article: Article
+	) {
+		self.article = article
+	}
 
-    var body: some View {
-        HStack {
-            Text(article.title)
-            Spacer()
-            Text(article.author)
-                .foregroundColor(.secondary)
-        }
-    }
+	var body: some View {
+		HStack {
+			Text(article.title)
+			Spacer()
+			Text(article.author)
+				.foregroundColor(.secondary)
+		}
+	}
 }
 
 // Usage: SwiftUI skips re-rendering if article ID unchanged
 ForEach(articles) { article in
-    ArticleRow(article: article)
-        .equatable()
+	ArticleRow(article: article)
+		.equatable()
 }
 ```
 
@@ -89,44 +103,51 @@ ForEach(articles) { article in
 @Observable
 @MainActor
 final class SearchViewModel {
-    var searchText = ""
-    var results: [Article] = []
+	var searchText: String
+	var results: [Article]
 
-    private var searchTask: Task<Void, Never>?
+	private var searchTask: Task<Void, Never>?
+	
+	init(
+		searchText: String = "",
+		results: [Article] = []
+	) {
+		self.searchText = searchText
+		self.results = results
+	}
 
-    func updateSearch(_ text: String) {
-        searchText = text
+	func updateSearch(_ text: String) {
+		self.searchText = text
 
-        searchTask?.cancel()
-        searchTask = Task {
-            try? await Task.sleep(for: .milliseconds(300))
+		self.searchTask?.cancel()
+		self.searchTask = Task {
+			try? await Task.sleep(for: .milliseconds(300))
+			guard !Task.isCancelled else { return }
+			results = await performSearch(text)
+		}
+	}
 
-            guard !Task.isCancelled else { return }
-
-            results = await performSearch(text)
-        }
-    }
-
-    private func performSearch(_ query: String) async -> [Article] {
-        // Search logic
-        []
-    }
+	private func performSearch(_ query: String) async -> [Article] {
+		// Search logic
+		[]
+	}
 }
 
 struct SearchView: View {
-    @State private var viewModel = SearchViewModel()
+	@SwiftUIState
+	private var viewModel = SearchViewModel()
 
-    var body: some View {
-        VStack {
-            TextField("Search", text: $viewModel.searchText)
-                .onChange(of: viewModel.searchText) { oldValue, newValue in
-                    viewModel.updateSearch(newValue)
-                }
+	var body: some View {
+		VStack {
+			TextField("Search", text: $viewModel.searchText)
+				.onChange(of: viewModel.searchText) { oldValue, newValue in
+					viewModel.updateSearch(newValue)
+				}
 
-            List(viewModel.results) { article in
-                ArticleRow(article: article)
-            }
-        }
-    }
+			List(viewModel.results) { article in
+				ArticleRow(article: article)
+			}
+		}
+	}
 }
 ```

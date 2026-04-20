@@ -1,22 +1,28 @@
 # State Management (iOS 17+)
 
-## @State — NOT @StateObject
+## @State or @Bindable — NOT @StateObject
 
 ### ✅ Modern Pattern
 ```swift
 struct ProfileView: View {
-    @State private var model = UserProfileModel()
+	@SwiftUI.State
+	private var model: UserProfileModel
+	
+	init(_ model: UserProfileModel) {
+		self._model = State(wrappedValue: model)
+	}
 
-    var body: some View {
-        TextField("Name", text: $model.name)
-    }
+	var body: some View {
+		TextField("Name", text: $model.name)
+	}
 }
 ```
 
 ### ❌ Deprecated Pattern
 ```swift
 // NEVER use @StateObject with @Observable
-@StateObject private var model = UserProfileModel()
+@StateObject
+private var model: UserProfileModel = .init()
 ```
 
 ## @Bindable — NOT @ObservedObject
@@ -24,30 +30,41 @@ struct ProfileView: View {
 ### ✅ Modern Pattern
 ```swift
 struct ProfileEditView: View {
-    @Bindable var model: UserProfileModel
+	@Bindable
+	private var model: UserProfileModel
+	
+	init(_ model: UserProfileModel) {
+		self._model = Bindable(wrappedValue: model)
+	}
 
-    var body: some View {
-        Form {
-            TextField("Name", text: $model.name)
-            TextField("Email", text: $model.email)
-        }
-    }
+	var body: some View {
+		Form {
+			TextField("Name", text: $model.name)
+			TextField("Email", text: $model.email)
+		}
+	}
 }
 
 // Usage
 struct ProfileView: View {
-    @State private var model = UserProfileModel()
+	@Bindable
+	private var model: UserProfileModel
+	
+	init(_ model: UserProfileModel) {
+		self._model = Bindable(wrappedValue: model)
+	}
 
-    var body: some View {
-        ProfileEditView(model: model)
-    }
+	var body: some View {
+		ProfileEditView(model)
+	}
 }
 ```
 
 ### ❌ Deprecated Pattern
 ```swift
 // NEVER use @ObservedObject with @Observable
-@ObservedObject var model: UserProfileModel
+@ObservedObject
+var model: UserProfileModel
 ```
 
 ## Common Patterns
@@ -56,23 +73,28 @@ struct ProfileView: View {
 ```swift
 @Observable
 class NavigationModel {
-    var path = NavigationPath()
-    var selectedItem: Item?
+	var path = NavigationPath()
+	var selectedItem: Item?
 
-    func navigateTo(_ item: Item) {
-        selectedItem = item
-    }
+	func navigateTo(_ item: Item) {
+		selectedItem = item
+	}
 }
 
 struct ContentView: View {
-    @State private var navigation = NavigationModel()
+	@SwiftUI.Bindable
+	private var navigation: NavigationModel
 
-    var body: some View {
-        NavigationStack(path: $navigation.path) {
-            ItemList()
-                .environment(navigation)
-        }
-    }
+	init(_ model: UserProfileModel) {
+		self._model = Bindable(wrappedValue: model)
+	}
+	
+	var body: some View {
+		NavigationStack(path: $navigation.path) {
+			ItemList()
+				.environment(navigation)
+		}
+	}
 }
 ```
 
@@ -80,49 +102,66 @@ struct ContentView: View {
 ```swift
 @Observable
 class FormModel {
-    var email: String = ""
-    var isValid: Bool { email.contains("@") }
+	var email: String
+	
+	init(email: String = "") {
+		self.email = email
+	}
+	
+	var isValid: Bool { email.contains("@") }
 }
 
 struct FormView: View {
-    @State private var model = FormModel()
+	@SwiftUI.Bindable
+	private var model: FormModel
 
-    var body: some View {
-        Form {
-            TextField("Email", text: $model.email)
-            Button("Submit") { }
-                .disabled(!model.isValid)
-        }
-    }
+	init(_ model: FormModel) {
+		self._model = Bindable(wrappedValue: model)
+	}
+
+	var body: some View {
+		Form {
+			TextField("Email", text: $model.email)
+			Button("Submit") { }
+				.disabled(!model.isValid)
+		}
+	}
 }
 ```
 
 ### Loading State
 ```swift
 struct DataView: View {
-    @State private var data: [Item] = []
-    @State private var isLoading = false
-    @State private var error: Error?
+	@SwiftUI.State
+	private var data: [Item] = []
 
-    var body: some View {
-        List(data) { item in
-            Text(item.name)
-        }
-        .overlay {
-            if isLoading {
-                ProgressView()
-            }
-        }
-        .task {
-            isLoading = true
-            defer { isLoading = false }
+	@SwiftUI.State
+	private var isLoading = false
 
-            do {
-                data = try await fetchData()
-            } catch {
-                self.error = error
-            }
-        }
-    }
+	@SwiftUI.State
+	private var error: Error?
+	
+	init() {}
+
+	var body: some View {
+		List(data) { item in
+			Text(item.name)
+		}
+		.overlay {
+			if isLoading {
+				ProgressView()
+			}
+		}
+		.task {
+			isLoading = true
+			defer { isLoading = false }
+
+			do {
+				data = try await fetchData()
+			} catch {
+				self.error = error
+			}
+		}
+	}
 }
 ```

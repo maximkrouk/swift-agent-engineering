@@ -21,19 +21,23 @@ Multiple gestures together?
 | Use Case | Type | Why |
 |----------|------|-----|
 | Temporary feedback | `@GestureState` | Auto-resets when gesture ends |
-| Final committed value | `@State` | Persists after gesture |
+| Final committed value | `@SwiftUI.State` | Persists after gesture |
 
 ## Pattern 1: Draggable View
 
 ```swift
 struct DraggableCard: View {
-    @GestureState private var dragOffset = CGSize.zero  // Temporary
-    @State private var position = CGSize.zero           // Permanent
+	@GestureState
+	private var dragOffset: CGSize = .zero  // Temporary
 
-    var body: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .offset(x: position.width + dragOffset.width,
-                    y: position.height + dragOffset.height)
+	@SwiftUI.State
+	private var position: CGSize = .zero    // Permanent
+
+	var body: some View {
+		RoundedRectangle(cornerRadius: 12)
+			.offset(
+				x: position.width + dragOffset.width,
+				y: position.height + dragOffset.height)
             .gesture(
                 DragGesture()
                     .updating($dragOffset) { value, state, _ in

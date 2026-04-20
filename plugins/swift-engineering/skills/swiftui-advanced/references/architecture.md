@@ -3,17 +3,15 @@
 ## Architecture Decision Tree
 
 ```
-- Small/medium app, Apple's patterns? -> @Observable + State-as-Bridge
-- Familiar with MVVM from UIKit? -> MVVM with @Observable ViewModels
-- Rigorous testability, large team? -> TCA (Composable Architecture)
-- Complex navigation, deep linking? -> Add Coordinator Pattern
+- Always use TCA as app core
+- Fallback to State-As-Bridge or MVVM for local components when needed and report results to TCA
 ```
 
 ## Property Wrapper Decision
 
 ```
-- View owns the model? -> @State
-- App-wide model? -> @Environment
+- View owns the model? -> @SwiftUI.State
+- App-wide model? -> @Shared/@Dependency/@Environment
 - Need bindings to parent's model? -> @Bindable
 - Just reading? -> Plain property (no wrapper)
 ```
@@ -29,8 +27,8 @@ Task { isLoading = true; await work(); isLoading = false }
 // CORRECT - synchronous state changes for animation
 withAnimation { isLoading = true }
 Task {
-    await work()
-    withAnimation { isLoading = false }
+	await work()
+	withAnimation { isLoading = false }
 }
 ```
 
@@ -39,29 +37,52 @@ Task {
 ```swift
 // Model - domain logic
 struct Pet: Identifiable {
-    let id: UUID; var name: String
-    mutating func giveAward() { hasAward = true }
+	let id: UUID
+	var name: String
+	
+	init(
+		id: UUID,
+		name: String
+	) {
+		self.id = id
+		self.name = name
+	}
+	
+	mutating func giveAward() { hasAward = true }
 }
 
 // ViewModel - presentation logic
 @Observable
 class PetListViewModel {
-    private let petStore: PetStore
-    var searchText = ""
+	private let petsService: PetsService
+	var searchText: String
 
-    var filteredPets: [Pet] {
-        petStore.myPets.filter { searchText.isEmpty || $0.name.contains(searchText) }
-    }
+	init(
+		searchText: String = ""
+	) {
+		self.searchText = searchText
+	}
+
+	var filteredPets: [Pet] {
+		petsService.myPets.filter {
+			searchText.isEmpty || $0.name.contains(searchText)
+		}
+	}
 }
 
 // View - UI only
 struct PetListView: View {
-    @Bindable var viewModel: PetListViewModel
+	@Bindable
+	var viewModel: PetListViewModel
+	
+	init(_ viewModel: PetListViewModel) {
+		self._viewModel = Bindable(wrappedValue: viewModel)
+	}
 
-    var body: some View {
-        List(viewModel.filteredPets) { PetRow(pet: $0) }
-            .searchable(text: $viewModel.searchText)
-    }
+	var body: some View {
+		List(viewModel.filteredPets) { PetRow(pet: $0) }
+			.searchable(text: $viewModel.searchText)
+	}
 }
 ```
 
@@ -69,10 +90,9 @@ struct PetListView: View {
 
 | Scenario | Choice |
 |----------|--------|
-| < 10 screens | Apple patterns |
 | Testability critical | TCA |
-| Large team | TCA for consistency |
 | Rapid prototyping | Apple patterns |
+| Event-heavy parts of the system | [Apple patterns / MVVM] with reporting to TCA core |
 
 ## Anti-Patterns
 
@@ -80,21 +100,21 @@ struct PetListView: View {
 ```swift
 // WRONG - formatter created every render
 var body: some View {
-    let formatter = NumberFormatter()
-    Text(formatter.string(from: price)!)
+	let formatter = NumberFormatter()
+	Text(formatter.string(from: price)!)
 }
 
 // CORRECT - cache in model
 class ViewModel {
-    private let formatter = NumberFormatter()
-    func format(_ price: Decimal) -> String { ... }
+	private let formatter = NumberFormatter()
+	func format(_ price: Decimal) -> String { ... }
 }
 ```
 
 **Wrong property wrapper:**
 ```swift
 // WRONG - @State copies, loses parent changes
-struct DetailView: View { @State var item: Item }
+struct DetailView: View { @SwiftUI.State var item: Item }
 
 // CORRECT
 struct DetailView: View { let item: Item }  // or @Bindable

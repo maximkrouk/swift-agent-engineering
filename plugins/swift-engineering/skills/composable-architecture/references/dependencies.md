@@ -1,7 +1,10 @@
 # Dependencies
 
-Patterns for dependency injection in TCA.
+Patterns for dependency injection using swift-dependencies
 
+> [!Note]
+> 
+> _If you find any comments  in templates, they are added for the context and should not be present in the output_
 ## @DependencyClient Macro
 
 Use `@DependencyClient` to declare dependency clients with automatic test value generation.
@@ -105,7 +108,9 @@ struct DataClient: Sendable {
 ## Using Dependencies in Reducers
 
 ```swift
-@Reducer struct FeatureName {
+@Reducer
+public struct FeatureName {
+	
     @Dependency(\.apiClient) var apiClient
     @Dependency(\.analytics) var analytics
     @Dependency(\.dismiss) var dismiss

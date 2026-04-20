@@ -4,7 +4,8 @@ When updating legacy SwiftUI code to iOS 17+:
 
 - [ ] Replace `ObservableObject` with `@Observable`
 - [ ] Remove all `@Published` (regular properties auto-publish)
-- [ ] Replace `@StateObject` with `@State`
+- [ ] Replace `@State` with `@SwiftUI.State`
+- [ ] Replace `@StateObject` with `@SwiftUI.State`
 - [ ] Replace `@ObservedObject` with `@Bindable`
 - [ ] Replace `environmentObject(_:)` with `environment(_:)`
 - [ ] Replace `@EnvironmentObject` with `@Environment(Type.self)`
@@ -16,21 +17,27 @@ When updating legacy SwiftUI code to iOS 17+:
 ### Before (iOS 16)
 ```swift
 class UserProfileModel: ObservableObject {
-    @Published var name: String = ""
-    @Published var email: String = ""
+	@Published
+	var name: String = ""
+
+	@Published
+	var email: String = ""
+
+	init() {}
 }
 
 struct ProfileView: View {
-    @StateObject private var model = UserProfileModel()
+	@StateObject
+	private var model = UserProfileModel()
 
-    var body: some View {
-        TextField("Name", text: $model.name)
-            .onAppear {
-                Task {
-                    await model.load()
-                }
-            }
-    }
+	init() {}
+
+	var body: some View {
+		TextField("Name", text: $model.name)
+			.onAppear {
+				Task { await model.load() }
+			}
+	}
 }
 ```
 
@@ -38,18 +45,27 @@ struct ProfileView: View {
 ```swift
 @Observable
 class UserProfileModel {
-    var name: String = ""
-    var email: String = ""
+	var name: String
+	var email: String
+	
+	init(
+		name: String = "",
+		email: String = ""
+	) {
+		self.name = name
+		self.email = email
+	}
 }
 
 struct ProfileView: View {
-    @State private var model = UserProfileModel()
+	@SwiftUI.State
+	private var model: UserProfileModel = .init()
 
-    var body: some View {
-        TextField("Name", text: $model.name)
-            .task {
-                await model.load()
-            }
-    }
+	init() {}
+	
+	var body: some View {
+		TextField("Name", text: $model.name)
+			.task { await model.load() }
+	}
 }
 ```

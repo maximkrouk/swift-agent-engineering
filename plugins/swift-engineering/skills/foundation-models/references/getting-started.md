@@ -8,10 +8,8 @@ Always check before creating a session:
 import FoundationModels
 
 switch SystemLanguageModel.default.availability {
-case .available:
-    print("Foundation Models available")
-case .unavailable(let reason):
-    print("Unavailable: \(reason)")
+case .available: // handle availability
+case let .unavailable(reason): // handle unavailability
 }
 ```
 
@@ -24,10 +22,11 @@ case .unavailable(let reason):
 let session = LanguageModelSession()
 
 // With instructions (define model's role)
-let session = LanguageModelSession(instructions: """
-    You are a helpful travel assistant.
-    Respond concisely.
-    """
+let session = LanguageModelSession(
+	instructions: """
+	You are a helpful travel assistant.
+	Respond concisely.
+	"""
 )
 ```
 

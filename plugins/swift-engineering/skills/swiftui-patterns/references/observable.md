@@ -8,24 +8,38 @@ import Observation
 
 @Observable
 class UserProfileModel {
-    var name: String = ""
-    var email: String = ""
-    var isLoading: Bool = false
+	var name: String
+	var email: String
+	var isLoading: Bool
+  
+	init(
+		name: String = "",
+		email: String = "",
+		isLoading: Bool = false
+  ) {
+		self.name = name
+		self.email = email
+		self.isLoading = isLoading
+  }
 
-    func save() async {
-        isLoading = true
-        // Save logic
-        isLoading = false
-    }
+	func save() async {
+		isLoading = true
+		defer { isLoading = false }
+		// Save logic
+	}
 }
 
 // In SwiftUI view
 struct ProfileView: View {
-    let model: UserProfileModel
+	let model: UserProfileModel
+	
+	init(_ model: UserProfileModel) {
+		self.model = model
+	}
 
-    var body: some View {
-        TextField("Name", text: $model.name)
-    }
+	var body: some View {
+		TextField("Name", text: $model.name)
+	}
 }
 ```
 
@@ -33,8 +47,11 @@ struct ProfileView: View {
 ```swift
 // NEVER use ObservableObject for new code
 class UserProfileModel: ObservableObject {
-    @Published var name: String = ""
-    @Published var email: String = ""
+	@Published
+	var name: String = ""
+	
+	@Published
+	var email: String = ""
 }
 ```
 
