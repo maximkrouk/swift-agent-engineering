@@ -19,10 +19,10 @@ case let .unavailable(reason): // handle unavailability
 
 ```swift
 // Basic
-let session = LanguageModelSession()
+let session: LanguageModelSession = .init()
 
 // With instructions (define model's role)
-let session = LanguageModelSession(
+let session: LanguageModelSession = .init(
 	instructions: """
 	You are a helpful travel assistant.
 	Respond concisely.
@@ -35,7 +35,7 @@ let session = LanguageModelSession(
 ## Basic Text Generation
 
 ```swift
-let session = LanguageModelSession()
+let session: LanguageModelSession = .init()
 let response = try await session.respond(to: "Summarize this article...")
 print(response.content)
 ```
@@ -45,7 +45,7 @@ print(response.content)
 Sessions retain transcript automatically:
 
 ```swift
-let session = LanguageModelSession()
+let session: LanguageModelSession = .init()
 
 let first = try await session.respond(to: "Write a haiku about fishing")
 // "Silent waters gleam..."
@@ -58,9 +58,9 @@ let second = try await session.respond(to: "Now one about golf")
 
 ```swift
 Button("Generate") {
-    Task {
-        result = try await session.respond(to: "Write a haiku").content
-    }
+	Task {
+		result = try await session.respond(to: "Write a haiku").content
+	}
 }
 .disabled(session.isResponding)
 ```
@@ -71,15 +71,15 @@ First generation takes 1-2s to load. Prewarm before user interaction:
 
 ```swift
 class ViewModel: ObservableObject {
-    private var session: LanguageModelSession?
+	private var session: LanguageModelSession?
 
-    init() {
-        Task { self.session = LanguageModelSession() }
-    }
+	init() {
+		Task { self.session = .init() }
+	}
 
-    func generate(prompt: String) async throws -> String {
-        try await session!.respond(to: prompt).content
-    }
+	func generate(prompt: String) async throws -> String {
+		try await session!.respond(to: prompt).content
+	}
 }
 ```
 
@@ -87,14 +87,14 @@ class ViewModel: ObservableObject {
 
 ```swift
 struct AIFeatureView: View {
-    var body: some View {
-        switch SystemLanguageModel.default.availability {
-        case .available:
-            AIContentView()
-        case .unavailable:
-            Text("AI features require Apple Intelligence")
-        }
-    }
+	var body: some View {
+		switch SystemLanguageModel.default.availability {
+		case .available:
+			AIContentView()
+		case .unavailable:
+			Text("AI features require Apple Intelligence")
+		}
+	}
 }
 ```
 

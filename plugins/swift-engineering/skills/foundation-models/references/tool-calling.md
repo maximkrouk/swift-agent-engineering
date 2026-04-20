@@ -15,10 +15,10 @@ Tools let the model call your code to fetch real data.
 
 ```swift
 protocol Tool {
-    var name: String { get }
-    var description: String { get }
-    associatedtype Arguments: Generable
-    func call(arguments: Arguments) async throws -> ToolOutput
+	var name: String { get }
+	var description: String { get }
+	associatedtype Arguments: Generable
+	func call(arguments: Arguments) async throws -> ToolOutput
 }
 ```
 
@@ -26,29 +26,29 @@ protocol Tool {
 
 ```swift
 struct GetWeatherTool: Tool {
-    let name = "getWeather"
-    let description = "Get current weather for a city"
+	let name: String = "getWeather"
+	let description: String = "Get current weather for a city"
 
-    @Generable
-    struct Arguments {
-        @Guide(description: "City name")
-        var city: String
-    }
+	@Generable
+	struct Arguments {
+		@Guide(description: "City name")
+		var city: String
+	}
 
-    func call(arguments: Arguments) async throws -> ToolOutput {
-        let places = try await CLGeocoder().geocodeAddressString(arguments.city)
-        let weather = try await WeatherService.shared.weather(for: places.first!.location!)
-        return ToolOutput("Temperature: \(weather.currentWeather.temperature.value)F")
-    }
+	func call(arguments: Arguments) async throws -> ToolOutput {
+		let places = try await CLGeocoder().geocodeAddressString(arguments.city)
+		let weather = try await WeatherService.shared.weather(for: places.first!.location!)
+		return ToolOutput("Temperature: \(weather.currentWeather.temperature.value)F")
+	}
 }
 ```
 
 ## Using Tools
 
 ```swift
-let session = LanguageModelSession(
-    tools: [GetWeatherTool()],
-    instructions: "Help with weather forecasts."
+let session: LanguageModelSession = LanguageModelSession(
+	tools: [GetWeatherTool()],
+	instructions: "Help with weather forecasts."
 )
 
 let response = try await session.respond(to: "What's the temperature in Cupertino?")
@@ -70,25 +70,31 @@ Use `class` to track state across calls:
 
 ```swift
 class FindContactTool: Tool {
-    var pickedContacts = Set<String>()
+	var pickedContacts: Set<String>
 
-    func call(arguments: Arguments) async throws -> ToolOutput {
-        contacts.removeAll(where: { pickedContacts.contains($0.name) })
-        guard let picked = contacts.randomElement() else {
-            return ToolOutput("No more contacts")
-        }
-        pickedContacts.insert(picked.name)
-        return ToolOutput(picked.name)
-    }
+	init(
+		pickedContacts: Set<String> = []
+	) {
+		self.pickedContacts = pickedContacts
+	}
+
+	func call(arguments: Arguments) async throws -> ToolOutput {
+		self.contacts.removeAll(where: { self.pickedContacts.contains($0.name) })
+		guard let picked = self.contacts.randomElement() else {
+			return ToolOutput("No more contacts")
+		}
+		self.pickedContacts.insert(picked.name)
+		return ToolOutput(picked.name)
+	}
 }
 ```
 
 ## Multiple Tools
 
 ```swift
-let session = LanguageModelSession(
-    tools: [GetWeatherTool(), FindRestaurantTool(), FindHotelTool()],
-    instructions: "Plan travel itineraries."
+let session: LanguageModelSession = LanguageModelSession(
+	tools: [GetWeatherTool(), FindRestaurantTool(), FindHotelTool()],
+	instructions: "Plan travel itineraries."
 )
 // Model autonomously decides which tools to call
 ```

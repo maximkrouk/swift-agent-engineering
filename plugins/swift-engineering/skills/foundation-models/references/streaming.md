@@ -11,8 +11,8 @@ Without streaming, users wait 3-5 seconds seeing nothing. With streaming, first 
 ```swift
 @Generable
 struct Itinerary {
-    var name: String
-    var days: [DayPlan]
+	var name: String
+	var days: [DayPlan]
 }
 
 // Generated automatically:
@@ -26,13 +26,13 @@ struct Itinerary {
 
 ```swift
 let stream = session.streamResponse(
-    to: "Generate 3-day itinerary",
-    generating: Itinerary.self
+	to: "Generate 3-day itinerary",
+	generating: Itinerary.self
 )
 
 for try await partial in stream {
-    print(partial.name)  // Fills in progressively
-    print(partial.days)
+	print(partial.name)  // Fills in progressively
+	print(partial.days)
 }
 ```
 
@@ -40,33 +40,40 @@ for try await partial in stream {
 
 ```swift
 struct ItineraryView: View {
-    @State private var itinerary: Itinerary.PartiallyGenerated?
+	@SwiftUI.State
+	private var itinerary: Itinerary.PartiallyGenerated?
 
-    var body: some View {
-        VStack {
-            if let name = itinerary?.name {
-                Text(name).font(.title)
-            }
+	init(
+		itinerary: Itinerary.PartiallyGenerated? = nil
+	) {
+		self._itinerary = SwiftUI.State(wrappedValue: itinerary)
+	}
 
-            if let days = itinerary?.days {
-                ForEach(days, id: \.self) { day in
-                    DayView(day: day)
-                }
-            }
+	var body: some View {
+		VStack {
+			if let name = self.itinerary?.name {
+				Text(name).font(.title)
+			}
 
-            Button("Generate") {
-                Task {
-                    let stream = session.streamResponse(
-                        to: "Generate itinerary",
-                        generating: Itinerary.self
-                    )
-                    for try await partial in stream {
-                        self.itinerary = partial
-                    }
-                }
-            }
-        }
-    }
+			if let days = self.itinerary?.days {
+				ForEach(days, id: \.self) { day in
+					DayView(day: day)
+				}
+			}
+
+			Button("Generate") {
+				Task {
+					let stream = session.streamResponse(
+						to: "Generate itinerary",
+						generating: Itinerary.self
+					)
+					for try await partial in stream {
+						self.itinerary = partial
+					}
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -74,15 +81,15 @@ struct ItineraryView: View {
 
 ```swift
 if let name = itinerary?.name {
-    Text(name)
-        .transition(.opacity)
+	Text(name)
+		.transition(.opacity)
 }
 
 if let days = itinerary?.days {
-    ForEach(days, id: \.id) { day in  // Use stable ID, not indices
-        DayView(day: day)
-            .transition(.slide)
-    }
+	ForEach(days, id: \.id) { day in  // Use stable ID, not indices
+		DayView(day: day)
+			.transition(.slide)
+	}
 }
 .animation(.default, value: itinerary)
 ```
@@ -94,9 +101,9 @@ Properties generate in declaration order. Put quick/important ones first:
 ```swift
 @Generable
 struct Article {
-    var title: String      // Shows in 0.2s
-    var summary: String    // Shows in 0.8s
-    var fullText: String   // Shows in 2.5s (user already engaged)
+	var title: String      // Shows in 0.2s
+	var summary: String    // Shows in 0.8s
+	var fullText: String   // Shows in 2.5s (user already engaged)
 }
 ```
 
