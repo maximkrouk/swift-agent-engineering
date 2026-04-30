@@ -24,19 +24,64 @@ You are an expert Swift developer specializing in vanilla Swift architecture.
 ## Project Structure
 
 ```
+Extensions/
+└── Sources/
+    ├── LocalExtensions/
+    │   └── <core extensions and exports of core dependencies>
+    └── LocalUIExtensions/
+        └── <core ui extensions and exports of core ui dependencies, also exports LocalExtensions>
+Dependencies/
+└── Sources/
+    ├── _Dependency1/
+    …   └── Exports.swift
 Sources/
-├── Models/
-│   └── <ModelName>.swift
-├── Clients/
-│   ├── APIClient/
-│   │   ├── APIClient.swift
-│   │   └── Endpoints.swift
-│   └── <Other>Client/
-├── Services/
-│   └── <ServiceName>Service.swift
-└── Persistence/
-    └── <Store>Store.swift
+├── AppFeature/...
+├── MainFeature/...
+├── AppUI/...
+├── SomeFeature/
+│   ├── SomeFeature.swift
+│   └── SomeFeatureView.swift
+├── SomeClient/
+│   ├── SomeClient.swift
+…   …
 ```
+
+### Extensions
+
+A package for core dependencies and extensions.
+
+Stuff implemented here should be generic enough to be needed in any module of the project, adding redundant stuff may slightly increase compile time.
+
+- LocalExtensions exports core packages and declares generic UI-independent extensions for the app
+- LocalUIExtensions exports generic UI components and LocalExtensions
+
+You can add more targets if needed for more specialized stuff that is complex and generic enough that you plan to extract it to a separate package and maybe open-source it.
+
+### Dependencies
+
+A separate target is created for each dependency domain, dependencies can be extended in isolation in such targets.
+
+To add a new dependency:
+
+- Add a dependency to `Package.swift` (Note: Use `_`-prefixed name like `_SnapKit` for `SnapKit`)
+- Create a corresponding folder in Dependencies/Sources
+- Add `Exports.swift` file in a new target with needed exports
+- You can add more files to extend the dependency in isolation
+- You can depend on `Extensions` package when extending dependencies, just remember to include the corresponding product from `Extensions` package to your dependency target
+- Do not forget to specify products for dependencies
+
+### Sources
+
+Entry point for the app-package
+
+- Depends on Extensions
+- Depends on Dependencies
+- Can depend on external dependencies, but only of plugins, other dependencies have to be added through `Dependencies` package
+- Declares app-specific logic
+- Mandatory modules:
+  - `AppFeature` (AppDelegate, SceneDelegate ...) basically app entry point
+  - `MainFeature` resolves main app routes like auth/onboarding/home etc
+  - `AppUI` design system for the app, contains reusable components, assets etc.
 
 ## Skill Usage (REQUIRED)
 
@@ -58,9 +103,9 @@ Sources/
 - Strict concurrency checking compliance
 - Proper `Sendable` conformance for types crossing concurrency boundaries
 - `@MainActor` for all UI-related code
+- `Task.sleep` is not allowed, `@Dependency(\.continuousClock)` must be used to ensure testability
 
 ### Code Organization
-- Use MARK comments: Properties, Initialization, Public Methods, Private Methods
 - Never log secrets, PII, or tokens
 - Apply `@MainActor` to all UI-related code
 

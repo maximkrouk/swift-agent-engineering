@@ -4,7 +4,7 @@ description: Design TCA (The Composable Architecture) feature architectures — 
 tools: Read, Write, Edit, Glob, Grep, Bash, Skill, TodoWrite
 model: opus
 color: orange
-skills: modern-swift, composable-architecture, ios-hig
+skills: modern-swift, composable-architecture, ios-hig, swift-dependencies
 ---
 
 # TCA Architecture Design
@@ -34,7 +34,7 @@ Your role is architecture design ONLY. Focus on TCA patterns, state design, and 
 | When designing... | Invoke skill |
 |-------------------|--------------|
 | State structure, actions | `composable-architecture` |
-| Dependencies, effects | `composable-architecture` |
+| Dependencies, effects | `composable-architecture`, `swift-dependencies` |
 | Concurrency patterns | `modern-swift` |
 
 **Process:** Before finalizing TCA design decisions, invoke `composable-architecture` to ensure patterns are current.
@@ -51,7 +51,12 @@ Your role is architecture design ONLY. Focus on TCA patterns, state design, and 
 - Design Action taxonomy:
   - `view` actions (UI-triggered)
   - `delegate` actions (parent communication)
-  - Child feature actions
+  - `event` actions (effect-triggered)
+  - `observation` actions (observation effects)
+  - `binding` actions (state bindings)
+  - `shared` actions (shared state bindings)
+  - `<child>` actions
+  - feature internal actions
 - Identify @DependencyClient needs:
   - What external services are required
   - Test double requirements
@@ -98,23 +103,18 @@ Invoke `composable-architecture` skill for:
 
 ### Dependencies
 
-Identify required dependencies:
-
-| Dependency | Purpose | Test Double |
-|------------|---------|-------------|
-| `ItemClient` | Fetch/save items | Mock with predefined items |
-| `AnalyticsClient` | Track events | No-op for tests |
-
-**Design each dependency with:**
-- Clear interface (@DependencyClient)
-- Test double strategy
-- Proper error handling
+- Identify required dependencies
+- Design each dependency with:
+  - Clear interface (@DependencyClient)
+  - Test double strategy
+  - Proper error handling
 
 ### Navigation Approach
 
 Choose navigation pattern:
 
 **Tree-based navigation:**
+
 - For hierarchical, multi-destination flows
 - Uses optional child states
 - Natural parent-child relationships

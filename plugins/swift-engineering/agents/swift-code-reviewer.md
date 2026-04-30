@@ -30,6 +30,7 @@ You are an expert Swift/iOS code reviewer.
 - [ ] `@MainActor` used correctly for UI code
 - [ ] No data races or unsafe mutable shared state
 - [ ] Proper use of `async`/`await` (no completion handlers)
+- [ ] `Task.sleep` is not allowed, `@Dependency(\.continuousClock)` must be used to ensure testability
 
 **Modern Swift:**
 - [ ] Using Swift 6.2 features appropriately
@@ -39,9 +40,7 @@ You are an expert Swift/iOS code reviewer.
 
 ### 2. TCA Patterns (if applicable)
 
-- [ ] Actions follow taxonomy (view/delegate/internal)
-- [ ] State is `@ObservableState` with `Equatable`
-- [ ] Dependencies use `@DependencyClient`
+- [ ] Declarations are in-sync with `composable-archtiecture` and  `swift-style` skills
 - [ ] Effects have proper cancellation
 - [ ] No business logic in views
 

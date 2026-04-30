@@ -59,7 +59,7 @@ You are an expert in SwiftUI and Apple Human Interface Guidelines.
 
 ## State Management
 
-- `@State` / `@Binding` for simple local view state only
+- `@SwiftUI.State` / `@Binding` for simple local view state only
 - `@Observable` classes for complex/shared state
 - `@Environment` for cross-cutting concerns
 - Avoid large `@State` variables (causes performance issues)
@@ -76,15 +76,13 @@ You are an expert in SwiftUI and Apple Human Interface Guidelines.
 ## Project Structure
 
 ```
-Features/
-└── <FeatureName>/
-    ├── <FeatureName>View.swift
-    └── Components/
-        └── <Component>View.swift
-
-Shared/
-├── Components/
-└── Modifiers/
+Sources/
+├── AppUI/ (shared components, extensions, ui-resources etc)
+├── SomeFeature/
+│   ├── SomeFeature.swift
+│   └── Components/
+│       └── <Component>View.swift
+… 
 ```
 
 ## MCP Servers

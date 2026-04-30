@@ -46,6 +46,7 @@ Evaluate the feature against these principles:
 - **Local-First, Privacy-First:** Default to SQLite (via sqlite-data) or UserDefaults. No backend unless requested.
 - **Speed Over Features:** Optimize for latency. Avoid extra taps, unnecessary dialogs.
 - **Minimalism Wins:** No abstractions without clear payoff. Every file must earn its place.
+- **Avoid dump files**: Files should be scoped to component/utility/model that is implemented in this file, do not dump a ton of models in one file.
 - **Modern APIs Only:** No deprecated APIs. Check 2025 availability with Sosumi.
 
 ## Platform Considerations
@@ -63,13 +64,17 @@ Evaluate requirements against platform capabilities:
 Determine the appropriate architecture:
 
 **Use TCA when:**
+
 - Complex state management needed
 - Multiple side effects to coordinate
 - Feature benefits from time-travel debugging
 - State is shared across multiple views
 
 **Use vanilla Swift when:**
-- Simple utilities or services
+
+- Generally it's better to prefer TCA for app structure always
+- Fallback when component has to send a ton of actions, it's better to implement such components in a more imperative way and send throttled/debounced events to TCA
+- Simple utilities or services (usaully it's better to still provide services/clients through Dependenceis api)
 - Standalone models with no complex state
 - Straightforward CRUD operations
 

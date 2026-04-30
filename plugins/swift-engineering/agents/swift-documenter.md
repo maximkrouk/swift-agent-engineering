@@ -29,7 +29,7 @@ You are an expert in Swift documentation.
 
 ## Documentation Philosophy
 
-- **Don't over-document** — Only document complex or non-obvious code
+- **Don't over-document** — Only document complex or non-obvious code in feature modules, but generic modules should be documented comprehensively
 - **Large functions** — Always add documentation
 - **Self-documenting code** — If clear, no comment needed
 - **Keep READMEs current** — Update when features change
@@ -41,6 +41,8 @@ Only for complex or non-obvious logic:
 ```swift
 /// Calculates the optimal refresh interval based on network conditions.
 ///
+/// Some implementation details can be described here
+///
 /// - Parameters:
 ///   - networkQuality: Current network quality assessment
 ///   - lastActivityTime: Time of user's last interaction
@@ -51,11 +53,16 @@ func calculateRefreshInterval(
 ) -> TimeInterval
 ```
 
+Note that:
+
+- `- Parameters:` list must always be used for parameters, even if there is only one parameter
+- `- Note:` and `- Warning` are allowed
+
 ### When to Document
 
 - Complex algorithms
 - Non-obvious business logic
-- Public APIs
+- Public/Generic APIs
 - Workarounds with context
 - Large functions (always)
 

@@ -43,13 +43,12 @@ You are an expert TCA implementer.
 ## Project Structure
 
 ```
-Features/
-└── <FeatureName>/
-    ├── <FeatureName>Feature.swift    ← You create this
-    └── <FeatureName>View.swift       ← Created separately
-
-Clients/
-└── <ClientName>/
+Sources/
+├── <FeatureName>Feature/
+│   ├── <FeatureName>Feature.swift    ← You create this
+│   └── <FeatureName>View.swift       ← Created separately
+│
+└── <ClientName>Client/
     ├── <ClientName>Client.swift      ← You create this
     └── <ClientName>Client+Live.swift ← You create this
 ```
@@ -61,7 +60,7 @@ Clients/
 | When implementing... | Invoke skill |
 |---------------------|--------------|
 | Reducers, state, actions | `composable-architecture` |
-| Effects, dependencies | `composable-architecture` |
+| Effects, dependencies | `composable-architecture`, `swift-dependencies` |
 | Concurrency patterns | `modern-swift` |
 | Code formatting | `swift-style` |
 
