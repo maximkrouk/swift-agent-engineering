@@ -85,12 +85,13 @@ func fetchUser(byID id: String) -> User
 > else { return }
 > 
 > // MARK: CORRENT ✅ soft [condition vs else] separation
-> //for simple conditions and else branches
+> // for simple conditions and else branches, or when both
+> // branches have approximately equal lengths 
 > guard let first = candidates.first(where: condition)
 > else { throw LocalError.noMatchingCandidatesFound }
 > 
 > // MARK: CORRENT ✅ else block separation with indentation
-> // when else branch is complex
+> // when else branch is complex/multiline
 > guard let self else {
 > 	logger.logError("self is missing")
 > 	service.cleanup()
@@ -118,7 +119,6 @@ func fetchUser(byID id: String) -> User
 > 
 > // MARK: CORRENT ✅ conditions and else branch both
 > // are strongly visually separated with indentation
-> 
 > guard
 > 	let self,
 > 	let firstInt,
@@ -133,14 +133,22 @@ func fetchUser(byID id: String) -> User
 > // as a one-liner, `else { return }` must be placed on a new line
 > guard let pattern = loadAHAPPattern(named: "ShieldTransient") else { return }
 > 
+> // MARK: WRONG ❌ `else` branch is approximately the same length
+> // as the condition, expression would be more balanced as a two-liner
+> // `throw` should be placed on the same line as `else {` as well as `}`
+> guard let pattern = loadAHAPPattern(named: "ShieldTransient") 
+> else { 
+>   throw Failure.couldNotLoadAHAPPPattern
+> }
+> 
 > // MARK: WRONG ❌ not enough visual separation, conditions are complex enough,
 > // but the first one competes with `guard` keyword for reader's attention.
 > // Also such separation doesn't work well with tabs indentation.
 > // `let self` must be placed on a new line, other conditions indentations
 > // should be adjusted
 > guard let self,
->    let firstInt,
->    firstInt.isMultiple(of: 2)
+> 	let firstInt,
+> 	firstInt.isMultiple(of: 2)
 > else { return nil }
 > 
 > // MARK: WRONG ❌ both condition and else branch
@@ -149,7 +157,6 @@ func fetchUser(byID id: String) -> User
 > guard let self else {
 > 	return nil
 > }
-> 
 > 
 > // MARK: WRONG ❌ both condition and else branch
 > // are equally super simple, but else branch is much
@@ -227,6 +234,31 @@ guard
 else { 
 	// some more work
 	return
+}
+```
+
+Guard statments should NEVER have the following shapes:
+
+```swift
+// ❌
+// first condition on the `guard` line
+// second condition on a new line, aligned with condition1 with spaces
+//
+// Could be fixed by moving the first condition to a new line
+guard condition1
+      conditionN
+else ...
+
+// ❌
+// first condition on the `guard` line
+// else is on a new line and is multiline
+//
+// could be fixed by placing `else {` on the same line
+// as `guard condition` like `guard condition else {`
+// or moving a condition to a new line
+guard condition
+else {
+  // ...
 }
 ```
 
