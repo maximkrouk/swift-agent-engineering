@@ -95,7 +95,7 @@ Solution: Continuous haptic + continuous audio - unified experience.
 ```swift
 func shouldPlayHaptic(for event: UserEvent) -> Bool {
 	switch event {
-	case .buttonTap(let importance):
+	case let .buttonTap(importance):
 		return importance == .high  // Only important buttons
 
 	case .selectionChange:

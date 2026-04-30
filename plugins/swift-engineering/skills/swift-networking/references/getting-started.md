@@ -19,18 +19,18 @@ let connection: NWConnection = .init(
 )
 
 connection.stateUpdateHandler = { [weak self] state in
-switch state {
-case .ready:
-	self?.sendRequest()
+	switch state {
+	case .ready:
+		self?.sendRequest()
 
-case let .waiting(error):
-	print("Waiting: \(error)")
+	case let .waiting(error):
+		self?.showStatus("Waiting: \(error)")
 
-case let .failed(error):
-	print("Failed: \(error)")
+	case let .failed(error):
+		self?.showError(error)
 
-default: break
-}
+	default: break
+	}
 }
 
 connection.start(queue: .main)
@@ -60,7 +60,9 @@ func communicate() async throws {
 let udp: NWConnection = .init(host: "game.example.com", port: 9000, using: .udp)
 
 // iOS 26+
-let udp: NetworkConnection = .init(to: .hostPort(host: "game.example.com", port: 9000)) { UDP() }
+let udp: NetworkConnection = .init(to: .hostPort(host: "game.example.com", port: 9000)) {
+	UDP()
+}
 ```
 
 ## Custom Parameters

@@ -40,7 +40,7 @@ if you ever interact with a live dependency while tests are running:
 ```swift
 @Test
 func feature() async throws {
-  let model = FeatureModel()
+  let model: FeatureModel = .init()
 
   model.addButtonTapped()
   // 🛑  A dependency has no test implementation, but was accessed from a 
@@ -60,7 +60,7 @@ dependency and setting the live value:
 ```swift
 @Test
 func feature() async throws {
-  let model = withDependencies {
+  let model: FeatureModel = withDependencies {
     // ⚠️ Explicitly say you want to use a live dependency.
     $0.apiClient = .liveValue
   } operation: {
@@ -109,7 +109,7 @@ struct AnalyticsClient {
 import Dependencies
 
 extension AnalyticsClient: TestDependencyKey {
-  static let testValue = Self(
+  static let testValue: Self = .init(
     track: unimplemented("AnalyticsClient.track")
   )
 }
@@ -149,7 +149,7 @@ immediately returns some mock data:
 
 ```swift
 extension APIClient: TestDependencyKey {
-  static let previewValue = Self(
+  static let previewValue: Self = .init(
     fetchUsers: {
       [
         User(id: 1, name: "Blob"),
@@ -225,7 +225,7 @@ the interface module, like this:
 struct AnalyticsClient: TestDependencyKey {
   // ...
 
-  static let testValue = Self(/* ... */)
+  static let testValue: Self = .init(/* ... */)
 }
 ```
 
@@ -235,7 +235,7 @@ And then in the implementation module you can extend the dependency to further c
 ```swift
 // Module: LiveAnalyticsClient
 extension AnalyticsClient: DependencyKey {
-  static let liveValue = Self(/* ... */)
+  static let liveValue: Self = .init(/* ... */)
 }
 ```
 
@@ -269,7 +269,7 @@ live dependency you can override the dependency with `.liveValue`:
 ```swift
 @Test
 func feature() async throws {
-  let model = withDependencies {
+  let model: FeatureModel = withDependencies {
     // ⚠️ Explicitly say you want to use a live dependency.
     $0.apiClient = .liveValue
   } operation: {

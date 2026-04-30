@@ -43,19 +43,19 @@ struct APIClient: Sendable {
 }
 
 extension APIClient: DependencyKey {
-    static let liveValue = APIClient(
+    static let liveValue: APIClient = .init(
         fetchItems: {
             let (data, _) = try await URLSession.shared.data(from: itemsURL)
             return try JSONDecoder().decode([Item].self, from: data)
         },
         saveItem: { item in
-            var request = URLRequest(url: itemsURL)
+            var request: URLRequest = .init(url: itemsURL)
             request.httpMethod = "POST"
             request.httpBody = try JSONEncoder().encode(item)
             _ = try await URLSession.shared.data(for: request)
         },
         deleteItem: { id in
-            var request = URLRequest(url: itemsURL.appending(path: id.uuidString))
+            var request: URLRequest = .init(url: itemsURL.appending(path: id.uuidString))
             request.httpMethod = "DELETE"
             _ = try await URLSession.shared.data(for: request)
         }
@@ -93,8 +93,8 @@ struct DataClient: Sendable {
 
         var debugDescription: String {
             switch self {
-            case .networkError(let e): return "Network: \(e.localizedDescription)"
-            case .decodingError(let e): return "Decoding: \(e.localizedDescription)"
+            case let .networkError(e): return "Network: \(e.localizedDescription)"
+            case let .decodingError(e): return "Decoding: \(e.localizedDescription)"
             }
         }
     }
@@ -111,10 +111,14 @@ struct DataClient: Sendable {
 @Reducer
 public struct FeatureName {
 	
-    @Dependency(\.apiClient) var apiClient
-    @Dependency(\.analytics) var analytics
-    @Dependency(\.dismiss) var dismiss
-    @Dependency(\.continuousClock) var clock
+    @Dependency(\.apiClient)
+    var apiClient
+    @Dependency(\.analytics)
+    var analytics
+    @Dependency(\.dismiss)
+    var dismiss
+    @Dependency(\.continuousClock)
+    var clock
 }
 ```
 
@@ -123,7 +127,7 @@ public struct FeatureName {
 Override dependencies in tests using `withDependencies`:
 
 ```swift
-let store = TestStore(initialState: .init()) {
+let store: TestStoreOf<FeatureReducer> = TestStore(initialState: .init()) {
     FeatureReducer()
 } withDependencies: {
     $0.apiClient.fetchItems = { [Item(id: 1, name: "Test")] }
@@ -147,7 +151,7 @@ struct SpeechClient: Sendable {
 }
 
 extension SpeechClient: DependencyKey {
-    static let liveValue = SpeechClient(
+    static let liveValue: SpeechClient = .init(
         authorizationStatus: {
             SFSpeechRecognizer.authorizationStatus()
         },
@@ -156,7 +160,7 @@ extension SpeechClient: DependencyKey {
         },
         startTask: { request in
             AsyncThrowingStream { continuation in
-                let recognizer = SFSpeechRecognizer()
+                let recognizer: SFSpeechRecognizer? = .init()
                 let task = recognizer?.recognitionTask(with: request) { result, error in
                     if let result {
                         continuation.yield(result)
@@ -196,14 +200,14 @@ Define `previewValue` for dependencies used in SwiftUI previews:
 
 ```swift
 extension AudioRecorderClient: TestDependencyKey {
-    static let previewValue = AudioRecorderClient(
+    static let previewValue: AudioRecorderClient = .init(
         currentTime: { 10.0 },
         requestRecordPermission: { true },
         startRecording: { _ in true },
         stopRecording: { }
     )
 
-    static let testValue = AudioRecorderClient()  // Unimplemented by default
+    static let testValue: AudioRecorderClient = .init()  // Unimplemented by default
 }
 ```
 
@@ -239,7 +243,7 @@ struct DataClient: Sendable {
 }
 
 extension DataClient: TestDependencyKey {
-    static let liveValue = DataClient(
+    static let liveValue: DataClient = .init(
         fetchData: {
             // Real network call
             let (data, _) = try await URLSession.shared.data(from: url)
@@ -247,7 +251,7 @@ extension DataClient: TestDependencyKey {
         }
     )
 
-    static let previewValue = DataClient(
+    static let previewValue: DataClient = .init(
         fetchData: {
             // Mock data for previews
             [

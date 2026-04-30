@@ -256,7 +256,7 @@ func testConfirmationAlert() async {
 ```swift
 @Test("handles async operations")
 func testAsyncOperations() async {
-    let expectation = Expectation(description: "Async operation completes")
+    let expectation: Expectation = .init(description: "Async operation completes")
     let store = makeStore {
         $0.apiClient.fetchData = {
             try await Task.sleep(nanoseconds: 1_000_000)
@@ -327,7 +327,7 @@ func testEnablesNotifications() async {
     // Declare @Shared at test scope for verification
     @Shared(.appStorage("notificationsEnabled")) var notificationsEnabled = false
 
-    let store = TestStore(initialState: SettingsFeature.State()) {
+    let store: TestStoreOf<SettingsFeature> = TestStore(initialState: SettingsFeature.State()) {
         SettingsFeature()
     } withDependencies: {
         $0.notificationClient.requestAuthorization = { true }
@@ -366,7 +366,7 @@ await store.receive(\.delegate.settingsSaved) {
 func testDarkModeToggle() async {
     @Shared(.appStorage("darkModeEnabled")) var darkModeEnabled = false
 
-    let store = TestStore(initialState: AppearanceFeature.State()) {
+    let store: TestStoreOf<AppearanceFeature> = TestStore(initialState: AppearanceFeature.State()) {
         AppearanceFeature()
     }
 

@@ -166,9 +166,11 @@ When adding a dependency to a feature modeled in an observable object, you shoul
 @Observable
 final class FeatureModel {
   @ObservationIgnored
-  @Dependency(\.apiClient) var apiClient
+  @Dependency(\.apiClient)
+  var apiClient
   @ObservationIgnored
-  @Dependency(\.date) var date
+  @Dependency(\.date)
+  var date
   // ...
 }
 ```
@@ -177,8 +179,10 @@ And similarly for `UIViewController` subclasses:
 
 ```swift
 final class FeatureViewController: UIViewController {
-  @Dependency(\.apiClient) var apiClient
-  @Dependency(\.date) var date
+  @Dependency(\.apiClient)
+  var apiClient
+  @Dependency(\.date)
+  var date
   // ...
 }
 ```
@@ -199,12 +203,14 @@ final class FeatureModel {
   var editModel: EditModel?
 
   @ObservationIgnored
-  @Dependency(\.apiClient) var apiClient
+  @Dependency(\.apiClient)
+  var apiClient
   @ObservationIgnored
-  @Dependency(\.date) var date
+  @Dependency(\.date)
+  var date
 
   func editButtonTapped() {
-    editModel = withDependencies(from: self) {
+    self.editModel = withDependencies(from: self) {
       EditModel()
     }
   }
@@ -220,14 +226,16 @@ be sure to wrap its construction in
 
 ```swift
 final class FeatureViewController: UIViewController {
-  @Dependency(\.apiClient) var apiClient
-  @Dependency(\.date) var date
+  @Dependency(\.apiClient)
+  var apiClient
+  @Dependency(\.date)
+  var date
 
   func editButtonTapped() {
-    let controller = withDependencies(from: self) {
+    let controller: EditViewController = withDependencies(from: self) {
       EditViewController()
     }
-    present(controller, animated: true, completion: nil)
+    self.present(controller, animated: true, completion: nil)
   }
 }
 ```

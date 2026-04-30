@@ -56,7 +56,7 @@ struct FeatureNameTests {
     typealias Reducer = FeatureNameReducer
 
     // Test data and helpers
-    private let testData = TestData()
+    private let testData: TestData = .init()
 
     private func makeStore(
         initialState: Reducer.State = .init(),
@@ -126,7 +126,7 @@ private func makeStore(
     shiftId: Int = 1,
     allowsMultipleSegments: Bool = true
 ) -> TestStoreOf<EditShiftReducer> {
-    let dependencies = ShiftOperationsDependencies(
+    let dependencies: ShiftOperationsDependencies = .init(
         allowsMultipleWorkSegments: allowsMultipleSegments,
         allowsConsentOverride: true
     )

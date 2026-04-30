@@ -18,10 +18,10 @@ Use DatabaseQueue for most apps - simpler and sufficient for typical usage patte
 import GRDB
 
 // File-based database
-let dbPath = NSSearchPathForDirectoriesInDomains(
+let dbPath: String = NSSearchPathForDirectoriesInDomains(
 	.documentDirectory, .userDomainMask, true
 )[0]
-let dbQueue: DatabaseQueue = try DatabaseQueue(path: "\(dbPath)/app.sqlite")
+let dbQueue: DatabaseQueue = try .init(path: "\(dbPath)/app.sqlite")
 
 // In-memory database (useful for tests)
 let dbQueue: DatabaseQueue = try DatabaseQueue()
@@ -108,12 +108,12 @@ final class DatabaseManager {
 	let dbQueue: DatabaseQueue
 
 	private init() {
-		let path = NSSearchPathForDirectoriesInDomains(
+		let path: String = NSSearchPathForDirectoriesInDomains(
 			.documentDirectory, .userDomainMask, true
 		)[0] + "/app.sqlite"
 
 		do {
-			var migrator: DatabaseMigrator = DatabaseMigrator()
+			var migrator: DatabaseMigrator = .init()
 			// Register migrations...
 
 			dbQueue = try DatabaseQueue(path: path)

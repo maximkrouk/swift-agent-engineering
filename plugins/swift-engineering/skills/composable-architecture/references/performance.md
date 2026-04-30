@@ -77,7 +77,8 @@ case .view(.onDisappear):
 // ✅ Good: Use weak capture in closures
 case .loadData:
     return .run { [weak self] send in
-        guard let self = self else { return }
+        guard let self = self
+        else { return }
         let data = try await self.apiClient.fetchData()
         await send(.didLoadData(.success(data)))
     }
@@ -212,7 +213,8 @@ case .startButtonTapped:
 Slider(value: store.$opacity, in: 0...1)
 
 // ✅ Good: Slider with local state and onEditingChanged
-@State private var opacity: Double = 0.5
+@SwiftUI.State
+private var opacity: Double = 0.5
 
 Slider(value: $opacity, in: 0...1) {
     store.send(.setOpacity(opacity))
@@ -262,7 +264,8 @@ struct ChildView: View {
 // ✅ Good: Use weak capture in effects
 case .loadData:
     return .run { [weak self] send in
-        guard let self = self else { return }
+        guard let self = self
+        else { return }
         let data = try await self.apiClient.fetchData()
         await send(.didLoadData(.success(data)))
     }

@@ -33,19 +33,19 @@ Task {
 		switch state {
 
 		case .preparing:
-			print("Connecting...")
+			self.updateStatus("Connecting...")
 
 		case let .waiting(error):
-			print("Waiting: \(error)")
+			self.updateStatus("Waiting: \(error)")
 
 		case .ready:
-			await startCommunication()
+			await self.startCommunication()
 
 		case let .failed(error):
-			print("Failed: \(error)")
+			self.handleError(error)
 
 		case .cancelled:
-			print("Cancelled")
+			self.handleCancellation()
 
 		@unknown default: break
 		}
@@ -80,7 +80,7 @@ case .character: // decode character
 case .move: // decode move
 
 case .none:
-	print("Unknown type")
+	self.handleUnknownType()
 }
 ```
 

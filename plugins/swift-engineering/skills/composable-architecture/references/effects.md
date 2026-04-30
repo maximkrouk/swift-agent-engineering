@@ -32,7 +32,7 @@ case .view(.onTapSave):
 Use the `catch:` parameter for structured error handling:
 
 ```swift
-case .loadItem(let id):
+case let .loadItem(id):
     return .run { send in
         let item = try await apiClient.fetchItem(id)
         await send(.itemLoaded(item))
@@ -142,13 +142,15 @@ var body: some View {
 ### Basic Timer with Clock Dependency
 
 ```swift
-@Dependency(\.continuousClock) var clock
+@Dependency(\.continuousClock)
+var clock
 private enum CancelID { case timer }
 
 case .toggleTimerButtonTapped:
     state.isTimerActive.toggle()
     return .run { [isTimerActive = state.isTimerActive] send in
-        guard isTimerActive else { return }
+        guard isTimerActive
+        else { return }
         for await _ in self.clock.timer(interval: .seconds(1)) {
             await send(.timerTick)
         }
@@ -166,7 +168,8 @@ case .timerTick:
 case .toggleTimerButtonTapped:
     state.isTimerActive.toggle()
     return .run { [isTimerActive = state.isTimerActive] send in
-        guard isTimerActive else { return }
+        guard isTimerActive
+        else { return }
         for await _ in self.clock.timer(interval: .seconds(1)) {
             await send(.timerTick, animation: .default)
         }
@@ -213,7 +216,7 @@ case .numberFactButtonTapped:
 ### Capturing Multiple Values
 
 ```swift
-case .searchTextChanged(let text):
+case let .searchTextChanged(text):
     state.searchText = text
     return .run { [text, filter = state.filter, sortOrder = state.sortOrder] send in
         try await Task.sleep(for: .milliseconds(300))

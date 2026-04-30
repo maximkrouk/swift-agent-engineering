@@ -56,7 +56,8 @@ transaction.offer?.type, transaction.offer?.id, transaction.offer?.paymentMode
 
 ```swift
 func grantEntitlement(for transaction: Transaction) async {
-	guard transaction.revocationDate == nil else {
+	guard transaction.revocationDate == nil
+	else {
 		await revokeEntitlement(for: transaction.productID)
 		return
 	}

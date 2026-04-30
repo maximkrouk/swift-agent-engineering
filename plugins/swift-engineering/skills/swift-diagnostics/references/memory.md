@@ -18,7 +18,7 @@ Systematic debugging for retain cycles, memory leaks, and deallocation issues. 9
 // 1. Add deinit logging to suspected class
 class PlayerViewModel: ObservableObject {
 	deinit {
-		print("PlayerViewModel deallocated")
+		self.logger.debug("PlayerViewModel deallocated")
 	}
 }
 

@@ -18,7 +18,7 @@ protocol:
 
 ```swift
 extension APIClient: DependencyKey {
-  static let liveValue = APIClient(/*
+  static let liveValue: Self = .init(/*
     Construct the "live" API client that actually makes network 
     requests and communicates with the outside world.
   */)
@@ -29,7 +29,7 @@ extension APIClient: DependencyKey {
 > ``DependencyKey/testValue`` it will be used when running features in tests, and if you
 > implement `previewValue` it  will be used while running features in an Xcode preview. You don't
 > need to worry about those values when you are just getting started, and instead can add them
-> later. See <Doc:LivePreviewTest> for more information.
+> later. See [LivePreviewTest](live-preview-test.md) for more information.
 
 With that done you can instantly access your API client dependency from any part of your code base:
 
@@ -37,7 +37,8 @@ With that done you can instantly access your API client dependency from any part
 @Observable
 final class TodosModel {
   @ObservationIgnored
-  @Dependency(APIClient.self) var apiClient
+  @Dependency(APIClient.self)
+  var apiClient
   // ...
 }
 ```
@@ -49,13 +50,13 @@ you can override the dependency to return mock data:
 @MainActor
 @Test
 func fetchUser() async {
-  let model = withDependencies {
+  let model: TodosModel = withDependencies {
     $0[APIClient.self].fetchTodos = { _ in Todo(id: 1, title: "Get milk") }
   } operation: {
     TodosModel()
   }
 
-  await store.loadButtonTapped()
+  await model.loadButtonTapped()
   #expect(
     model.todos == [Todo(id: 1, title: "Get milk")]
   )
@@ -83,9 +84,10 @@ as a property that is discoverable from autocomplete:
 
 ```diff
 -@Dependency(APIClient.self) var apiClient
-+@Dependency(\.apiClient) var apiClient
++@Dependency(\.apiClient)
++var apiClient
 
- let model = withDependencies {
+ let model: TodosModel = withDependencies {
 -  $0[APIClient.self].fetchTodos = { _ in Todo(id: 1, title: "Get milk") }
 +  $0.apiClient.fetchTodos = { _ in Todo(id: 1, title: "Get milk") }
  } operation: {
@@ -97,7 +99,8 @@ Another benefit of this style is the ability to scope a `@Dependency` to a speci
 
 ```swift
 // This feature only needs to access the API client's logged-in user
-@Dependency(\.apiClient.currentUser) var currentUser
+@Dependency(\.apiClient.currentUser)
+var currentUser
 ```
 
 ### Indirect dependency key conformances
@@ -108,17 +111,18 @@ conforms to `DependencyKey`:
 
 ```swift
 enum UserDefaultsKey: DependencyKey {
-  static let liveValue = UserDefaults.standard
+  static let liveValue: UserDefaults = .standard
 }
 ```
 
 You can then access and override your dependency through this key type, instead of the value's type:
 
 ```swift
-@Dependency(UserDefaultsKey.self) var userDefaults
+@Dependency(UserDefaultsKey.self)
+var userDefaults
 
-let model = withDependencies {
-  let defaults = UserDefaults(suiteName: "test-defaults")
+let model: TodosModel = withDependencies {
+  let defaults: UserDefaults = .init(suiteName: "test-defaults")!
   defaults.removePersistentDomain(forName: "test-defaults")
   $0[UserDefaultsKey.self] = defaults
 } operation: {

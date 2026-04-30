@@ -27,7 +27,7 @@ final class FeatureModel {
   func onAppear() async {
     do {
       try await Task.sleep(for: .seconds(10))
-      message = "Welcome!"
+      self.message = "Welcome!"
     } catch {}
   }
 }
@@ -47,7 +47,7 @@ struct FeatureView: View {
 
       // ...
     }
-    .task { await model.onAppear() }
+    .task { await self.model.onAppear() }
   }
 }
 ```
@@ -83,12 +83,13 @@ final class FeatureModel {
   var message: String?
 
   @ObservationIgnored
-  @Dependency(\.continuousClock) var clock
+  @Dependency(\.continuousClock)
+  var clock
 
   func onAppear() async {
     do {
-      try await clock.sleep(for: .seconds(10))
-      message = "Welcome!"
+      try await self.clock.sleep(for: .seconds(10))
+      self.message = "Welcome!"
     } catch {}
   }
 }
@@ -105,8 +106,8 @@ does not actually sleep for any amount of time:
 
 ```swift
 #Preview {
-  let _ = prepareDependencies { $0.continuousClock = ImmediateClock() }
-  FeatureView(model: FeatureModel())
+  let _: Void = prepareDependencies { $0.continuousClock = .init() }
+  FeatureView(model: .init())
 }
 ```
 
@@ -121,7 +122,7 @@ the ``withDependencies(_:operation:)-4uz6m`` helper:
 ```swift
 @Test
 func message() async {
-  let model = withDependencies {
+  let model: FeatureModel = withDependencies {
     $0.continuousClock = .immediate
   } operation: {
     FeatureModel()

@@ -100,13 +100,13 @@ struct PetListView: View {
 ```swift
 // WRONG - formatter created every render
 var body: some View {
-	let formatter = NumberFormatter()
+	let formatter: NumberFormatter = .init()
 	Text(formatter.string(from: price)!)
 }
 
 // CORRECT - cache in model
 class ViewModel {
-	private let formatter = NumberFormatter()
+	private let formatter: NumberFormatter = .init()
 	func format(_ price: Decimal) -> String { ... }
 }
 ```
@@ -114,7 +114,10 @@ class ViewModel {
 **Wrong property wrapper:**
 ```swift
 // WRONG - @State copies, loses parent changes
-struct DetailView: View { @SwiftUI.State var item: Item }
+struct DetailView: View {
+	@SwiftUI.State
+	var item: Item
+}
 
 // CORRECT
 struct DetailView: View { let item: Item }  // or @Bindable

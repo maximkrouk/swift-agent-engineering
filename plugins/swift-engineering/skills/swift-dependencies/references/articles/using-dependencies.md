@@ -21,9 +21,15 @@ feature's model:
 ```swift
 @Observable
 final class TodosModel {
-  @ObservationIgnored @Dependency(\.continuousClock) var clock
-  @ObservationIgnored @Dependency(\.date) var date
-  @ObservationIgnored @Dependency(\.uuid) var uuid
+  @ObservationIgnored
+  @Dependency(\.continuousClock)
+  var clock
+  @ObservationIgnored
+  @Dependency(\.date)
+  var date
+  @ObservationIgnored
+  @Dependency(\.uuid)
+  var uuid
 
   // ...
 }
@@ -36,9 +42,9 @@ feature:
 @MainActor
 @Test
 func todos() async {
-  let model = withDependencies {
+  let model: TodosModel = withDependencies {
     $0.continuousClock = .immediate
-    $0.date.now = Date(timeIntervalSinceReferenceDate: 1234567890)
+    $0.date.now = .init(timeIntervalSinceReferenceDate: 1234567890)
     $0.uuid = .incrementing
   } operation: {
     TodosModel()

@@ -153,7 +153,8 @@ func updateIntensity(
 
 ```swift
 func safelyStartEngine() {
-	guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else {
+	guard CHHapticEngine.capabilitiesForHardware().supportsHaptics
+	else {
 		useFallbackHaptics() // Use UIFeedbackGenerator
 		return
 	}

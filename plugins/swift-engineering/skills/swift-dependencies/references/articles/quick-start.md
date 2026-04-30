@@ -8,7 +8,7 @@ To use this library in a SwiftPM project, add it to the dependencies of your Pac
 specify the `Dependencies` product in any targets that need access to the library:
 
 ```swift
-let package = Package(
+let package: Package = .init(
   dependencies: [
     .package(
       url: "https://github.com/pointfreeco/swift-dependencies",
@@ -40,13 +40,17 @@ final class FeatureModel {
   var items: [Item] = []
 
   @ObservationIgnored
-  @Dependency(\.continuousClock) var clock  // Controllable way to sleep a task
+  @Dependency(\.continuousClock)
+  var clock  // Controllable way to sleep a task
   @ObservationIgnored
-  @Dependency(\.date.now) var now           // Controllable way to ask for current date
+  @Dependency(\.date.now)
+  var now  // Controllable way to ask for current date
   @ObservationIgnored
-  @Dependency(\.mainQueue) var mainQueue    // Controllable scheduling on main queue
+  @Dependency(\.mainQueue)
+  var mainQueue  // Controllable scheduling on main queue
   @ObservationIgnored
-  @Dependency(\.uuid) var uuid              // Controllable UUID creation
+  @Dependency(\.uuid)
+  var uuid  // Controllable UUID creation
 
   // ...
 }
@@ -61,12 +65,12 @@ final class FeatureModel {
   // ...
 
   func addButtonTapped() async throws {
-    try await clock.sleep(for: .seconds(1))  // 👈 Don't use 'Task.sleep'
-    items.append(
+    try await self.clock.sleep(for: .seconds(1))  // 👈 Don't use 'Task.sleep'
+    self.items.append(
       Item(
-        id: uuid(),  // 👈 Don't use 'UUID()'
+        id: self.uuid(),  // 👈 Don't use 'UUID()'
         name: "",
-        createdAt: now  // 👈 Don't use 'Date()'
+        createdAt: self.now  // 👈 Don't use 'Date()'
       )
     )
   }
@@ -83,10 +87,10 @@ function to override any dependencies for the scope of one single test. It's as 
 ```swift
 @Test
 func add() async throws {
-  let model = withDependencies {
+  let model: FeatureModel = withDependencies {
     // 1️⃣ Override any dependencies that your feature uses.
     $0.clock = .immediate
-    $0.date.now = Date(timeIntervalSinceReferenceDate: 1234567890)
+    $0.date.now = .init(timeIntervalSinceReferenceDate: 1234567890)
     $0.uuid = .incrementing
   } operation: {
     // 2️⃣ Construct the feature's model
@@ -99,9 +103,9 @@ func add() async throws {
   #expect(
     model.items == [
       Item(
-        id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
+        id: .init(uuidString: "00000000-0000-0000-0000-000000000000")!,
         name: "",
-        createdAt: Date(timeIntervalSinceReferenceDate: 1234567890)
+        createdAt: .init(timeIntervalSinceReferenceDate: 1234567890)
       )
     ]
   )
@@ -123,10 +127,10 @@ how the view changes, you can override the clock dependency to be an "immediate"
 
 ```swift
 #Preview {
-  let _ = prepareDependencies { $0.continuousClock = ImmediateClock() }
+  let _: Void = prepareDependencies { $0.continuousClock = .init() }
   // All access of '@Dependency(\.continuousClock)' in this preview will
   // use an immediate clock.
-  FeatureView(model: FeatureModel())
+  FeatureView(model: .init())
 }
 ```
 

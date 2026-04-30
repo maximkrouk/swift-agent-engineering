@@ -75,7 +75,7 @@ struct NotificationSettingsView: View {
 	}
 
 	func requestNotificationPermission() async -> Bool {
-		let center = UNUserNotificationCenter.current()
+		let center: UNUserNotificationCenter = .current()
 		return (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
 	}
 }

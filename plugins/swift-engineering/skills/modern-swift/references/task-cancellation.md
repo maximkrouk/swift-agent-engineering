@@ -30,10 +30,10 @@ Returns `Bool`. Use for graceful cleanup in non-throwing contexts.
 func processItems(_ items: [Item]) async {
 	for item in items {
 		if Task.isCancelled {
-			print("Cancelled, stopping early")
+			await self.handleCancellation()
 			return
 		}
-		await process(item)
+		await self.process(item)
 	}
 }
 ```
@@ -60,9 +60,9 @@ func downloadFile(url: URL) async throws -> Data {
 ```swift
 func monitorEvents() async throws {
 	while !Task.isCancelled {
-		let event = try await fetchNextEvent()
+		let event = try await self.fetchNextEvent()
 		try Task.checkCancellation()
-		await handle(event)
+		await self.handle(event)
 	}
 }
 ```
@@ -74,7 +74,7 @@ func fetchWithTimeout(ids: [String]) async throws -> [User] {
 		// Add tasks
 		for id in ids {
 			group.addTask {
-				try await fetchUser(id: id)
+				try await self.fetchUser(id: id)
 			}
 		}
 

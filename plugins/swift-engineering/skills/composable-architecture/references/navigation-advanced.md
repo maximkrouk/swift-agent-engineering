@@ -92,10 +92,10 @@ struct State: Equatable {
 ### Navigating from External Event
 
 ```swift
-case .deepLinkReceived(let deepLink):
+case let .deepLinkReceived(deepLink):
     state.path.removeAll()
     switch deepLink {
-    case .detail(let id):
+    case let .detail(id):
         state.path.append(.detail(Detail.State(id: id)))
     case .settings:
         state.path.append(.settings(Settings.State()))

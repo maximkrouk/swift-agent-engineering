@@ -62,7 +62,8 @@ Use `@Shared` without a persistence strategy for in-memory shared state:
 ```swift
 @ObservableState
 struct State: Equatable {
-    @Shared var userSession: UserSession
+    @Shared
+    var userSession: UserSession
 }
 ```
 

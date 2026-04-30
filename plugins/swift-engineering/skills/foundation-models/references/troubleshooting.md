@@ -13,8 +13,8 @@ session.respond(to: "What's the capital of France?")
 ### Manual JSON Parsing
 ```swift
 // BAD - Crashes on wrong keys/invalid JSON
-let json = try await session.respond(to: "Generate person as JSON")
-JSONDecoder().decode(Person.self, from: json.data)
+let json: GeneratedContent = try await session.respond(to: "Generate person as JSON")
+try JSONDecoder().decode(Person.self, from: json.data)
 ```
 **Fix:** Use @Generable for guaranteed structure.
 
@@ -37,11 +37,11 @@ do {
 	let response = try await session.respond(to: prompt)
 } catch LanguageModelSession.GenerationError.exceededContextWindowSize {
 	// Condense transcript, create new session
-	session = condensedSession(from: session)
+	self.session = self.condensedSession(from: self.session)
 } catch LanguageModelSession.GenerationError.guardrailViolation {
-	showMessage("I can't help with that request")
+	self.showMessage("I can't help with that request")
 } catch LanguageModelSession.GenerationError.unsupportedLanguageOrLocale {
-	showMessage("Language not supported")
+	self.showMessage("Language not supported")
 }
 ```
 
@@ -50,7 +50,8 @@ do {
 ```swift
 func condensedSession(from prev: LanguageModelSession) -> LanguageModelSession {
 	let entries = prev.transcript.entries
-	guard entries.count > 2 else { return prev }
+	guard entries.count > 2
+	else { return prev }
 
 	// Keep first (instructions) + last (recent)
 	let condensed = [entries.first!, entries.last!]

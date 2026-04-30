@@ -43,9 +43,9 @@ extension DependencyValues {
   mutating func bootstrapDatabase(
     syncEngineDelegate: (any SyncEngineDelegate)? = nil
   ) throws {
-    defaultDatabase = try appDatabase()
-    defaultSyncEngine = try SyncEngine(
-      for: defaultDatabase,
+    self.defaultDatabase = try appDatabase()
+    self.defaultSyncEngine = try SyncEngine(
+      for: self.defaultDatabase,
       tables: RemindersList.self,
       RemindersListAsset.self,
       Reminder.self,
@@ -62,11 +62,12 @@ extension DependencyValues {
 ```swift
 @main
 struct MyApp: App {
-  @State var syncEngineDelegate = MySyncEngineDelegate()
+  @SwiftUI.State
+  var syncEngineDelegate: MySyncEngineDelegate = .init()
 
   init() {
     try! prepareDependencies {
-      try $0.bootstrapDatabase(syncEngineDelegate: syncEngineDelegate)
+      try $0.bootstrapDatabase(syncEngineDelegate: self.syncEngineDelegate)
     }
   }
 
@@ -83,11 +84,12 @@ struct MyApp: App {
 ### Share a Record
 
 ```swift
-@Dependency(\.defaultSyncEngine) var syncEngine
+@Dependency(\.defaultSyncEngine)
+var syncEngine
 
 func shareButtonTapped() {
   Task {
-    sharedRecord = try await syncEngine.share(record: counter) { share in
+    self.sharedRecord = try await self.syncEngine.share(record: self.counter) { share in
       share[CKShare.SystemFieldKey.title] = "Join my counter!"
     }
   }
@@ -99,26 +101,29 @@ func shareButtonTapped() {
 ```swift
 struct CounterRow: View {
   let counter: Counter
-  @State var sharedRecord: SharedRecord?
-  @Dependency(\.defaultSyncEngine) var syncEngine
+  @SwiftUI.State
+  var sharedRecord: SharedRecord?
+
+  @Dependency(\.defaultSyncEngine)
+  var syncEngine
 
   var body: some View {
     HStack {
       Text("\(counter.count)")
       Button {
-        shareButtonTapped()
+        self.shareButtonTapped()
       } label: {
         Image(systemName: "square.and.arrow.up")
       }
     }
-    .sheet(item: $sharedRecord) { sharedRecord in
+    .sheet(item: self.$sharedRecord) { sharedRecord in
       CloudSharingView(sharedRecord: sharedRecord)
     }
   }
 
   func shareButtonTapped() {
     Task {
-      sharedRecord = try await syncEngine.share(record: counter) { share in
+      self.sharedRecord = try await self.syncEngine.share(record: self.counter) { share in
         share[CKShare.SystemFieldKey.title] = "Join my counter!"
       }
     }
@@ -132,7 +137,8 @@ struct CounterRow: View {
 
 ```swift
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-  @Dependency(\.defaultSyncEngine) var syncEngine
+  @Dependency(\.defaultSyncEngine)
+  var syncEngine
   var window: UIWindow?
 
   func windowScene(
@@ -140,7 +146,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata
   ) {
     Task {
-      try await syncEngine.acceptShare(metadata: cloudKitShareMetadata)
+      try await self.syncEngine.acceptShare(metadata: cloudKitShareMetadata)
     }
   }
 
@@ -153,7 +159,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     else { return }
 
     Task {
-      try await syncEngine.acceptShare(metadata: cloudKitShareMetadata)
+      try await self.syncEngine.acceptShare(metadata: cloudKitShareMetadata)
     }
   }
 }
@@ -168,7 +174,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     configurationForConnecting connectingSceneSession: UISceneSession,
     options: UIScene.ConnectionOptions
   ) -> UISceneConfiguration {
-    let configuration = UISceneConfiguration(
+    let configuration: UISceneConfiguration = .init(
       name: "Default Configuration",
       sessionRole: connectingSceneSession.role
     )
@@ -179,7 +185,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 @main
 struct MyApp: App {
-  @UIApplicationDelegateAdaptor var delegate: AppDelegate
+  @UIApplicationDelegateAdaptor
+  var delegate: AppDelegate
   // ...
 }
 ```
@@ -217,19 +224,22 @@ class MySyncEngineDelegate: SyncEngineDelegate {
 ```swift
 @main
 struct MyApp: App {
-  @Dependency(\.defaultSyncEngine) var syncEngine
-  @State var syncEngineDelegate = MySyncEngineDelegate()
+  @Dependency(\.defaultSyncEngine)
+  var syncEngine
+
+  @SwiftUI.State
+  var syncEngineDelegate: MySyncEngineDelegate = .init()
 
   var body: some Scene {
     WindowGroup {
       ContentView()
         .alert(
           "Reset local data?",
-          isPresented: $syncEngineDelegate.isDeleteLocalDataAlertPresented
+          isPresented: self.$syncEngineDelegate.isDeleteLocalDataAlertPresented
         ) {
           Button("Reset", role: .destructive) {
             Task {
-              try await syncEngine.deleteLocalData()
+              try await self.syncEngine.deleteLocalData()
             }
           }
         } message: {

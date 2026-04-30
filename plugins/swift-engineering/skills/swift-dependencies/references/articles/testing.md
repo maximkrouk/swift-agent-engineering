@@ -35,7 +35,7 @@ test:
   withDependencies {
     $0.uuid = .incrementing
   } operation: {
-    let model = FeatureModel()
+    let model: FeatureModel = .init()
     // Invoke methods on 'model' and make assertions
   }
 }
@@ -48,7 +48,7 @@ DependenciesTestSupport library to your test target, after which you can do the 
 ```swift
 @Test(.dependency(\.uuid, .incrementing)) 
 func basics() {
-  let model = FeatureModel()
+  let model: FeatureModel = .init()
   // Invoke methods on 'model' and make assertions
 }
 ```
@@ -62,7 +62,7 @@ It is also possible to override dependencies for an entire `@Suite` using a suit
 @Suite(.dependency(\.uuid, .incrementing))
 struct MySuite {
   @Test func basics() {
-    let model = FeatureModel()
+    let model: FeatureModel = .init()
     // Invoke methods on 'model' and make assertions
   }
 }
@@ -72,12 +72,12 @@ If you need to override multiple dependencies you can do so using the `.dependen
 
 ```swift
 @Suite(.dependencies {
-  $0.date.now = Date(timeIntervalSince1970:12324567890)
+  $0.date.now = .init(timeIntervalSince1970: 12324567890)
   $0.uuid = .incrementing
 })
 struct MySuite {
   @Test func basics() {
-    let model = FeatureModel()
+    let model: FeatureModel = .init()
     // Invoke methods on 'model' and make assertions
   }
 }
@@ -127,7 +127,7 @@ func testBasics() {
   withDependencies {
     $0.uuid = .incrementing
   } operation: {
-    let model = FeatureModel()
+    let model: FeatureModel = .init()
     // Invoke methods on 'model' and make assertions
   }
 }
@@ -170,7 +170,7 @@ login fails, and then later change the dependency so that it succeeds using
 ```swift
 @Test(.dependency(\.apiClient.login, { _, _ in throw LoginFailure() }))
 func retryFlow() async {
-  let model = LoginModel()
+  let model: LoginModel = .init()
   await model.loginButtonTapped()
   #expect(model.errorMessage == "We could not log you in. Please try again")
 
@@ -241,7 +241,8 @@ func application(
 _ application: UIApplication,
 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 ) -> Bool {
-  guard !isTesting else { return true }
+  guard !isTesting
+  else { return true }
   // ...
 }
 ```
@@ -307,7 +308,8 @@ You should never use the `@Dependency` property wrapper as a static variable:
 
 ```swift
 class Model {
-  @Dependency(\.date) static var date
+  @Dependency(\.date)
+  static var date
   // ...
 }
 ```

@@ -80,7 +80,8 @@ class FindContactTool: Tool {
 
 	func call(arguments: Arguments) async throws -> ToolOutput {
 		self.contacts.removeAll(where: { self.pickedContacts.contains($0.name) })
-		guard let picked = self.contacts.randomElement() else {
+		guard let picked = self.contacts.randomElement()
+		else {
 			return ToolOutput("No more contacts")
 		}
 		self.pickedContacts.insert(picked.name)

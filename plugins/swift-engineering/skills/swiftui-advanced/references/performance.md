@@ -22,14 +22,14 @@ Ensure view bodies update quickly and only when needed.
 ```swift
 // WRONG - creates every render
 var body: some View {
-	let formatter = NumberFormatter()
+	let formatter: NumberFormatter = .init()
 	Text(formatter.string(from: price)!)
 }
 
 // CORRECT - cache formatters
 class Formatters {
 	static let currency: NumberFormatter = {
-		let f = NumberFormatter()
+		let f: NumberFormatter = .init()
 		f.numberStyle = .currency
 		return f
 	}()
@@ -47,8 +47,20 @@ var body: some View {
 // CORRECT - compute in model
 @Observable
 class ViewModel {
-	var data: [Int] { didSet { maxValue = data.max() ?? 0 } }
-	private(set) var maxValue = 0
+	var data: [Int] {
+		didSet {
+			self.maxValue = self.data.max() ?? 0
+		}
+	}
+	private(set) var maxValue: Int
+
+	init(
+		data: [Int] = [],
+		maxValue: Int = 0
+	) {
+		self.data = data
+		self.maxValue = maxValue
+	}
 }
 ```
 
@@ -61,7 +73,7 @@ var body: some View {
 }
 
 // CORRECT
-.task { data = try? await loadData() }
+.task { self.data = try? await self.loadData() }
 ```
 
 ## Problem 2: Unnecessary Updates
@@ -73,7 +85,7 @@ Many small updates add up to miss frame deadline.
 ```swift
 // WRONG - all views depend on whole array
 func isFavorite(_ item: Item) -> Bool {
-	favorites.contains(item)  // Depends on entire array
+	self.favorites.contains(item)  // Depends on entire array
 }
 
 // CORRECT - per-item view models

@@ -72,7 +72,8 @@ AHAP (Apple Haptic Audio Pattern) files are JSON files combining haptic events a
 
 ```swift
 func loadAHAPPattern(named name: String) -> CHHapticPattern? {
-	guard let url = Bundle.main.url(forResource: name, withExtension: "ahap") else {
+	guard let url = Bundle.main.url(forResource: name, withExtension: "ahap")
+	else {
 		return nil
 	}
 	return try? CHHapticPattern(contentsOf: url)
@@ -80,8 +81,10 @@ func loadAHAPPattern(named name: String) -> CHHapticPattern? {
 
 // Usage
 func playPattern() {
-	guard let pattern = loadAHAPPattern(named: "ShieldTransient") else { return }
-	let player = try? engine?.makePlayer(with: pattern)
+	guard let pattern = self.loadAHAPPattern(named: "ShieldTransient")
+	else { return }
+
+	let player = try? self.engine?.makePlayer(with: pattern)
 	try? player?.start(atTime: CHHapticTimeImmediate)
 }
 ```

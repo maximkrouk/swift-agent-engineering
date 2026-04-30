@@ -144,11 +144,12 @@ class FeatureModel {
   var user: User?
 
   @ObservationIgnored
-  @Dependency(\.apiClient) var apiClient
+  @Dependency(\.apiClient)
+  var apiClient
 
   func onAppear() async {
     do {
-      user = try await apiClient.fetchUser()
+      self.user = try await self.apiClient.fetchUser()
     } catch {}
   }
 }
@@ -177,7 +178,7 @@ creating the model.
 For example, if you create the features model in the following way:
 
 ```swift
-let onboardingModel = withDependencies {
+let onboardingModel: FeatureModel = withDependencies {
   $0.apiClient = .mock
 } operation: {
   FeatureModel()
@@ -193,7 +194,7 @@ child's dependencies to inherit from the parent's dependencies, you must make us
 [withDependencies(from:)](../extensions/with-dependencies-from.md) when creating the child model:
 
 ```swift
-let onboardingModel = withDependencies(from: self) {
+let onboardingModel: FeatureModel = withDependencies(from: self) {
   $0.apiClient = .mock
 } operation: {
   FeatureModel()
@@ -219,10 +220,10 @@ when the `fetchUser` endpoint throws an error, you can update the preview like s
 
 ```swift
 #Preview {
-  let _ = prepareDependencies {
+  let _: Void = prepareDependencies {
     $0.apiClient.fetchUser = { _ in throw SomeError() }
   }
-  FeatureView(model: FeatureModel())
+  FeatureView(model: .init())
 }
 ```
 

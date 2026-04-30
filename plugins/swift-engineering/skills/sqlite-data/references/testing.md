@@ -20,7 +20,7 @@ struct MyTestSuite {}
 ```swift
 @Suite(
   .dependency(\.continuousClock, ImmediateClock()),
-  .dependency(\.date.now, Date(timeIntervalSince1970: 1_234_567_890)),
+  .dependency(\.date.now, .init(timeIntervalSince1970: 1_234_567_890)),
   .dependency(\.uuid, .incrementing),
   .dependencies {
     try $0.bootstrapDatabase()
@@ -37,7 +37,8 @@ struct BaseTestSuite {}
 extension BaseTestSuite {
   @MainActor
   struct RemindersDetailsTests {
-    @Dependency(\.defaultDatabase) var database
+    @Dependency(\.defaultDatabase)
+    var database
 
     @Test func basics() async throws {
       // Test implementation
@@ -52,7 +53,8 @@ extension BaseTestSuite {
 
 ```swift
 @Test func testCounter() async throws {
-  @Dependency(\.defaultDatabase) var database
+  @Dependency(\.defaultDatabase)
+  var database
 
   // Act
   try database.write { db in
@@ -70,7 +72,7 @@ extension BaseTestSuite {
 ### Fetch One Record
 
 ```swift
-let remindersList = try await database.read { try RemindersList.fetchOne($0)! }
+let remindersList: RemindersList = try await database.read { try RemindersList.fetchOne($0)! }
 ```
 
 ### Fetch All Records
@@ -100,7 +102,7 @@ extension Database {
       }
 
       Meeting.Draft(
-        date: Date().addingTimeInterval(-60 * 60 * 24 * 7),
+        date: .init().addingTimeInterval(-60 * 60 * 24 * 7),
         syncUpID: UUID(1),
         transcript: "Meeting notes..."
       )
@@ -130,10 +132,11 @@ struct SyncUpFormTests {}
 
 ```swift
 @Test func testRemindersDetail() async throws {
-  @Dependency(\.defaultDatabase) var database
+  @Dependency(\.defaultDatabase)
+  var database
 
   let remindersList = try await database.read { try RemindersList.fetchOne($0)! }
-  let model = RemindersDetailModel(detailType: .remindersList(remindersList))
+  let model: RemindersDetailModel = .init(detailType: .remindersList(remindersList))
 
   // Load the @Fetch query
   try await model.$reminderRows.load()
@@ -149,7 +152,7 @@ struct SyncUpFormTests {}
 
 ```swift
 @Test func testModel() async throws {
-  let model = RemindersDetailModel(detailType: .remindersList(remindersList))
+  let model: RemindersDetailModel = .init(detailType: .remindersList(remindersList))
   try await model.$reminderRows.load()
 
   assertInlineSnapshot(of: model.reminderRows, as: .customDump) {
@@ -196,7 +199,8 @@ extension RemindersList: @retroactive CustomDumpReflectable {
 
 ```swift
 @Test func testInsert() async throws {
-  @Dependency(\.defaultDatabase) var database
+  @Dependency(\.defaultDatabase)
+  var database
 
   try database.write { db in
     try Counter.insert { Counter.Draft(count: 42) }.execute(db)
@@ -215,9 +219,10 @@ extension RemindersList: @retroactive CustomDumpReflectable {
 
 ```swift
 @Test func testUpdate() async throws {
-  @Dependency(\.defaultDatabase) var database
+  @Dependency(\.defaultDatabase)
+  var database
 
-  let id = UUID()
+  let id: UUID = .init()
   try database.write { db in
     try Counter.insert { Counter.Draft(id: id, count: 0) }.execute(db)
     try Counter.find(id).update { $0.count += 1 }.execute(db)
@@ -235,9 +240,10 @@ extension RemindersList: @retroactive CustomDumpReflectable {
 
 ```swift
 @Test func testDelete() async throws {
-  @Dependency(\.defaultDatabase) var database
+  @Dependency(\.defaultDatabase)
+  var database
 
-  let id = UUID()
+  let id: UUID = .init()
   try database.write { db in
     try Counter.insert { Counter.Draft(id: id) }.execute(db)
     try Counter.find(id).delete().execute(db)
@@ -259,7 +265,8 @@ extension RemindersList: @retroactive CustomDumpReflectable {
 @Suite(.dependency(\.uuid, .incrementing))
 struct MyTests {
   @Test func testUUIDs() {
-    @Dependency(\.uuid) var uuid
+    @Dependency(\.uuid)
+    var uuid
     #expect(uuid() == UUID(0))
     #expect(uuid() == UUID(1))
     #expect(uuid() == UUID(2))
@@ -270,10 +277,11 @@ struct MyTests {
 ### Fixed Date
 
 ```swift
-@Suite(.dependency(\.date.now, Date(timeIntervalSince1970: 1_234_567_890)))
+  @Suite(.dependency(\.date.now, .init(timeIntervalSince1970: 1_234_567_890)))
 struct DateTests {
   @Test func testDateComparison() {
-    @Dependency(\.date.now) var now
+    @Dependency(\.date.now)
+    var now
     // now is always Date(timeIntervalSince1970: 1_234_567_890)
   }
 }

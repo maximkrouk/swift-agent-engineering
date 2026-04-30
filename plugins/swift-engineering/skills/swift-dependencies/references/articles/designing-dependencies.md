@@ -47,7 +47,7 @@ struct MockAudioPlayer: AudioPlayer {
 }
 struct UnimplementedAudioPlayer: AudioPlayer {
   func loop(url: URL) async throws {
-    reportIssue("AudioPlayer.loop is unimplemented")
+    self.reportIssue("AudioPlayer.loop is unimplemented")
   }
   // ...
 }
@@ -58,9 +58,9 @@ dependency:
 
 ```swift
 private enum AudioPlayerKey: DependencyKey {
-  static let liveValue: any AudioPlayer = LiveAudioPlayer()
-  static let previewValue: any AudioPlayer = MockAudioPlayer()
-  static let testValue: any AudioPlayer = UnimplementedAudioPlayer()
+  static let liveValue: any AudioPlayer = .init()
+  static let previewValue: any AudioPlayer = .init()
+  static let testValue: any AudioPlayer = .init()
 }
 ```
 
@@ -91,12 +91,12 @@ Then, rather than defining types that conform to the protocol you construct valu
 extension AudioPlayerClient {
   static var live: Self {
     let audioEngine: AVAudioEngine
-    return Self(/*...*/)
+    return .init(/*...*/)
   }
 
-  static let mock = Self(/* ... */)
+  static let mock: Self = .init(/* ... */)
 
-  static let unimplemented = Self(
+  static let unimplemented: Self = .init(
     loop: { _ in reportIssue("AudioPlayerClient.loop is unimplemented") },
     // ...
   )
@@ -111,12 +111,12 @@ define the live, preview and test values directly in the conformance, all at onc
 extension AudioPlayerClient: DependencyKey {
   static var liveValue: Self {
     let audioEngine: AVAudioEngine
-    return Self(/* ... */)
+    return .init(/* ... */)
   }
 
-  static let previewValue = Self(/* ... */)
+  static let previewValue: Self = .init(/* ... */)
 
-  static let testValue = Self(
+  static let testValue: Self = .init(
     loop: unimplemented("AudioPlayerClient.loop"),
     play: unimplemented("AudioPlayerClient.play"),
     setVolume: unimplemented("AudioPlayerClient.setVolume"),
@@ -146,7 +146,8 @@ a dependency on just that one function:
 @Observable
 final class FeatureModel {
   @ObservationIgnored
-  @Dependency(\.audioPlayer.play) var play
+  @Dependency(\.audioPlayer.play)
+  var play
   // ...
 }
 ```
@@ -160,16 +161,16 @@ endpoint will be called. Then you can write a test that overrides only that one 
 
 ```swift
 func testFeature() {
-  let isPlaying = ActorIsolated(false)
+  let isPlaying: ActorIsolated<Bool> = .init(false)
 
-  let model = withDependencies {
+  let model: FeatureModel = withDependencies {
     $0.audioPlayer.play = { _ in await isPlaying.setValue(true) }
   } operation: {
     FeatureModel()
   }
 
   await model.play()
-  XCTAssertEqual(isPlaying.value, true)
+  XCTAssertEqual(await isPlaying.value, true)
 }
 ```
 
@@ -223,7 +224,7 @@ information into methods with argument labels. This means you can invoke the `pl
 like so:
 
 ```swift
-try await player.play(url: URL(filePath: "..."))
+try await player.play(url: .init(filePath: "..."))
 ```
 
 And finally, the macro also generates a public initializer for you with all of the client's 

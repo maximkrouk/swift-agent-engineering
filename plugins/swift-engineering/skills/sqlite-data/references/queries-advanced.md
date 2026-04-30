@@ -8,16 +8,26 @@ For complex queries that need multiple database operations in a single transacti
 
 ```swift
 @Fetch(Facts(), animation: .default)
-private var facts = Facts.Value()
+private var facts: Facts.Value = .init()
 
 private struct Facts: FetchKeyRequest {
-  var query = ""
+	var query: String = ""
 
-  struct Value {
-    var facts: [Fact] = []
-    var searchCount = 0
-    var totalCount = 0
-  }
+	struct Value {
+		var facts: [Fact]
+		var searchCount: Int
+		var totalCount: Int
+
+		init(
+			facts: [Fact] = [],
+			searchCount: Int = 0,
+			totalCount: Int = 0
+		) {
+			self.facts = facts
+			self.searchCount = searchCount
+			self.totalCount = totalCount
+		}
+	}
 
   func fetch(_ db: Database) throws -> Value {
     let search = Fact
@@ -39,7 +49,7 @@ Update queries dynamically using the projected value:
 
 ```swift
 @Fetch(SearchRequest(text: ""), animation: .default)
-var searchResults = SearchResults()
+var searchResults: SearchResults = .init()
 
 // In view:
 .task(id: searchText) {
@@ -55,15 +65,16 @@ var searchResults = SearchResults()
 For non-reactive queries in imperative code:
 
 ```swift
-@Dependency(\.defaultDatabase) var database
+@Dependency(\.defaultDatabase)
+var database
 
 // Read transaction
-let counters = try database.read { db in
+let counters: [Counter] = try database.read { db in
   try Counter.order(by: \.id).fetchAll(db)
 }
 
 // Fetch single record
-let counter = try database.read { db in
+let counter: Counter? = try database.read { db in
   try Counter.find(id).fetchOne(db)
 }
 ```
@@ -74,16 +85,16 @@ Convenient static methods for common fetches:
 
 ```swift
 // Fetch all records
-let items = try Item.fetchAll(db)
+let items: [Item] = try Item.fetchAll(db)
 
 // Fetch with query
-let active = try Item.where { !$0.isArchived }.fetchAll(db)
+let active: [Item] = try Item.where { !$0.isArchived }.fetchAll(db)
 
 // Find by primary key
-let item = try Item.find(db, key: id)
+let item: Item? = try Item.find(db, key: id)
 
 // Fetch count
-let total = try Item.fetchCount(db)
+let total: Int = try Item.fetchCount(db)
 ```
 
 ## Recursive CTEs
@@ -93,22 +104,32 @@ Query hierarchical data like trees or org charts:
 ```swift
 @Table
 nonisolated struct Category: Identifiable {
-    let id: UUID
-    var name = ""
-    var parentID: UUID?  // Self-referential
+	let id: UUID
+	var name: String
+	var parentID: UUID?  // Self-referential
+
+	init(
+		id: UUID,
+		name: String = "",
+		parentID: UUID? = nil
+	) {
+		self.id = id
+		self.name = name
+		self.parentID = parentID
+	}
 }
 
 // Get all descendants of a category
-let descendants = try With {
-    // Base case: start with root
-    Category.where { $0.id.eq(rootCategoryId) }
+let descendants: [Category] = try With {
+	// Base case: start with root
+	Category.where { $0.id.eq(rootCategoryId) }
 } recursiveUnion: { cte in
-    // Recursive case: join children to CTE
-    Category.all
-        .join(cte) { $0.parentID.eq($1.id) }
-        .select { $0 }
+	// Recursive case: join children to CTE
+	Category.all
+		.join(cte) { $0.parentID.eq($1.id) }
+		.select { $0 }
 } query: { cte in
-    cte.order(by: \.name)
+	cte.order(by: \.name)
 }
 .fetchAll(db)
 ```
@@ -116,14 +137,14 @@ let descendants = try With {
 ### Walking Up the Tree (Ancestors)
 
 ```swift
-let ancestors = try With {
-    Category.where { $0.id.eq(childCategoryId) }
+let ancestors: [Category] = try With {
+	Category.where { $0.id.eq(childCategoryId) }
 } recursiveUnion: { cte in
-    Category.all
-        .join(cte) { $0.id.eq($1.parentID) }
-        .select { $0 }
+	Category.all
+		.join(cte) { $0.id.eq($1.parentID) }
+		.select { $0 }
 } query: { cte in
-    cte.all
+	cte.all
 }
 .fetchAll(db)
 ```

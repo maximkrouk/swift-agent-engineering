@@ -39,8 +39,8 @@ Use enum-based ID constants for reproducible tests instead of creating new UUIDs
 ```swift
 // ✅ Good: Consistent test data constants
 enum TestData {
-    static let itemId1 = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
-    static let itemId2 = UUID(uuidString: "00000000-0000-0000-0000-000000000002")!
+    static let itemId1: UUID = .init(uuidString: "00000000-0000-0000-0000-000000000001")!
+    static let itemId2: UUID = .init(uuidString: "00000000-0000-0000-0000-000000000002")!
 }
 
 @Test("sets item as favorite")
@@ -52,7 +52,7 @@ func testSetFavorite() async {
 }
 
 // ❌ Avoid: Creating new UUIDs each test run
-let itemId = UUID()  // Different every run, harder to debug
+let itemId: UUID = .init()  // Different every run, harder to debug
 ```
 
 ## Test Organization
@@ -116,7 +116,7 @@ func testConfirmationDialogAction() async {
 
     let deleteCalled = LockIsolated<(UUID, Bool)?>(nil)
 
-    let store = TestStore(initialState: state) {
+    let store: TestStoreOf<Feature> = TestStore(initialState: state) {
         Feature()
     } withDependencies: {
         $0.bundleClient.delete = { id, preserveItems in
@@ -167,13 +167,13 @@ case .view(.saveTapped):
     }
 
 // ❌ Test only mocks ONE - will fail with unimplemented dependency
-let store = TestStore(...) {
+let store: TestStoreOf<Feature> = TestStore(...) {
     $0.bundleClient.update = { ... }
     // Missing: $0.bundleClient.updateTemporary
 }
 
 // ✅ Mock ALL dependencies called by the action
-let store = TestStore(...) {
+let store: TestStoreOf<Feature> = TestStore(...) {
     $0.bundleClient.update = { ... }
     $0.bundleClient.updateTemporary = { _, _ in }  // Added!
 }
@@ -205,7 +205,7 @@ callHistory.withLock { $0.append("called") }
 ### Boolean Tracking
 
 ```swift
-let wasCalled = LockIsolated(false)
+let wasCalled: LockIsolated<Bool> = .init(false)
 $0.client.someMethod = {
     wasCalled.setValue(true)
 }
@@ -224,7 +224,7 @@ func testConfirmEnablesFeature() async {
     var state = Feature.State()
     state.confirmationAlert = FeatureHelper.confirmationAlertState()
 
-    let store = TestStore(initialState: state) {
+    let store: TestStoreOf<Feature> = TestStore(initialState: state) {
         Feature()
     } withDependencies: {
         $0.itemClient.setFavorite = { _ in }

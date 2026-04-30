@@ -8,8 +8,11 @@ Patterns for integrating sqlite-data with swift-dependencies for dependency inje
 
 ```swift
 struct CountersListView: View {
-  @FetchAll var counters: [Counter]
-  @Dependency(\.defaultDatabase) var database
+  @FetchAll
+  var counters: [Counter]
+
+  @Dependency(\.defaultDatabase)
+  var database
 
   var body: some View {
     List {
@@ -20,7 +23,7 @@ struct CountersListView: View {
     .toolbar {
       Button("Add") {
         withErrorReporting {
-          try database.write { db in
+          try self.database.write { db in
             try Counter.insert { Counter.Draft() }.execute(db)
           }
         }
@@ -38,17 +41,19 @@ struct CountersListView: View {
 class RemindersListsModel {
   @ObservationIgnored
   @FetchAll(RemindersList.all)
-  var remindersLists
+  var remindersLists: [RemindersList]
 
   @ObservationIgnored
-  @Dependency(\.defaultDatabase) private var database
+  @Dependency(\.defaultDatabase)
+  private var database
 
   @ObservationIgnored
-  @Dependency(\.defaultSyncEngine) var syncEngine
+  @Dependency(\.defaultSyncEngine)
+  var syncEngine
 
   func addList() {
     withErrorReporting {
-      try database.write { db in
+      try self.database.write { db in
         try RemindersList.insert { RemindersList.Draft() }.execute(db)
       }
     }
@@ -68,15 +73,18 @@ struct CountersListFeature {
     // ...
   }
 
-  @Dependency(\.defaultDatabase) var database
-  @Dependency(\.defaultSyncEngine) var syncEngine
+  @Dependency(\.defaultDatabase)
+  var database
+
+  @Dependency(\.defaultSyncEngine)
+  var syncEngine
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .addCounter:
         return .run { send in
-          try await database.write { db in
+          try await self.database.write { db in
             try Counter.insert { Counter.Draft() }.execute(db)
           }
         }
@@ -95,9 +103,9 @@ extension DependencyValues {
   mutating func bootstrapDatabase(
     syncEngineDelegate: (any SyncEngineDelegate)? = nil
   ) throws {
-    defaultDatabase = try appDatabase()
-    defaultSyncEngine = try SyncEngine(
-      for: defaultDatabase,
+    self.defaultDatabase = try appDatabase()
+    self.defaultSyncEngine = try SyncEngine(
+      for: self.defaultDatabase,
       tables: RemindersList.self,
       RemindersListAsset.self,
       Reminder.self,
@@ -114,11 +122,12 @@ extension DependencyValues {
 ```swift
 @main
 struct MyApp: App {
-  @State var syncEngineDelegate = MySyncEngineDelegate()
+  @SwiftUI.State
+  var syncEngineDelegate: MySyncEngineDelegate = .init()
 
   init() {
     try! prepareDependencies {
-      try $0.bootstrapDatabase(syncEngineDelegate: syncEngineDelegate)
+      try $0.bootstrapDatabase(syncEngineDelegate: self.syncEngineDelegate)
     }
   }
 
@@ -136,7 +145,7 @@ struct MyApp: App {
 
 ```swift
 #Preview {
-  let _ = prepareDependencies {
+  let _: Void = prepareDependencies {
     $0.defaultDatabase = .swiftUIDatabase
   }
 
@@ -153,8 +162,8 @@ struct MyApp: App {
 ```swift
 extension DatabaseWriter where Self == DatabaseQueue {
   static var swiftUIDatabase: Self {
-    let databaseQueue = try! DatabaseQueue()
-    var migrator = DatabaseMigrator()
+    let databaseQueue: DatabaseQueue = try! .init()
+    var migrator: DatabaseMigrator = .init()
     migrator.registerMigration("Create 'facts' table") { db in
       try #sql(
         """
@@ -179,7 +188,8 @@ When creating child models that need access to dependencies:
 @Observable
 class ParentModel {
   @ObservationIgnored
-  @Dependency(\.defaultDatabase) var database
+  @Dependency(\.defaultDatabase)
+  var database
 
   func createChildModel() -> ChildModel {
     withDependencies(from: self) {
@@ -194,7 +204,8 @@ class ParentModel {
 ```swift
 @Reducer
 struct ParentFeature {
-  @Dependency(\.defaultDatabase) var database
+  @Dependency(\.defaultDatabase)
+  var database
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -219,8 +230,9 @@ struct ParentFeature {
 ```swift
 nonisolated extension Reminder.TableColumns {
   var isPastDue: some QueryExpression<Bool> {
-    @Dependency(\.date.now) var now
-    return !isCompleted && #sql("coalesce(date(\(dueDate)) < date(\(now)), 0)")
+    @Dependency(\.date.now)
+    var now: Date
+    return !self.isCompleted && #sql("coalesce(date(\(self.dueDate)) < date(\(now)), 0)")
   }
 }
 ```
@@ -228,10 +240,11 @@ nonisolated extension Reminder.TableColumns {
 ### UUID Dependency
 
 ```swift
-@Dependency(\.uuid) var uuid
+@Dependency(\.uuid)
+var uuid
 
 func createNewItem() {
-  let id = uuid()
+  let id = self.uuid()
   // Use id
 }
 ```
@@ -239,7 +252,8 @@ func createNewItem() {
 ### Context Dependency
 
 ```swift
-@Dependency(\.context) var context
+@Dependency(\.context)
+var context
 
 switch context {
 case .live:
@@ -265,9 +279,10 @@ protocol DatabaseWriter {
 ### Read Transaction
 
 ```swift
-@Dependency(\.defaultDatabase) var database
+@Dependency(\.defaultDatabase)
+var database
 
-let counters = try database.read { db in
+let counters: [Counter] = try database.read { db in
   try Counter.order(by: \.id).fetchAll(db)
 }
 ```
@@ -275,7 +290,8 @@ let counters = try database.read { db in
 ### Write Transaction
 
 ```swift
-@Dependency(\.defaultDatabase) var database
+@Dependency(\.defaultDatabase)
+var database
 
 try database.write { db in
   try Counter.insert { Counter.Draft() }.execute(db)

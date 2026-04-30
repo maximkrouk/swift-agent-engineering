@@ -122,8 +122,10 @@ final class SearchViewModel {
 		self.searchTask?.cancel()
 		self.searchTask = Task {
 			try? await Task.sleep(for: .milliseconds(300))
-			guard !Task.isCancelled else { return }
-			results = await performSearch(text)
+			guard !Task.isCancelled
+			else { return }
+
+			self.results = await self.performSearch(text)
 		}
 	}
 
@@ -134,17 +136,17 @@ final class SearchViewModel {
 }
 
 struct SearchView: View {
-	@SwiftUIState
-	private var viewModel = SearchViewModel()
+	@SwiftUI.State
+	private var viewModel: SearchViewModel = .init()
 
 	var body: some View {
 		VStack {
-			TextField("Search", text: $viewModel.searchText)
-				.onChange(of: viewModel.searchText) { oldValue, newValue in
-					viewModel.updateSearch(newValue)
+			TextField("Search", text: self.$viewModel.searchText)
+				.onChange(of: self.viewModel.searchText) { oldValue, newValue in
+					self.viewModel.updateSearch(newValue)
 				}
 
-			List(viewModel.results) { article in
+			List(self.viewModel.results) { article in
 				ArticleRow(article: article)
 			}
 		}

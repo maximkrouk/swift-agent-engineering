@@ -29,7 +29,7 @@ final class AppModel {
   var onboardingTodos: TodosModel?
 
   func tutorialButtonTapped() {
-    onboardingTodos = withDependencies(from: self) {
+    self.onboardingTodos = withDependencies(from: self) {
       $0.apiClient = .mock
       $0.fileManager = .mock
       $0.userDefaults = .mock
@@ -75,14 +75,17 @@ final class TodosModel {
   var editTodo: EditTodoModel?
 
   @ObservationIgnored
-  @Dependency(\.apiClient) var apiClient
+  @Dependency(\.apiClient)
+  var apiClient
   @ObservationIgnored
-  @Dependency(\.fileManager) var fileManager
+  @Dependency(\.fileManager)
+  var fileManager
   @ObservationIgnored
-  @Dependency(\.userDefaults) var userDefaults
+  @Dependency(\.userDefaults)
+  var userDefaults
 
   func tappedTodo(_ todo: Todo) {
-    editTodo = EditTodoModel(todo: todo)
+    self.editTodo = .init(todo: todo)
   }
 
   // ...
@@ -99,7 +102,7 @@ must wrap the creation of the child model in
 
 ```swift
 func tappedTodo(_ todo: Todo) {
-  editTodo = withDependencies(from: self) {
+  self.editTodo = withDependencies(from: self) {
     EditTodoModel(todo: todo)
   }
 }
@@ -119,7 +122,7 @@ a user when the view appears, a test for this functionality could be written by 
 ```swift
 @Test
 func onAppear() async {
-  let model = withDependencies {
+  let model: FeatureModel = withDependencies {
     $0.apiClient.fetchUser = { _ in User(id: 42, name: "Blob") }
   } operation: {
     FeatureModel()
@@ -140,7 +143,7 @@ overriding `invokeTest` in your test case class:
 final class FeatureTests: XCTestCase {
   override func invokeTest() {
     withDependencies {
-      $0.date.now = Date(timeIntervalSince1970: 1234567890)
+      $0.date.now = .init(timeIntervalSince1970: 1234567890)
     } operation: {
       super.invokeTest()
     }

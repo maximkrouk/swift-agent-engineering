@@ -156,7 +156,8 @@ try database.write { db in
     .returning(\.id)
     .fetchOne(db)
 
-  guard let remindersListID else { return }
+  guard let remindersListID
+  else { return }
 
   // Continue with dependent operations
 }

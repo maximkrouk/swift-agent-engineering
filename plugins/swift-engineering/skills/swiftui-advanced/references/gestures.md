@@ -97,7 +97,8 @@ TapGesture(count: 2)
 **Using @State instead of @GestureState:**
 ```swift
 // WRONG - offset stays at last value
-@State private var offset = CGSize.zero
+@SwiftUI.State
+private var offset: CGSize = .zero
 
 // CORRECT - auto-resets when gesture ends
 @GestureState private var offset = CGSize.zero

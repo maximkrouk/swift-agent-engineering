@@ -22,13 +22,13 @@ Run these BEFORE changing code:
 NavigationStack(path: $path) {
 	RootView()
 		.onChange(of: path.count) { oldCount, newCount in
-			print("Path changed: \(oldCount) -> \(newCount)")
+			self.logger.debug("Path changed: \(oldCount) -> \(newCount)")
 		}
 }
 
 // 2. Verify navigationDestination is evaluated
 .navigationDestination(for: Recipe.self) { recipe in
-	let _ = print("Destination for: \(recipe.name)")
+	let _: Void = self.logger.debug("Destination for: \(recipe.name)")
 	RecipeDetail(recipe: recipe)
 }
 

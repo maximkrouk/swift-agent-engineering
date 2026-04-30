@@ -36,7 +36,8 @@ enum ValidationError: Error {
 }
 
 func validate(_ input: String) throws(ValidationError) {
-	guard input.count > 5 else {
+	guard input.count > 5
+	else {
 		throw ValidationError.tooShort
 	}
 }
@@ -47,11 +48,12 @@ do {
 } catch {
 	// error is ValidationError, not any Error
 	switch error {
+
 	case .tooShort:
-		print("Too short")
+		self.handleTooShortError()
 
 	case .invalidFormat:
-		print("Invalid")
+		self.handleInvalidFormatError()
 	}
 }
 ```
@@ -114,7 +116,7 @@ class ViewModel {
 	func load() {
 		// ❌ Error: Capturing non-Sendable self
 		Task {
-			self.items = await fetch()
+			self.items = await self.fetch()
 		}
 	}
 }

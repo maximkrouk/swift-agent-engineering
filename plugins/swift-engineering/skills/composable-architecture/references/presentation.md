@@ -255,7 +255,7 @@ struct Feature {
     var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
-            case .showAlert(let alert):
+            case let .showAlert(alert):
                 state.destination = .alert(alertState(for: alert))
                 return .none
 

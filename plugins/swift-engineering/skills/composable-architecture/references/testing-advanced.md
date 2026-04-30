@@ -90,9 +90,9 @@ Use `TestClock` when you need precise control over time advancement:
 ```swift
 @Test("timer advances correctly")
 func testTimer() async {
-    let clock = TestClock()
+    let clock: TestClock = .init()
 
-    let store = TestStore(initialState: Timer.State()) {
+    let store: TestStoreOf<Timer> = TestStore(initialState: Timer.State()) {
         Timer()
     } withDependencies: {
         $0.continuousClock = clock
@@ -148,7 +148,7 @@ func testDelayedLoad() async {
 // TestClock example - control time advancement
 @Test("polls every 5 seconds")
 func testPolling() async {
-    let clock = TestClock()
+    let clock: TestClock = .init()
     let store = makeStore {
         $0.continuousClock = clock
     }
@@ -229,7 +229,7 @@ Use `store.exhaustivity = .off` when:
 ```swift
 @Test("available status triggers sync when identity exists")
 func availableStatusWithIdentity() async {
-    let testIdentity = StoredAppleIdentity(appleUserId: "test-user-id")
+    let testIdentity: StoredAppleIdentity = .init(appleUserId: "test-user-id")
 
     let store = makeStore {
         $0.appleIdentityStore.load = { testIdentity }
@@ -264,7 +264,7 @@ func editModePopulatesFromExisting() async {
     #expect(store.state.itemTypeEditor != nil)
 
     // Can check specific state properties without asserting every change
-    if case .link(let linkState) = store.state.itemTypeEditor {
+    if case let .link(linkState) = store.state.itemTypeEditor {
         #expect(linkState.urlInput == "https://example.com")
         #expect(linkState.preview?.title == "Example")
     }
@@ -290,7 +290,7 @@ func editModePopulatesFromExisting() async {
 ```swift
 @Test("onAppear sets default list when no selection")
 func onAppearSetsDefaultList() async {
-    let inboxListID = UUID()
+    let inboxListID: UUID = .init()
     let store = makeStore {
         $0.defaultDatabase.read = { db in
             return StashItemList(id: inboxListID, name: "Inbox", ...)

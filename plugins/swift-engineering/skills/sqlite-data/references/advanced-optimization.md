@@ -60,7 +60,8 @@ Define complex aggregation logic in Swift with `@DatabaseFunction`:
 func mode(priority priorities: some Sequence<Reminder.Priority?>) -> Reminder.Priority? {
     var occurrences: [Reminder.Priority: Int] = [:]
     for priority in priorities {
-        guard let priority else { continue }
+        guard let priority
+        else { continue }
         occurrences[priority, default: 0] += 1
     }
     return occurrences.max { $0.value < $1.value }?.key

@@ -42,13 +42,13 @@ struct WebView: CocoaViewRepresentable {
 	init(
 		url: URL,
 		isLoading: Binding<Bool>
-  ) {
+	) {
 		self.url = url
 		self._isLoading = isLoading
-  }
+	}
 
 	func makeCocoaView(context: Context) -> WKWebView {
-		let webView = WKWebView()
+		let webView: WKWebView = .init()
 		webView.navigationDelegate = context.coordinator
 		return webView
 	}
@@ -57,12 +57,12 @@ struct WebView: CocoaViewRepresentable {
 		_ webView: WKWebView,
 		context: Context
 	) {
-		let request = URLRequest(url: url)
+		let request: URLRequest = .init(url: self.url)
 		webView.load(request)
 	}
 
 	func makeCoordinator() -> Coordinator {
-		Coordinator(isLoading: $isLoading)
+		Coordinator(isLoading: self.$isLoading)
 	}
 
 	class Coordinator: NSObject, WKNavigationDelegate {
@@ -77,14 +77,14 @@ struct WebView: CocoaViewRepresentable {
 			_ webView: WKWebView,
 			didStartProvisionalNavigation navigation: WKNavigation!
 		) {
-			isLoading = true
+			self.isLoading = true
 		}
 
 		func webView(
 			_ webView: WKWebView,
 			didFinish navigation: WKNavigation!
 		) {
-			isLoading = false
+			self.isLoading = false
 		}
 	}
 }
@@ -123,14 +123,14 @@ public struct ImagePicker: CocoaViewControllerRepresentable {
 	var image: UIImage?
 
 	@Environment(\.dismiss)
-	private var dismiss
+	private var dismiss: DismissAction
 
 	func makeUIViewController(context: Context) -> PHPickerViewController {
-		var config = PHPickerConfiguration()
+		var config: PHPickerConfiguration = .init()
 		config.filter = .images
 		config.selectionLimit = 1
 
-		let picker = PHPickerViewController(configuration: config)
+		let picker: PHPickerViewController = .init(configuration: config)
 		picker.delegate = context.coordinator
 		return picker
 	}
@@ -143,7 +143,7 @@ public struct ImagePicker: CocoaViewControllerRepresentable {
 	}
 
 	func makeCoordinator() -> Coordinator {
-		Coordinator(image: $image, dismiss: dismiss)
+		Coordinator(image: self.$image, dismiss: self.dismiss)
 	}
 
 	class Coordinator: NSObject, PHPickerViewControllerDelegate {

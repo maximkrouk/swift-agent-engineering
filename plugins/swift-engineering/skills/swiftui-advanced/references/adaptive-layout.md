@@ -55,8 +55,8 @@ var body: some View {
 Read dimensions without GeometryReader side effects.
 
 ```swift
-@State
-private var columnCount = 2
+@SwiftUI.State
+private var columnCount: Int = 2
 
 LazyVGrid(
 	columns: Array(
@@ -69,7 +69,7 @@ LazyVGrid(
 .onGeometryChange(for: Int.self) { proxy in
 	max(1, Int(proxy.size.width / 150))
 } action: { 
-	columnCount = $0
+	self.columnCount = $0
 }
 ```
 
@@ -113,7 +113,7 @@ if UIDevice.current.userInterfaceIdiom == .pad { }
 
 // CORRECT - respond to space
 @Environment(\.horizontalSizeClass)
-var sizeClass
+var sizeClass: UserInterfaceSizeClass?
 ```
 
 **Unconstrained GeometryReader:**

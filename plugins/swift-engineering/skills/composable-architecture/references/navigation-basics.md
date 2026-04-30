@@ -109,7 +109,8 @@ Use `@Dependency(\.dismiss)` for child features to dismiss themselves:
 ```swift
 @Reducer
 struct DetailFeature {
-    @Dependency(\.dismiss) var dismiss
+    @Dependency(\.dismiss)
+    var dismiss
 
     var body: some Reducer<State, Action> {
         Reduce { state, action in
@@ -151,7 +152,8 @@ case .path(.element(id: _, action: .settings(.delegate(.didLogout)))):
 ```swift
 case .view(.didTapSave):
     // Check if we're in a specific screen
-    guard state.path.last(where: { $0.is(\.detail) }) != nil else {
+    guard state.path.last(where: { $0.is(\.detail) }) != nil
+    else {
         return .none
     }
     return .send(.path(.element(id: state.path.ids.last!, action: .detail(.save))))
