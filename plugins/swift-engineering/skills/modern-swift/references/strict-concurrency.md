@@ -36,8 +36,7 @@ enum ValidationError: Error {
 }
 
 func validate(_ input: String) throws(ValidationError) {
-	guard input.count > 5
-	else {
+	guard input.count > 5 else {
 		throw ValidationError.tooShort
 	}
 }

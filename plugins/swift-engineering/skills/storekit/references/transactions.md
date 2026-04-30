@@ -56,8 +56,7 @@ transaction.offer?.type, transaction.offer?.id, transaction.offer?.paymentMode
 
 ```swift
 func grantEntitlement(for transaction: Transaction) async {
-	guard transaction.revocationDate == nil
-	else {
+	guard transaction.revocationDate == nil else {
 		await revokeEntitlement(for: transaction.productID)
 		return
 	}
@@ -92,8 +91,10 @@ await transaction.finish()
 
 ```swift
 for await result in Transaction.currentEntitlements {
-	guard let transaction = try? result.payloadValue,
-		  transaction.revocationDate == nil else { continue }
+	guard
+		let transaction = try? result.payloadValue,
+		transaction.revocationDate == nil
+	else { continue }
 	purchased.insert(transaction.productID)
 }
 
