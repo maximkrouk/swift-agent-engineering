@@ -18,9 +18,17 @@ Build the project - Xcode extracts strings from:
 - Interface Builder files (.storyboard, .xib)
 - Info.plist values
 
+**Method 3 (Recommended):**
+
+- Create `Localizable.xcstrings`
+- Project `Localization Catalog Generation` should be set to `ON`
+- Use xcode generated strings `Strings.<Domain>.<Subdomain>.<entry>(optionalArgs)`
+
 ## SwiftUI Localization
 
 ### LocalizedStringKey (Automatic)
+
+❌ Wrong:
 
 ```swift
 // Automatically localizable - Xcode extracts these
@@ -29,30 +37,48 @@ Label("Shopping Cart", systemImage: "cart")
 Button("Checkout") { }
 ```
 
+⚠️ Correct, but no compile-time safety:
+
+```swift
+// Automatically localizable - Xcode extracts these
+Text("app.greeting")
+Label("common.shopping_cart", systemImage: "cart")
+Button("common.checkout") { }
+```
+
+✅ Correct and safe (recommended):
+
+```swift
+// Update localized resource files first
+Text(Strings.App.greeting)
+Label(Strings.Common.shoppingCart, systemImage: "cart")
+Button(Strings.Common.checkout)
+```
+
 ### String(localized:) with Comments
 
 ```swift
 // Basic
-let title: String = .init(localized: "Welcome")
+let title: String = .init(localized: "main.greeting")
 
-// With translator comment (recommended)
+// With translator comment
 let title: String = .init(
-	localized: "Welcome",
+	localized: "main.greeting", // "Welcome"
 	comment: "Main screen greeting"
 )
 
 // With custom table
 let title: String = .init(
-	localized: "Welcome",
+	localized: "onboarding.greeting", // "Welcome"
 	table: "Onboarding",
 	comment: "First launch greeting"
 )
 
-// With default value (key != English text)
+// With default value
 let title: String = .init(
-	localized: "WELCOME_TITLE",
+	localized: "app.greeting",
 	defaultValue: "Welcome to the App!",
-	comment: "Main screen title"
+	comment: "Default app greeting"
 )
 ```
 
@@ -83,8 +109,8 @@ struct CardView: View {
 
 // Usage
 CardView(
-	title: "Recent Purchases",
-	subtitle: "Items from the past week"
+	title: "purchases.recent_purchases", // Recent Purchases
+	subtitle: "purchases.items.past_week" // Items from the past week
 )
 ```
 
@@ -92,13 +118,15 @@ CardView(
 
 ```swift
 // Markdown preserved across localizations
-let styled: AttributedString = .init(localized: "**Bold** and _italic_ text")
+let styled: AttributedString = .init(
+  localized: "**Bold** and _italic_ text"
+)
 ```
 
 ## String Catalog Structure
 
 Each entry contains:
-- **Key**: Unique identifier (default: the English string)
+- **Key**: Unique identifier
 - **Default Value**: Fallback if translation missing
 - **Comment**: Context for translators
 - **State**: New, Needs Review, Reviewed, Stale
@@ -108,7 +136,7 @@ Each entry contains:
 {
   "sourceLanguage": "en",
   "strings": {
-    "Thanks for shopping with us!": {
+    "checkout.thank_you": {
       "comment": "Label above checkout button",
       "localizations": {
         "en": {
@@ -144,14 +172,14 @@ Each entry contains:
 ### NSLocalizedString
 
 ```swift
-let title = NSLocalizedString(
-	"Recent Purchases",
+let title: String = NSLocalizedString(
+	"purchases.recent", // Recent Purchases
 	comment: "Section header"
 )
 
 // With table
-let title = NSLocalizedString(
-	"Recent Purchases",
+let title: String = NSLocalizedString(
+	"purchases.recent", // Recent Purchases
 	tableName: "Shopping",
 	comment: "Section header"
 )
@@ -161,8 +189,8 @@ let title = NSLocalizedString(
 
 ```swift
 let customBundle: Bundle = .init(for: MyFramework.self)
-let text = customBundle.localizedString(
-	forKey: "Welcome",
+let text: String = customBundle.localizedString(
+	forKey: "common.welcome", // Welcome
 	value: nil,
 	table: "MyFramework"
 )
@@ -186,23 +214,37 @@ let text = customBundle.localizedString(
 ## Common Mistakes
 
 ```swift
-// WRONG - not localizable
+// ❌ WRONG - not localizable
 let title: String = "Settings"
 
-// CORRECT - localizable
-let title: String = .init(localized: "Settings")
+// ⚠️ WRONG - localizable, but string literal key
+let title: String = .init(localized: "common.settings")
 
-// WRONG - concatenation breaks word order
+// ✅ CORRECT - localizable and safe
+let title: String = Strings.Common.settings
+
+// ❌ WRONG - concatenation breaks word order and string literal key
 let msg: String = .init(localized: "You have") + " \(count) " + .init(localized: "items")
 
-// CORRECT - single string with substitution
+// ⚠️ WRONG - single string with substitution but string literal key
 let msg: String = .init(localized: "You have \(count) items")
 
-// WRONG - no context for translator
-String(localized: "Confirm")
+// ✅ CORRECT - safe use of placeholders
+let msg: String = Strings
+	.Shopping.Cart
+	.currentItems(count: count)
 
-// CORRECT - clear context
-String(localized: "Confirm", comment: "Button to confirm deletion")
+// ❌ WRONG - no context for translator and string literal key
+String(localized: "common.confirm")
+
+// ⚠️ CORRECT - clear context but string literal key
+String(
+	localized: "common.confirm", 
+	comment: "Button to confirm deletion"
+)
+
+// ✅ CORRECT
+Strings.Common.confirm
 ```
 
 ## Troubleshooting
