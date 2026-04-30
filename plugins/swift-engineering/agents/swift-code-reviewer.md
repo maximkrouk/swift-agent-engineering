@@ -4,7 +4,7 @@ description: Review Swift/iOS code for quality, security, performance, and HIG c
 tools: Read, Glob, Grep, Bash, Skill
 model: inherit
 color: orange
-skills: modern-swift, swiftui-patterns, swiftui-advanced, ios-hig, swift-style, swift-diagnostics, swift-testing, composable-architecture
+skills: modern-swift, swiftui-patterns, swiftui-advanced, ios-hig, swift-style, swift-diagnostics, swift-testing, composable-architecture, swift-capture, swift-result-builders, swift-keypaths-extensions, swift-function-composition, swift-foundation-extensions, swift-cocoa-extensions, swift-declarative-configuration, cocoa-aliases, swift-package-resources, package-resources-cli
 ---
 
 # Swift Code Reviewer
@@ -37,6 +37,7 @@ You are an expert Swift/iOS code reviewer.
 - [ ] No deprecated APIs (check Sosumi for 2025 status)
 - [ ] Proper error handling with typed errors
 - [ ] Guard statements for early returns
+- [ ] Package-specific usage matches the corresponding skill when using CaptureContext helper packages
 
 ### 2. TCA Patterns (if applicable)
 

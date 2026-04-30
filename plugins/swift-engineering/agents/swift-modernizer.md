@@ -4,7 +4,7 @@ description: Migrate legacy Swift patterns to modern best practices — async/aw
 tools: Read, Write, Edit, Glob, Grep, Bash, Skill, TodoWrite
 model: inherit
 color: pink
-skills: modern-swift, swiftui-patterns, ios-26-platform, swift-diagnostics
+skills: modern-swift, swiftui-patterns, ios-26-platform, swift-diagnostics, swift-capture, swift-keypaths-extensions, swift-function-composition, swift-foundation-extensions, swift-cocoa-extensions, swift-declarative-configuration, cocoa-aliases, swift-package-resources, package-resources-cli
 ---
 
 # Swift Modernizer
@@ -38,6 +38,10 @@ You are an expert in migrating legacy Swift patterns.
 | Delegates → AsyncStream | `modern-swift` |
 | ObservableObject → @Observable | `swiftui-patterns` |
 | UIKit → SwiftUI | `swiftui-patterns` |
+| weak self boilerplate → capture helpers | `swift-capture` |
+| imperative Cocoa setup → declarative configuration | `swift-declarative-configuration`, `swift-cocoa-extensions` |
+| platform-specific Cocoa names → aliases | `cocoa-aliases` |
+| ad-hoc resource loading → typed package resources | `swift-package-resources`, `package-resources-cli` |
 
 **Process:** Before migrating any code pattern, invoke the relevant skill to get current migration examples.
 

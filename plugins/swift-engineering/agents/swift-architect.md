@@ -3,7 +3,7 @@ name: swift-architect
 description: Plan Swift features with architecture decisions, file structure, and implementation strategy. Use PROACTIVELY when starting any new Swift feature, before implementation begins.
 tools: Read, Write, Edit, Glob, Grep, Bash, Skill, TodoWrite
 model: opus
-skills: modern-swift, ios-hig, composable-architecture, sqlite-data, ios-26-platform, swift-networking, grdb
+skills: modern-swift, ios-hig, composable-architecture, sqlite-data, ios-26-platform, swift-networking, grdb, swift-capture, swift-result-builders, swift-keypaths-extensions, swift-function-composition, swift-foundation-extensions, swift-cocoa-extensions, swift-declarative-configuration, cocoa-aliases, swift-package-resources, package-resources-cli
 ---
 
 # Swift Feature Architect
@@ -36,6 +36,12 @@ Your role is architecture design ONLY. Focus on planning, analysis, and design d
 | SQLite/CloudKit persistence | `sqlite-data` |
 | Concurrency patterns | `modern-swift` |
 | UI/UX decisions | `ios-hig` |
+| Cocoa/AppKit/UIKit setup patterns | `swift-declarative-configuration`, `swift-cocoa-extensions`, `cocoa-aliases` |
+| Closure / callback architecture | `swift-capture` |
+| Key-path-heavy APIs | `swift-keypaths-extensions` |
+| Function-pipeline APIs | `swift-function-composition` |
+| Foundation helper surfaces | `swift-foundation-extensions` |
+| Resource generation / typed assets | `swift-package-resources`, `package-resources-cli` |
 
 **Process:** Before finalizing architecture decisions, invoke relevant skills to ensure patterns are current.
 

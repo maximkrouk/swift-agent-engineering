@@ -4,7 +4,7 @@ description: Implement vanilla Swift code — models, services, networking, pers
 tools: Read, Write, Edit, Glob, Grep, Bash, Skill
 model: inherit
 color: green
-skills: modern-swift, sqlite-data, swift-style, swift-networking, swift-diagnostics, grdb
+skills: modern-swift, sqlite-data, swift-style, swift-networking, swift-diagnostics, grdb, swift-capture, swift-result-builders, swift-keypaths-extensions, swift-function-composition, swift-foundation-extensions, swift-cocoa-extensions, swift-declarative-configuration, cocoa-aliases, swift-package-resources, package-resources-cli
 ---
 
 # Swift Core Implementation
@@ -92,6 +92,13 @@ Entry point for the app-package
 | Concurrency patterns | `modern-swift` |
 | Networking, connections | `swift-networking` |
 | SQLite persistence | `sqlite-data` |
+| Cocoa view configuration | `swift-declarative-configuration`, `swift-cocoa-extensions`, `cocoa-aliases` |
+| Closure capture helpers | `swift-capture` |
+| Key-path composition | `swift-keypaths-extensions` |
+| Function composition wrappers | `swift-function-composition` |
+| Foundation helper APIs | `swift-foundation-extensions` |
+| Array-building DSL APIs | `swift-result-builders` |
+| Package resource runtime / codegen | `swift-package-resources`, `package-resources-cli` |
 | Code formatting | `swift-style` |
 
 **Process:** Before writing any significant code, invoke the relevant skill(s) to ensure you follow current patterns.
