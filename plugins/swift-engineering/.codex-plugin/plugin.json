@@ -1,0 +1,42 @@
+{
+  "name": "swift-engineering",
+  "version": "0.0.1",
+  "description": "Modern Swift/SwiftUI development toolkit for planning, implementing, testing, documenting, and reviewing Swift features.",
+  "author": {
+    "name": "CaptureContext",
+    "email": "contact@capturecontext.dev",
+    "url": "https://github.com/capturecontext"
+  },
+  "homepage": "https://github.com/capturecontext/swift-agent-engineering",
+  "repository": "https://github.com/capturecontext/swift-agent-engineering",
+  "license": "MIT",
+  "keywords": [
+    "swift",
+    "swiftui",
+    "ios",
+    "macos",
+    "tca",
+    "composable-architecture",
+    "mobile",
+    "apple",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Swift Engineering",
+    "shortDescription": "Modern Swift toolkit for planning, building, and reviewing features.",
+    "longDescription": "Swift Engineering is a modern Swift/SwiftUI toolkit with specialized workflows, shared skills, and documentation for planning, implementing, testing, documenting, and reviewing iOS and macOS features.",
+    "developerName": "CaptureContext",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/capturecontext/swift-agent-engineering",
+    "defaultPrompt": [
+      "Plan a new SwiftUI feature with modern Swift architecture guidance.",
+      "Implement a Swift service using async/await, TCA, and repo conventions.",
+      "Review this iOS feature for Swift style, HIG, and testing gaps."
+    ]
+  }
+}

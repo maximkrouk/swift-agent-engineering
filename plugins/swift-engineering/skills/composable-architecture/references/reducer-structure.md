@@ -47,10 +47,13 @@ public struct <#Domain#>Feature {
 	}
 
 	@CasePathable
-	public enum Action: Equatable, Sendable {
+	public enum Action: SharedBindableAction, Equatable, Sendable {
 		case ui(UI)
 		case event(Event)
 		case delegate(Delegate)
+		case shared(SharedBindingAction<State>)
+		case observation(ObservationAction<Observation>)
+		// <internal business logic actions here>
 		
 		@CasePathable
 		public enum UI: Equatable, Sendable {}
@@ -60,6 +63,9 @@ public struct <#Domain#>Feature {
 		
 		@CasePathable
 		public enum Delegate: Equatable, Sendable {}
+
+		@CasePathable
+		public enum Observation: Equatable, Sendable {}
 	}
 	
 	public var body: some ReducerOf<Self> {
@@ -67,10 +73,10 @@ public struct <#Domain#>Feature {
 			uiReducer
 		}
 	}
-  
-  private var uiReducer: some ReducerOf<Self> {
-    EmptyReducer() 
-  }
+
+	private var uiReducer: some ReducerOf<Self> {
+		EmptyReducer() 
+	}
 }
 ```
 
@@ -128,9 +134,9 @@ public struct State: Equatable, Sendable {
 		
 	@Presents
 	public var nestedChild: NestedChild.State?
-  
-  @Shared(.inMemory(\.someSharedKeyDomain.someEntry))
-  public var sharedValue: Int = 0
+
+	@Shared(.inMemory(\.someSharedKeyDomain.someEntry))
+	public var sharedValue: Int = 0
 		
 	public init(
 		value1: Int = 0
@@ -160,13 +166,12 @@ Actions should:
   - `Delegate` - actions that are not handled in the reducer and meant for external handling
 - Follow the following structure:
   - core subactions
-  - internal actions
-    - these ones are triggering the logic
   - specific generic actions
     - BindingActions
-    - SharedBindingActions
     - PresentationActions
-    - ObservationActions
+  - child actions
+  - internal actions
+    - these ones are triggering the logic
   - core subactions type declarations
   - other nested type declarations
     - i.e. `public enum Observation: Equatable, Sendable { ... }`
@@ -174,25 +179,29 @@ Actions should:
 ```swift
 @CasePathable
 public enum Action: Equatable, Sendable {
-  case ui(UI)
-  case event(Event)
-  case delegate(Delegate)
-  
-  case performWork
-  
-  case someChild(PresentationAction<SomeChildFeature.Action>)
-  // case binding(BindingAction<State>) // requres BindableAction conformace
-  // case shared(SharedBindingAction<State>) // requres SharedBindableAction conformance
-  // case observation(ObservationAction<Observation>) // requres Observation enum declaration
-  
+	case ui(UI)
+	case event(Event)
+	case delegate(Delegate)
+	// case shared(SharedBindingAction<State>) // requres SharedBindableAction conformance
+	// case observation(ObservationAction<Observation>) // requres Observation enum declaration
+	// case binding(BindingAction<State>) // requres BindableAction conformace
+	//
+	// case someChild(PresentationAction<SomeChildFeature.Action>)
+	//
+	// case performWork
+
+
 	@CasePathable
 	public enum UI: Equatable, Sendable {}
-  
+
 	@CasePathable
 	public enum Event: Equatable, Sendable {}
-		
+
 	@CasePathable
 	public enum Delegate: Equatable, Sendable {}
+
+	@CasePathable
+	public enum Observation: Equatable, Sendable {}
 }
 ```
 

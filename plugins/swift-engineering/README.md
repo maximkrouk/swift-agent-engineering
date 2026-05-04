@@ -1,10 +1,12 @@
 # Swift Engineering Plugin
 
-**Version:** 0.1.28
+**Version:** 0.1.31
 
 > ⚠️ **Experimental** — This plugin is actively developed. APIs, agents, and workflows may evolve.
 
-Modern Swift/SwiftUI development toolkit with TCA support for Claude Code. Provides 12 specialized agents and 18 comprehensive skills for planning, implementing, testing, and shipping production iOS/macOS applications.
+Modern Swift/SwiftUI development toolkit with TCA support, packaged for Claude and Codex. It provides 12 specialized agents and 18 comprehensive skills for planning, implementing, testing, and shipping production iOS/macOS applications.
+
+> The agent invocation syntax, model assignments, and hook configuration documented below are Claude-specific unless a section explicitly says otherwise.
 
 ## Features at a Glance
 
@@ -20,16 +22,16 @@ Modern Swift/SwiftUI development toolkit with TCA support for Claude Code. Provi
 - [Core Capabilities](#core-capabilities)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
-- [Using Agents](#using-agents)
-- [Agents](#agents)
+- [Using Agents in Claude Code](#using-agents-in-claude-code)
+- [Claude Code Agent Catalog](#claude-code-agent-catalog)
 - [Skills](#skills)
-- [Installation](#installation)
+- [Installation & Packaging](#installation--packaging)
 - [Advanced Features](#advanced-features)
-- [Workflow](#workflow)
-- [Agent Handoff Model](#agent-handoff-model)
+- [Claude Code Workflow](#claude-code-workflow)
+- [Claude Code Agent Handoff Model](#claude-code-agent-handoff-model)
 - [Plan File Format](#plan-file-format)
 - [Architecture Conventions](#architecture-conventions)
-- [Model Usage](#model-usage)
+- [Claude Code Model Usage](#claude-code-model-usage)
 - [Quality Assurance](#quality-assurance)
 - [Contributing](#contributing)
 - [License](#license)
@@ -62,18 +64,18 @@ Modern Swift/SwiftUI development toolkit with TCA support for Claude Code. Provi
 
 ## Prerequisites
 
-**Sosumi MCP Server** — Required for Apple documentation lookup. Agents use this to verify modern API usage (2025). Configure in your Claude Code settings before using this plugin.
+**Sosumi MCP Server** — Claude users should configure this for Apple documentation lookup. The agents use it to verify modern API usage (2025).
 
 ## Getting Started
 
-1. **Install** this plugin in your Claude Code plugins directory
-2. **Build a feature** by invoking agents in order (start with `@swift-architect` for new features)
-3. **Agents coordinate** through plan files — no manual handoffs needed
+1. **Choose the packaging files for your host platform**
+2. **If using Claude, install** the plugin in your local plugins directory
+3. **Build a feature** by invoking agents in order (start with `@swift-architect` for new features)
 4. **End with code review** via `@swift-code-reviewer` before shipping
 
-For detailed workflows and examples, see [Using Agents](#using-agents) section below.
+For detailed workflows and examples, see [Using Agents in Claude Code](#using-agents-in-claude-code) section below.
 
-## Using Agents
+## Using Agents in Claude Code
 
 This plugin provides ultra-specialized agents that you invoke directly to build features. Each agent has a specific role and understands when to hand off to the next agent in the workflow.
 
@@ -177,7 +179,7 @@ Each agent will automatically read the plan, update it with their work, and add 
 - **Always end with `@swift-code-reviewer`** to verify quality before shipping
 - **Agents coordinate via plan files** — No manual handoff needed, just invoke the next agent
 
-## Agents
+## Claude Code Agent Catalog
 
 ### Planning Agents (Opus, READ-ONLY)
 
@@ -262,12 +264,14 @@ Automates version bumping across plugin metadata files.
 
 Usage:
 ```bash
-bash scripts/bump-plugin-version.sh <new-version>
+bash scripts/bump-plugin-version.sh <patch|minor|major>
 ```
 
 This script updates version numbers in:
 - `.claude-plugin/plugin.json`
-- Any other version-managed files
+- `.codex-plugin/plugin.json`
+- repo root `.claude-plugin/marketplace.json`
+- `README.md`
 
 ### Development Rules
 
@@ -282,9 +286,19 @@ Root cause analysis technique for debugging complex issues:
 
 Collaborative problem-solving approach for design decisions and complex architecture questions.
 
-## Installation
+## Installation & Packaging
 
-### Local Development
+### Repository Packaging
+
+This repository ships both plugin manifest formats:
+
+- **Claude marketplace catalog:** repo root `.claude-plugin/marketplace.json`
+- **Codex marketplace catalog:** repo root `.agents/plugins/marketplace.json`
+- **Claude plugin manifest:** `.claude-plugin/plugin.json`
+- **Codex plugin manifest:** `.codex-plugin/plugin.json`
+
+### Claude Code Local Development
+
 Drop this folder into your Claude Code plugins directory:
 
 ```bash
@@ -296,18 +310,19 @@ Then in Claude Code:
 /plugin reload
 ```
 
-### Configuration
+### Claude Code Configuration
+
 Before using agents, ensure the **Sosumi MCP Server** is configured in your Claude Code settings for Apple documentation lookup.
 
 Optional: Configure hooks for git automation. See [hooks-scripts/README.md](hooks-scripts/README.md) for details.
 
-### First Run
+### First Run In Claude Code
 1. Navigate to your Swift project directory
 2. Invoke an agent: `@swift-architect Design a new feature`
 3. Agent creates a plan file at `docs/plans/<feature-name>.md`
 4. Each subsequent agent updates the plan and adds handoff notes
 
-## Workflow
+## Claude Code Workflow
 
 ```
 UI description/mockup? ──yes──► @swift-ui-design (Opus)
@@ -334,7 +349,7 @@ UI description/mockup? ──yes──► @swift-ui-design (Opus)
                                         @swift-documenter (optional)
 ```
 
-## Agent Handoff Model
+## Claude Code Agent Handoff Model
 
 Each agent knows exactly when to hand off:
 
@@ -389,7 +404,7 @@ All agents share state via a plan file at `docs/plans/<feature-name>.md`:
 - **Swift Testing** framework (no XCTest)
 - **async/await** exclusively (no completion handlers)
 
-## Model Usage
+## Claude Code Model Usage
 
 | Model | Agents | Rationale |
 |-------|--------|-----------|
@@ -422,8 +437,8 @@ Contributions are welcome! Areas of focus:
 - **Testing** — Verify agent workflows work end-to-end
 
 Please ensure:
-- Agents follow the established [specification](#agents)
-- Skills adhere to [writing-skills best practices](https://github.com/anthropics/claude-code/blob/main/docs/skills.md)
+- Agents follow the established [specification](#claude-code-agent-catalog)
+- Skills adhere to the repository's established skill-writing conventions
 - Changes are tested with actual Swift projects
 - Documentation is updated
 
@@ -433,4 +448,4 @@ This plugin is available under the MIT License. See [LICENSE](LICENSE) file for 
 
 ## Feedback
 
-Report issues or suggest features at the [GitHub repository](https://github.com/johnrogers/claude-swift-engineering/issues).
+Report issues or suggest features at the [GitHub repository](https://github.com/capturecontext/swift-agent-engineering/issues).

@@ -1,0 +1,20 @@
+{
+  "name": "capturecontext",
+  "interface": {
+    "displayName": "CaptureContext"
+  },
+  "plugins": [
+    {
+      "name": "swift-engineering",
+      "source": {
+        "source": "local",
+        "path": "./plugins/swift-engineering"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,25 +1,25 @@
 {
-  "name": "claude-swift-engineering",
+  "name": "swift-agent-engineering",
   "metadata": {
-    "description": "A marketplace containing Swift plugin(s) related to the Swift engineering craft."
+    "description": "A marketplace containing Swift engineering plugins and shared Swift development assets."
   },
   "source": {
     "source": "github",
-    "repo": "claude-swift-engineering"
+    "repo": "swift-agent-engineering"
   },
   "owner": {
-    "name": "John Rogers"
+    "name": "CaptureContext"
   },
-  "repository": "https://github.com/johnrogers/",
+  "repository": "https://github.com/capturecontext/swift-agent-engineering",
   "license": "MIT",
   "keywords": ["swift", "engineering", "mobile", "ios", "watchos", "software development", "software engineering", "tca"],
   "plugins": [
     {
       "name": "swift-engineering",
       "description": "A collection of agents and commands to aid in the planning, implementation, documentation and testing of Swift/TCA code.",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "author": {
-        "name": "John Rogers (@johnrogers)"
+        "name": "Maxim Krouk (@maximkrouk)"
       },
       "source": "./plugins/swift-engineering",
       "category": "development",
