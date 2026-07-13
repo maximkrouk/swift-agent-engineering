@@ -10,15 +10,15 @@ Temporary triggers are created in memory and don't persist to disk:
 
 ```swift
 try database.write { db in
-	try RemindersList.createTemporaryTrigger(
-		after: .insert { new in
-			RemindersList
-				.find(new.id)
-				.update {
-					$0.position = RemindersList.select { ($0.position.max() ?? -1) + 1 }
-				}
-		}
-	).execute(db)
+  try RemindersList.createTemporaryTrigger(
+    after: .insert { new in
+      RemindersList
+        .find(new.id)
+        .update {
+          $0.position = RemindersList.select { ($0.position.max() ?? -1) + 1 }
+        }
+    }
+  ).execute(db)
 }
 ```
 
@@ -26,13 +26,13 @@ try database.write { db in
 
 ```swift
 try Reminder.createTemporaryTrigger(
-	after: .insert { new in
-		Reminder
-			.find(new.id)
-			.update {
-				$0.position = Reminder.select { ($0.position.max() ?? -1) + 1 }
-			}
-	}
+  after: .insert { new in
+    Reminder
+      .find(new.id)
+      .update {
+        $0.position = Reminder.select { ($0.position.max() ?? -1) + 1 }
+      }
+  }
 ).execute(db)
 ```
 
@@ -42,11 +42,11 @@ Execute trigger only when condition is met:
 
 ```swift
 try RemindersList.createTemporaryTrigger(
-	after: .delete { _ in
-		Values($createDefaultRemindersList())
-	} when: { _ in
-		!RemindersList.exists()
-	}
+  after: .delete { _ in
+    Values($createDefaultRemindersList())
+  } when: { _ in
+    !RemindersList.exists()
+  }
 ).execute(db)
 ```
 
@@ -94,18 +94,18 @@ Use `@DatabaseFunction` to create Swift functions callable from SQL:
 @DatabaseFunction
 nonisolated func createDefaultRemindersList() {
   Task {
-		@Dependency(\.defaultDatabase)
-		var database
+    @Dependency(\.defaultDatabase)
+    var database
 
-		try await database.write { db in
-			try RemindersList.insert {
-				RemindersList.Draft(
-					title: RemindersList.defaultTitle,
-					color: RemindersList.defaultColor
-				)
-			}.execute(db)
-		}
-	}
+    try await database.write { db in
+      try RemindersList.insert {
+        RemindersList.Draft(
+          title: RemindersList.defaultTitle,
+          color: RemindersList.defaultColor
+        )
+      }.execute(db)
+    }
+  }
 }
 ```
 
@@ -113,8 +113,8 @@ nonisolated func createDefaultRemindersList() {
 
 ```swift
 configuration.prepareDatabase { db in
-	db.add(function: $createDefaultRemindersList)
-	db.add(function: $handleReminderStatusUpdate)
+  db.add(function: $createDefaultRemindersList)
+  db.add(function: $handleReminderStatusUpdate)
 }
 ```
 
@@ -122,11 +122,11 @@ configuration.prepareDatabase { db in
 
 ```swift
 try RemindersList.createTemporaryTrigger(
-	after: .delete { _ in
-		Values($createDefaultRemindersList())
-	} when: { _ in
-		!RemindersList.exists()
-	}
+  after: .delete { _ in
+    Values($createDefaultRemindersList())
+  } when: { _ in
+    !RemindersList.exists()
+  }
 ).execute(db)
 ```
 
@@ -136,20 +136,20 @@ try RemindersList.createTemporaryTrigger(
 @DatabaseFunction
 nonisolated func handleReminderStatusUpdate() {
   reminderStatusMutex.withLock {
-		$0?.cancel()
-		$0 = Task {
-			@Dependency(\.defaultDatabase)
-			var database
+    $0?.cancel()
+    $0 = Task {
+      @Dependency(\.defaultDatabase)
+      var database
 
-			try await Task.sleep(for: .seconds(0.4))
-			try await database.write { db in
-				try Reminder
-					.where { $0.status.eq(.completing) }
-					.update { $0.status = #bind(.completed) }
-					.execute(db)
-			}
-		}
-	}
+      try await Task.sleep(for: .seconds(0.4))
+      try await database.write { db in
+        try Reminder
+          .where { $0.status.eq(.completing) }
+          .update { $0.status = #bind(.completed) }
+          .execute(db)
+      }
+    }
+  }
 }
 ```
 
@@ -160,10 +160,10 @@ nonisolated func handleReminderStatusUpdate() {
 ```swift
 @Table
 struct ReminderText: FTS5 {
-	let rowid: Int
-	let title: String
-	let notes: String
-	let tags: String
+  let rowid: Int
+  let title: String
+  let notes: String
+  let tags: String
 }
 ```
 

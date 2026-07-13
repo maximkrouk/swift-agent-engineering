@@ -25,8 +25,8 @@ List { ... }
 ### Search Placement
 ```swift
 NavigationSplitView {
-	List { }
-		.searchable(text: $searchText)
+  List { }
+    .searchable(text: $searchText)
 }
 // Automatically:
 // - Bottom-aligned on iPhone (ergonomic)
@@ -44,21 +44,21 @@ NavigationSplitView {
 ### Toolbar Customization
 ```swift
 .toolbar {
-	ToolbarItemGroup(placement: .topBarTrailing) {
-		Button("Up") { }
-		Button("Down") { }
+  ToolbarItemGroup(placement: .topBarTrailing) {
+    Button("Up") { }
+    Button("Down") { }
 
-		Spacer(.fixed) // NEW: Separates button groups
+    Spacer(.fixed) // NEW: Separates button groups
 
-		Button("Settings") { }
-	}
+    Button("Settings") { }
+  }
 }
 ```
 
 ### Prominent Toolbar Buttons
 ```swift
 Button("Add Trip") {
-	addTrip()
+  addTrip()
 }
 .buttonStyle(.borderedProminent)
 .tint(.blue) // Tinting in glass toolbars
@@ -67,22 +67,22 @@ Button("Add Trip") {
 ### Glass Effect for Custom Views
 ```swift
 CustomPhotoGrid()
-	.glassBackgroundEffect() // Reflects surrounding content
+  .glassBackgroundEffect() // Reflects surrounding content
 ```
 
 ### Search Tab Role
 ```swift
 TabView {
-	SearchView()
-		.tabItem { Label("Search", systemImage: "magnifyingglass") }
-		.tabRole(.search) // Separates from tabs, morphs into search
+  SearchView()
+    .tabItem { Label("Search", systemImage: "magnifyingglass") }
+    .tabRole(.search) // Separates from tabs, morphs into search
 }
 ```
 
 ### Tab Bar Minimization
 ```swift
 TabView { ... }
-	.tabBarMinimizationBehavior(.onScrollDown) // Recedes on scroll
+  .tabBarMinimizationBehavior(.onScrollDown) // Recedes on scroll
 ```
 
 ## Audit Checklist
@@ -91,16 +91,16 @@ TabView { ... }
 ```swift
 // Remove custom backgrounds on navigation
 NavigationView { }
-	.background(Color.blue.opacity(0.5)) // Remove
+  .background(Color.blue.opacity(0.5)) // Remove
 
 // Remove custom blur effects
 .background(
-	VisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+  VisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
 ) // Remove — let system handle
 
 // Remove hard-coded dimensions
 Slider(value: $volume)
-	.frame(width: 250, height: 44) // Remove — new metrics
+  .frame(width: 250, height: 44) // Remove — new metrics
 ```
 
 ### Update These
@@ -110,7 +110,7 @@ Section(header: Text("User Settings")) { } // Not "user settings"
 
 // Forms: Use grouped style
 Form { ... }
-	.formStyle(.grouped) // Platform-optimized metrics
+  .formStyle(.grouped) // Platform-optimized metrics
 ```
 
 ## Safe Area Considerations
@@ -120,14 +120,14 @@ Form { ... }
 // Use .safeAreaPadding() for content (not .padding())
 
 ZStack {
-	RoundedRectangle(cornerRadius: 12)
-		.fill(.thinMaterial)
-		.ignoresSafeArea()
+  RoundedRectangle(cornerRadius: 12)
+    .fill(.thinMaterial)
+    .ignoresSafeArea()
 
-	VStack {
-		content
-	}
-	.safeAreaPadding(.horizontal, 20) // Respects notch/home indicator
+  VStack {
+    content
+  }
+  .safeAreaPadding(.horizontal, 20) // Respects notch/home indicator
 }
 ```
 

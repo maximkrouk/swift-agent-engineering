@@ -18,27 +18,27 @@ Core requirements and setup patterns for testing TCA features with TestStore and
 // ❌ Cannot test - State doesn't conform to Equatable
 @ObservableState
 struct State {
-    var items: [Item] = []
-    @Presents var destination: Destination.State?
+  var items: [Item] = []
+  @Presents var destination: Destination.State?
 }
 
 // ✅ Can test - State and all nested types conform to Equatable
 @ObservableState
 struct State: Equatable {
-    var items: [Item] = []  // Item must be Equatable
-    @Presents var destination: Destination.State?  // Destination.State must be Equatable
+  var items: [Item] = []  // Item must be Equatable
+  @Presents var destination: Destination.State?  // Destination.State must be Equatable
 }
 
 // Destination.State must be Equatable
 @Reducer enum Destination {
-    case settings(SettingsFeature)  // SettingsFeature.State must be Equatable
+  case settings(SettingsFeature)  // SettingsFeature.State must be Equatable
 }
 extension Destination.State: Equatable {}
 
 // And any child features used by Destination
 @ObservableState
 struct SettingsFeature.State: Equatable {
-    // All properties must be Equatable
+  // All properties must be Equatable
 }
 ```
 
@@ -53,26 +53,26 @@ struct SettingsFeature.State: Equatable {
 @Suite("Feature Name")
 @MainActor
 struct FeatureNameTests {
-    typealias Reducer = FeatureNameReducer
+  typealias Reducer = FeatureNameReducer
 
-    // Test data and helpers
-    private let testData: TestData = .init()
+  // Test data and helpers
+  private let testData: TestData = .init()
 
-    private func makeStore(
-        initialState: Reducer.State = .init(),
-        dependencies: (inout DependencyValues) -> Void = { _ in }
-    ) -> TestStoreOf<Reducer> {
-        TestStore(initialState: initialState) {
-            Reducer()
-        } withDependencies: {
-            $0.apiClient = .test()
-            $0.analytics = .test()
-            $0.continuousClock = ImmediateClock()
-            $0.notificationFeedbackGenerator = .test()
-            $0.dismiss = DismissEffect { }
-            dependencies(&$0)
-        }
+  private func makeStore(
+    initialState: Reducer.State = .init(),
+    dependencies: (inout DependencyValues) -> Void = { _ in }
+  ) -> TestStoreOf<Reducer> {
+    TestStore(initialState: initialState) {
+      Reducer()
+    } withDependencies: {
+      $0.apiClient = .test()
+      $0.analytics = .test()
+      $0.continuousClock = ImmediateClock()
+      $0.notificationFeedbackGenerator = .test()
+      $0.dismiss = DismissEffect { }
+      dependencies(&$0)
     }
+  }
 }
 ```
 
@@ -100,22 +100,22 @@ func testUserCanAddMultipleItemsAndSave() async { }
 
 ```swift
 private func makeStore(
-    initialState: Reducer.State = .init(),
-    dependencies: (inout DependencyValues) -> Void = { _ in }
+  initialState: Reducer.State = .init(),
+  dependencies: (inout DependencyValues) -> Void = { _ in }
 ) -> TestStoreOf<Reducer> {
-    TestStore(initialState: initialState) {
-        Reducer()
-    } withDependencies: {
-        // Default test dependencies
-        $0.apiClient = .test()
-        $0.analytics = .test()
-        $0.continuousClock = ImmediateClock()
-        $0.notificationFeedbackGenerator = .test()
-        $0.dismiss = DismissEffect { }
+  TestStore(initialState: initialState) {
+    Reducer()
+  } withDependencies: {
+    // Default test dependencies
+    $0.apiClient = .test()
+    $0.analytics = .test()
+    $0.continuousClock = ImmediateClock()
+    $0.notificationFeedbackGenerator = .test()
+    $0.dismiss = DismissEffect { }
 
-        // Custom dependencies
-        dependencies(&$0)
-    }
+    // Custom dependencies
+    dependencies(&$0)
+  }
 }
 ```
 
@@ -123,26 +123,26 @@ private func makeStore(
 
 ```swift
 private func makeStore(
-    shiftId: Int = 1,
-    allowsMultipleSegments: Bool = true
+  shiftId: Int = 1,
+  allowsMultipleSegments: Bool = true
 ) -> TestStoreOf<EditShiftReducer> {
-    let dependencies: ShiftOperationsDependencies = .init(
-        allowsMultipleWorkSegments: allowsMultipleSegments,
-        allowsConsentOverride: true
-    )
+  let dependencies: ShiftOperationsDependencies = .init(
+    allowsMultipleWorkSegments: allowsMultipleSegments,
+    allowsConsentOverride: true
+  )
 
-    let state = withDependencies {
-        $0.shiftOperationsDependencies = dependencies
-    } operation: {
-        EditShiftReducer.State(shiftId: shiftId)
-    }
+  let state = withDependencies {
+    $0.shiftOperationsDependencies = dependencies
+  } operation: {
+    EditShiftReducer.State(shiftId: shiftId)
+  }
 
-    return TestStore(initialState: state) {
-        EditShiftReducer()
-    } withDependencies: {
-        $0.shiftClient = .test()
-        $0.shiftOperationsDependencies = dependencies
-    }
+  return TestStore(initialState: state) {
+    EditShiftReducer()
+  } withDependencies: {
+    $0.shiftClient = .test()
+    $0.shiftOperationsDependencies = dependencies
+  }
 }
 ```
 
@@ -150,22 +150,22 @@ private func makeStore(
 
 ```swift
 extension APIClient {
-    static func test(
-        fetchData: @escaping () async throws -> [Item] = { [] },
-        saveData: @escaping (Item) async throws -> Void = { _ in }
-    ) -> Self {
-        Self(
-            fetchData: fetchData,
-            saveData: saveData
-        )
-    }
+  static func test(
+    fetchData: @escaping () async throws -> [Item] = { [] },
+    saveData: @escaping (Item) async throws -> Void = { _ in }
+  ) -> Self {
+    Self(
+      fetchData: fetchData,
+      saveData: saveData
+    )
+  }
 }
 
 extension Analytics {
-    static func test(
-        track: @escaping (Event) -> Void = { _ in }
-    ) -> Self {
-        Self(track: track)
-    }
+  static func test(
+    track: @escaping (Event) -> Void = { _ in }
+  ) -> Self {
+    Self(track: track)
+  }
 }
 ```

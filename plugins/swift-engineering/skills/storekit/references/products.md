@@ -17,7 +17,7 @@ let products: [Product] = try await Product.products(for: productIDs)
 let loadedIDs: Set<String> = .init(products.map { $0.id })
 let missingIDs: Set<String> = .init(productIDs).subtracting(loadedIDs)
 if !missingIDs.isEmpty {
-	print("Missing products: \(missingIDs)")
+  print("Missing products: \(missingIDs)")
 }
 ```
 
@@ -51,17 +51,17 @@ let result = try await product.purchase(confirmIn: scene)
 switch result {
 
 case let .success(verificationResult):
-	guard let transaction = try? verificationResult.payloadValue
-	else { return }
-	await grantEntitlement(for: transaction)
-	await transaction.finish()  // CRITICAL
+  guard let transaction = try? verificationResult.payloadValue
+  else { return }
+  await grantEntitlement(for: transaction)
+  await transaction.finish()  // CRITICAL
 
 case .userCancelled:
-	print("User cancelled")
+  print("User cancelled")
 
 case .pending:
-	// Ask to Buy - arrives via Transaction.updates
-	print("Pending approval")
+  // Ask to Buy - arrives via Transaction.updates
+  print("Pending approval")
 
 @unknown default: break
 }
@@ -71,17 +71,17 @@ case .pending:
 
 ```swift
 struct ProductRow: View {
-	let product: Product
-	@Environment(\.purchase)
-	private var purchase
+  let product: Product
+  @Environment(\.purchase)
+  private var purchase
 
-	var body: some View {
-		Button("Buy \(self.product.displayPrice)") {
-			Task {
-				let result = try await self.purchase(self.product)
-			}
-		}
-	}
+  var body: some View {
+    Button("Buy \(self.product.displayPrice)") {
+      Task {
+        let result = try await self.purchase(self.product)
+      }
+    }
+  }
 }
 ```
 
@@ -90,14 +90,14 @@ struct ProductRow: View {
 ```swift
 // With account token (for server association)
 let result = try await product.purchase(
-	confirmIn: scene,
-	options: [.appAccountToken(.init())]
+  confirmIn: scene,
+  options: [.appAccountToken(.init())]
 )
 
 // With promotional offer
 let result = try await product.purchase(
-	confirmIn: scene,
-	options: [.promotionalOffer(offerID: "promo", signature: jwsSignature)]
+  confirmIn: scene,
+  options: [.promotionalOffer(offerID: "promo", signature: jwsSignature)]
 )
 ```
 
@@ -106,33 +106,33 @@ let result = try await product.purchase(
 ```swift
 @MainActor
 final class StoreManager: ObservableObject {
-	@Published
-	private(set) var products: [Product]
+  @Published
+  private(set) var products: [Product]
 
-	init(
-		products: [Product] = []
-	) {
-		self.products = products
-	}
+  init(
+    products: [Product] = []
+  ) {
+    self.products = products
+  }
 
-	func loadProducts() async {
-		self.products = try? await Product.products(for: productIDs) ?? []
-	}
+  func loadProducts() async {
+    self.products = try? await Product.products(for: productIDs) ?? []
+  }
 
-	func purchase(
-		_ product: Product,
-		in scene: UIWindowScene
-	) async throws -> Bool {
-		let result = try await product.purchase(confirmIn: scene)
-		guard
-			case let .success(verification) = result,
-			let transaction = try? verification.payloadValue
-		else { return false }
+  func purchase(
+    _ product: Product,
+    in scene: UIWindowScene
+  ) async throws -> Bool {
+    let result = try await product.purchase(confirmIn: scene)
+    guard
+      case let .success(verification) = result,
+      let transaction = try? verification.payloadValue
+    else { return false }
 
-		await grantEntitlement(for: transaction)
-		await transaction.finish()
-		return true
-	}
+    await grantEntitlement(for: transaction)
+    await transaction.finish()
+    return true
+  }
 }
 ```
 

@@ -27,17 +27,17 @@ Multiple gestures together?
 
 ```swift
 struct DraggableCard: View {
-	@GestureState
-	private var dragOffset: CGSize = .zero  // Temporary
+  @GestureState
+  private var dragOffset: CGSize = .zero  // Temporary
 
-	@SwiftUI.State
-	private var position: CGSize = .zero    // Permanent
+  @SwiftUI.State
+  private var position: CGSize = .zero    // Permanent
 
-	var body: some View {
-		RoundedRectangle(cornerRadius: 12)
-			.offset(
-				x: position.width + dragOffset.width,
-				y: position.height + dragOffset.height)
+  var body: some View {
+    RoundedRectangle(cornerRadius: 12)
+      .offset(
+        x: position.width + dragOffset.width,
+        y: position.height + dragOffset.height)
             .gesture(
                 DragGesture()
                     .updating($dragOffset) { value, state, _ in
@@ -59,12 +59,12 @@ struct DraggableCard: View {
 ```swift
 // Drag AND pinch-zoom at the same time
 .gesture(
-    DragGesture()
-        .updating($dragOffset) { value, state, _ in state = value.translation }
-        .simultaneously(with:
-            MagnificationGesture()
-                .updating($scale) { value, state, _ in state = value.magnification }
-        )
+  DragGesture()
+    .updating($dragOffset) { value, state, _ in state = value.translation }
+    .simultaneously(with:
+      MagnificationGesture()
+        .updating($scale) { value, state, _ in state = value.magnification }
+    )
 )
 ```
 
@@ -73,11 +73,11 @@ struct DraggableCard: View {
 ```swift
 // Long press THEN drag (like iOS Home Screen reordering)
 LongPressGesture(minimumDuration: 0.5)
-    .onEnded { _ in isEditing = true }
-    .sequenced(before:
-        DragGesture()
-            .updating($dragOffset) { value, state, _ in state = value.translation }
-    )
+  .onEnded { _ in isEditing = true }
+  .sequenced(before:
+    DragGesture()
+      .updating($dragOffset) { value, state, _ in state = value.translation }
+  )
 ```
 
 ## Pattern 4: Exclusive Gestures
@@ -85,11 +85,11 @@ LongPressGesture(minimumDuration: 0.5)
 ```swift
 // Double-tap OR single-tap (not both)
 TapGesture(count: 2)
-    .onEnded { zoom() }
-    .exclusively(before:
-        TapGesture(count: 1)
-            .onEnded { select() }
-    )
+  .onEnded { zoom() }
+  .exclusively(before:
+    TapGesture(count: 1)
+      .onEnded { select() }
+  )
 ```
 
 ## Common Pitfalls
@@ -126,12 +126,12 @@ Button("Submit") { }
 
 ```swift
 Image("slider")
-    .gesture(DragGesture().onChanged { ... })
-    .accessibilityAdjustableAction { direction in
-        switch direction {
-        case .increment: volume += 5
-        case .decrement: volume -= 5
-        @unknown default: break
-        }
+  .gesture(DragGesture().onChanged { ... })
+  .accessibilityAdjustableAction { direction in
+    switch direction {
+    case .increment: volume += 5
+    case .decrement: volume -= 5
+    @unknown default: break
     }
+  }
 ```

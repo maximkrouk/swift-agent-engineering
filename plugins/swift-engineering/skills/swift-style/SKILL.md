@@ -54,7 +54,7 @@ Code should compile without warnings.
 	
 	  ```swift
 	  func pipe<A, B, C>(
-	  	_ f0: @escaping (A) -> B,
+	    _ f0: @escaping (A) -> B,
 	    _ f1: @escaping (B) -> C
 	  ) -> (A) -> C {
 	    return { a in f1(f0(a)) }
@@ -93,16 +93,16 @@ func fetchUser(byID id: String) -> User
 > // MARK: CORRENT ✅ else block separation with indentation
 > // when else branch is complex/multiline
 > guard let self else {
-> 	logger.logError("self is missing")
-> 	service.cleanup()
-> 	return
+>   logger.logError("self is missing")
+>   service.cleanup()
+>   return
 > }
 > 
 > // MARK: CORRENT ✅ else block separation with indentation
 > // when else branch is much longer than the condition,
 > // this balances out the weight of the expression
 > guard let self else {
-> 	throw LocalError.somthingUnexpectedHappened
+>   throw LocalError.somthingUnexpectedHappened
 > }
 > 
 > // MARK: CORRENT ✅ complex conditions are visually separated with indentation,
@@ -112,21 +112,21 @@ func fetchUser(byID id: String) -> User
 > // to simplify it
 > var firstInt: Int? { strings.first { Int($0) }.flatMap { Int($0) } }
 > guard
-> 	let self,
-> 	let firstInt,
-> 	firstInt.isMultiple(of: 2)
+>   let self,
+>   let firstInt,
+>   firstInt.isMultiple(of: 2)
 > else { return nil }
 > 
 > // MARK: CORRENT ✅ conditions and else branch both
 > // are strongly visually separated with indentation
 > guard
-> 	let self,
-> 	let firstInt,
-> 	firstInt.isMultiple(of: 2)
+>   let self,
+>   let firstInt,
+>   firstInt.isMultiple(of: 2)
 > else { 
-> 	logger.logError("something went wrong")
-> 	service.cleanup()
-> 	throw LocalError.unexpectedFailure
+>   logger.logError("something went wrong")
+>   service.cleanup()
+>   throw LocalError.unexpectedFailure
 > }
 > 
 > // MARK: WRONG ❌ Expression is too long to be defined
@@ -147,15 +147,15 @@ func fetchUser(byID id: String) -> User
 > // `let self` must be placed on a new line, other conditions indentations
 > // should be adjusted
 > guard let self,
-> 	let firstInt,
-> 	firstInt.isMultiple(of: 2)
+>   let firstInt,
+>   firstInt.isMultiple(of: 2)
 > else { return nil }
 > 
 > // MARK: WRONG ❌ both condition and else branch
 > // are equally super simple, but else branch separation
 > // is too strong
 > guard let self else {
-> 	return nil
+>   return nil
 > }
 > 
 > // MARK: WRONG ❌ both condition and else branch
@@ -173,9 +173,9 @@ func fetchUser(byID id: String) -> User
 > 
 > // CORRECT: ✅ Clear visual separation of type identifier and generic constraints
 > class MyComplexCustomView<
-> 	CompexCustomDelegate,
-> 	ComplexCustomDataSource,
-> 	Content
+>   CompexCustomDelegate,
+>   ComplexCustomDataSource,
+>   Content
 > > { ... }
 > ```
 >
@@ -209,7 +209,7 @@ else { throw LocalError.inputCorrupted }
 ```swift
 guard input.someConditionThatMustBeSatisfied() else {
   // custom logic or multiple external calls
- 	return
+  return
 }
 ```
 
@@ -222,18 +222,18 @@ else { return nil }
 
 ```swift
 guard
-	input.firstCondition,
-	input.secondCondition
+  input.firstCondition,
+  input.secondCondition
 else { return }
 ```
 
 ```swift
 guard
-	input.firstCondition,
-	input.secondCondition
+  input.firstCondition,
+  input.secondCondition
 else { 
-	// some more work
-	return
+  // some more work
+  return
 }
 ```
 
@@ -274,9 +274,9 @@ Multiline conditions in `if` statements is discouraged, if the statment is short
 
 ```swift
 if isNumber, isFinite {
-	// work
+  // work
 } else {
-	// other work
+  // other work
 }
 ```
 
@@ -286,7 +286,7 @@ let isOddNumberValidAndCached = cache.contains(number)
 && !number.isMultiple(of: 2)
 
 if isOddNumberValidAndCached {
-	// work
+  // work
 }
 ```
 
@@ -308,7 +308,7 @@ Medium `switch` statements should handle cases on a new line
 ```swift
 switch action {
 case .someWork:
-	// perform some work
+  // perform some work
 case .someOtherWork:
   // perform some other work
 }
@@ -319,8 +319,8 @@ Cases in complex `switch` statments must have an extra newline
 ```swift
 switch action {
 case .someWork1:
-	// perform some work1
-	
+  // perform some work1
+  
 case .someWork2:
   // perform some work2
   
@@ -380,7 +380,7 @@ Left-hand margin is the happy path. Avoid redundant nesting of `if` statements.
 
 ```swift
 func process(value: Int?) throws -> Result {
-	guard let value else { throw ProcessError.nilValue }
+  guard let value else { throw ProcessError.nilValue }
   guard value > 0 else { throw ProcessError.negativeValue }
   return compute(value)
 }
@@ -393,18 +393,18 @@ Generally perfer explicit `self`, always use explicit `self` when method contain
 ```swift
 // Without swift-declarative-configuration
 override func _init() {
-	super._init()
-	self.backgroundColor = .systemBackground
+  super._init()
+  self.backgroundColor = .systemBackground
 }
 ```
 
 ```swift
 // With swift-declarative-configuration
 override func _init() {
-	super._init()
-	self.configure { $0 
-		.backgroundColor(.systemBackground)
-	}
+  super._init()
+  self.configure { $0 
+    .backgroundColor(.systemBackground)
+  }
 }
 ```
 
@@ -427,8 +427,8 @@ override func _init() {
   > // Type is implicit on the left side
   > // Type is explicit on the right side
   > let someView = SomeView() { $0 
-  > 	.backgroundColor(.red)
-  > 	.alpha(0.8)
+  >   .backgroundColor(.red)
+  >   .alpha(0.8)
   > }
   > ```
 
@@ -505,7 +505,7 @@ override func _init() {
   func test() {}
   
   @available(
-  	*, deprecated,
+    *, deprecated,
     message: """
     Don't use this method,
     it's deprecated
@@ -579,7 +579,7 @@ func sum(_ a: Int, _ b: Int) -> Int { a + b } // ok even as a one-liner
 ```swift
 // this one must declare each arg on a new line
 func sendRequest(
-	_ request: URLRequest,
+  _ request: URLRequest,
   using session: URLSession
 ) async throws -> (Data, Response) {
   // body
@@ -590,7 +590,7 @@ Functions, generic over 1 argument should have the following shape with each arg
 
 ```swift
 func identifier<Arg>(
-	_ arg: Arg
+  _ arg: Arg
 ) -> Output {
   // body
 }
@@ -600,7 +600,7 @@ Simple generic constraints can be put into generic args list
 
 ```swift
 func identifier<Arg: Equatable>(
-	_ arg: Arg
+  _ arg: Arg
 ) -> Output {
   // body
 }
@@ -610,10 +610,10 @@ Multiple generic args must be placed on separate lines as well as args
 
 ```swift
 func identifier<
-	Arg1,
-	Arg2
+  Arg1,
+  Arg2
 >(
-	_ arg1: Arg1,
+  _ arg1: Arg1,
   _ arg2: Arg2
 ) -> Output {
   // body
@@ -625,14 +625,14 @@ Complex generic constraints must be placed in where clauses, if where clause is 
 ```swift
 @inlinable
 public static func someFunction<
-	Arg1,
-	Arg2
+  Arg1,
+  Arg2
 >(
-	_ arg1: Arg1,
+  _ arg1: Arg1,
   _ arg2: Arg2
 ) async throws -> Output where
-	Arg1: Equatable & Sendable,
-	Arg2: Equatable & Sendable
+  Arg1: Equatable & Sendable,
+  Arg2: Equatable & Sendable
 {
   // body
 }
@@ -708,8 +708,8 @@ But functions calls with multiple arguments (especially with labels) should plac
 
 ```swift
 let cardView: CardView = .init(
-	model: cardModel,
-	style: cardStyle
+  model: cardModel,
+  style: cardStyle
 )
 ```
 
@@ -719,8 +719,8 @@ Since types should be specified explicitly it's fine to omit type on the right s
 let value: Value = .custom(0)
 let view: SomeView = .init()
 let manager: SomeManager = .init(
-	param1: 0,
-	param2: "test"
+  param1: 0,
+  param2: "test"
 )
 ```
 
@@ -730,11 +730,11 @@ Specifically when using `swift-declarative-configuration` package the shape of t
 // Type is explicit on the right side
 // instead of the left side
 let redRoundedView = CocoaView() { $0 
-	.backgroundColor(.red)
-	.layer.scope { $0 
-		.cornerCurve(.continuous)
-		.cornerRadius(12)
-	}
+  .backgroundColor(.red)
+  .layer.scope { $0 
+    .cornerCurve(.continuous)
+    .cornerRadius(12)
+  }
 }
 ```
 
@@ -745,12 +745,12 @@ let redRoundedView = CocoaView() { $0
 > ```swift
 > // WRONG ❌
 > someFunction(arg1: 0
->              arg2: 1)
+>             arg2: 1)
 > 
 > // CORRECT ✅
 > someFunction(
-> 	arg1: 0
-> 	arg2: 1
+>   arg1: 0
+>   arg2: 1
 > )
 > ```
 >
@@ -783,7 +783,7 @@ Ternary operators indentation:
 // WRONG: Fights Xcode indentation
 let value = condition
   ? true
-	: false
+  : false
 
 // CORRECT: Matches Xcode indentation
 let value = condition
@@ -799,9 +799,9 @@ Operators chaining:
 ```swift
 // WRONG: Trailing operators chaining
 let value = condition1 && (
-	condition2 ||
-	condition3 ||
-	condition4
+  condition2 ||
+  condition3 ||
+  condition4
 ) && condition5
 
 let f = f3 <<<
@@ -812,7 +812,7 @@ f0
 // CORRECT: Leading operators chaining
 let value = condition1
 && (
-	condition2
+  condition2
   || condition3
   || condition4
 )
@@ -828,7 +828,7 @@ let f = f3
 let value = condition1
 && !condition5
 && (
-	condition2
+  condition2
   || condition3
   || condition4
 )
@@ -844,8 +844,8 @@ let f = f3 <<< f2 <<< f1 <<< f0
 
 ```swift
 resource.request().onComplete { [weak self] response in
-	guard let self else { return }
-	self.updateModel(response)
+  guard let self else { return }
+  self.updateModel(response)
 }
 ```
 
@@ -853,7 +853,7 @@ If `swift-capture` is available:
 
 ```swift
 resource.request().onComplete(perform: capture { _self, response in 
-	_self.updateModel(response)
+  _self.updateModel(response)
 })
 ```
 

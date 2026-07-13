@@ -11,71 +11,71 @@ import Observation
 @Observable
 @MainActor
 final class ArticleListViewModel {
-	var articles: [Article]
-	var isLoading: Bool
-	var errorMessage: String?
-	
-	private let articleService: ArticleService
+  var articles: [Article]
+  var isLoading: Bool
+  var errorMessage: String?
+  
+  private let articleService: ArticleService
 
-	public init(
-		articles: [Article] = []
-		isLoading: Bool = false
-		errorMessage: String? = nil,
-		articleService: ArticleService
-	) {
-		self.articles = articles
-		self.isLoading = isLoading
-		self.errorMessage = errorMessage
-		self.articleService = articleService
-	}
+  public init(
+    articles: [Article] = []
+    isLoading: Bool = false
+    errorMessage: String? = nil,
+    articleService: ArticleService
+  ) {
+    self.articles = articles
+    self.isLoading = isLoading
+    self.errorMessage = errorMessage
+    self.articleService = articleService
+  }
 
-	func loadArticles() async {
-		isLoading = true
-		defer { isLoading = false }
-		
-		errorMessage = nil
+  func loadArticles() async {
+    isLoading = true
+    defer { isLoading = false }
+    
+    errorMessage = nil
 
-		do {
-			articles = try await articleService.fetchArticles()
-		} catch {
-			errorMessage = error.localizedDescription
-		}
-	}
+    do {
+      articles = try await articleService.fetchArticles()
+    } catch {
+      errorMessage = error.localizedDescription
+    }
+  }
 }
 
 struct ArticleListView: View {
-	@SwiftUI.State
-	private var viewModel: ArticleListViewModel
+  @SwiftUI.State
+  private var viewModel: ArticleListViewModel
 
-	init(
-		_ viewModel: ArticleListViewModel
-	) {
-		_viewModel = State(wrappedValue: viewModel)
-	}
+  init(
+    _ viewModel: ArticleListViewModel
+  ) {
+    _viewModel = State(wrappedValue: viewModel)
+  }
 
-	var body: some View {
-		List(viewModel.articles) { article in
-			ArticleRow(article: article)
-		}
-		.overlay {
-			if viewModel.isLoading {
-				ProgressView()
-			}
-		}
-		.alert(
-			"Error", 
-			isPresented: .constant(viewModel.errorMessage != nil)
-		) {
-			Button("OK") { viewModel.errorMessage = nil }
-		} message: {
-			if let message = viewModel.errorMessage {
-				Text(message)
-			}
-		}
-		.task {
-			await viewModel.loadArticles()
-		}
-	}
+  var body: some View {
+    List(viewModel.articles) { article in
+      ArticleRow(article: article)
+    }
+    .overlay {
+      if viewModel.isLoading {
+        ProgressView()
+      }
+    }
+    .alert(
+      "Error", 
+      isPresented: .constant(viewModel.errorMessage != nil)
+    ) {
+      Button("OK") { viewModel.errorMessage = nil }
+    } message: {
+      if let message = viewModel.errorMessage {
+        Text(message)
+      }
+    }
+    .task {
+      await viewModel.loadArticles()
+    }
+  }
 }
 ```
 

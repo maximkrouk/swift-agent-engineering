@@ -13,19 +13,19 @@ Apple's Causality-Harmony-Utility framework from WWDC 2021 for multimodal feedba
 // Good: Immediate feedback on touch
 @objc
 func buttonTapped() {
-	let generator: UIImpactFeedbackGenerator = .init(style: .medium)
-	generator.impactOccurred()  // Fire immediately
-	performAction()
+  let generator: UIImpactFeedbackGenerator = .init(style: .medium)
+  generator.impactOccurred()  // Fire immediately
+  performAction()
 }
 
 // Bad: Delayed feedback loses causality
 @objc
 func buttonTapped() {
-	performAction()
-	DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-		let generator: UIImpactFeedbackGenerator = .init(style: .medium)
-		generator.impactOccurred()  // Too late - user confused
-	}
+  performAction()
+  DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+    let generator: UIImpactFeedbackGenerator = .init(style: .medium)
+    generator.impactOccurred()  // Too late - user confused
+  }
 }
 ```
 
@@ -52,14 +52,14 @@ Fire haptic at the **exact moment** the visual change occurs. Even 100ms delay b
 
 ```swift
 func playImpact(for objectMass: CGFloat) {
-	// Match haptic intensity to visual/audio characteristics
-	let normalizedMass = min(max(objectMass / 100.0, 0.0), 1.0)
+  // Match haptic intensity to visual/audio characteristics
+  let normalizedMass = min(max(objectMass / 100.0, 0.0), 1.0)
 
-	let generator: UIImpactFeedbackGenerator = .init(style: .medium)
-	generator.impactOccurred(intensity: normalizedMass)
+  let generator: UIImpactFeedbackGenerator = .init(style: .medium)
+  generator.impactOccurred(intensity: normalizedMass)
 
-	// Audio pitch should also scale with mass
-	playSound(pitch: 1.0 - (normalizedMass * 0.5))
+  // Audio pitch should also scale with mass
+  playSound(pitch: 1.0 - (normalizedMass * 0.5))
 }
 ```
 
@@ -94,19 +94,19 @@ Solution: Continuous haptic + continuous audio - unified experience.
 
 ```swift
 func shouldPlayHaptic(for event: UserEvent) -> Bool {
-	switch event {
-	case let .buttonTap(importance):
-		return importance == .high  // Only important buttons
+  switch event {
+  case let .buttonTap(importance):
+    return importance == .high  // Only important buttons
 
-	case .selectionChange:
-		return true  // Picker-style selection feedback
+  case .selectionChange:
+    return true  // Picker-style selection feedback
 
-	case .scroll:
-		return false  // Never haptic on scroll
+  case .scroll:
+    return false  // Never haptic on scroll
 
-	case .success, .error:
-		return true  // Always confirm outcomes
-	}
+  case .success, .error:
+    return true  // Always confirm outcomes
+  }
 }
 ```
 
@@ -116,15 +116,15 @@ func shouldPlayHaptic(for event: UserEvent) -> Bool {
 
 ```swift
 func performShieldTransformation() {
-	// Start haptic simultaneously with animation
-	playShieldPattern()
+  // Start haptic simultaneously with animation
+  playShieldPattern()
 
-	UIView.animate(withDuration: 0.5) {
-		self.shieldView.transform = CGAffineTransform(
-			scaleX: 1.2,
-			y: 1.2
-		)
-	}
+  UIView.animate(withDuration: 0.5) {
+    self.shieldView.transform = CGAffineTransform(
+      scaleX: 1.2,
+      y: 1.2
+    )
+  }
 }
 ```
 
@@ -132,11 +132,11 @@ func performShieldTransformation() {
 
 ```swift
 func playCoordinatedExperience() {
-	impactGenerator.prepare()  // Reduce latency
+  impactGenerator.prepare()  // Reduce latency
 
-	// Start both simultaneously
-	audioPlayer.play()
-	impactGenerator.impactOccurred()
+  // Start both simultaneously
+  audioPlayer.play()
+  impactGenerator.impactOccurred()
 }
 ```
 

@@ -13,7 +13,7 @@ Xcode 15+ unified format for managing app localization. Replaces legacy .strings
 **Method 2: Automatic Extraction**
 Build the project - Xcode extracts strings from:
 - SwiftUI views (Text, Label, Button string literals)
-- Swift code (`String(localized:)`)
+- Swift code (`String.localized()`)
 - Objective-C (`NSLocalizedString`)
 - Interface Builder files (.storyboard, .xib)
 - Info.plist values
@@ -55,7 +55,7 @@ Label(Strings.Common.shoppingCart, systemImage: "cart")
 Button(Strings.Common.checkout)
 ```
 
-### String(localized:) with Comments
+### String.localized() with Comments
 
 ```swift
 // Basic
@@ -63,22 +63,22 @@ let title: String = .init(localized: "main.greeting")
 
 // With translator comment
 let title: String = .init(
-	localized: "main.greeting", // "Welcome"
-	comment: "Main screen greeting"
+  localized: "main.greeting", // "Welcome"
+  comment: "Main screen greeting"
 )
 
 // With custom table
 let title: String = .init(
-	localized: "onboarding.greeting", // "Welcome"
-	table: "Onboarding",
-	comment: "First launch greeting"
+  localized: "onboarding.greeting", // "Welcome"
+  table: "Onboarding",
+  comment: "First launch greeting"
 )
 
 // With default value
 let title: String = .init(
-	localized: "app.greeting",
-	defaultValue: "Welcome to the App!",
-	comment: "Default app greeting"
+  localized: "app.greeting",
+  defaultValue: "Welcome to the App!",
+  comment: "Default app greeting"
 )
 ```
 
@@ -88,29 +88,29 @@ Use when passing localizable strings to custom views:
 
 ```swift
 struct CardView: View {
-	let title: LocalizedStringResource
-	let subtitle: LocalizedStringResource
+  let title: LocalizedStringResource
+  let subtitle: LocalizedStringResource
 
-	init(
-		title: LocalizedStringResource,
-		subtitle: LocalizedStringResource
-	) {
-		self.title = title
-		self.subtitle = subtitle
+  init(
+    title: LocalizedStringResource,
+    subtitle: LocalizedStringResource
+  ) {
+    self.title = title
+    self.subtitle = subtitle
   }
 
-	var body: some View {
-		VStack {
-			Text(title)      // Resolved at render time
-			Text(subtitle)
-		}
-	}
+  var body: some View {
+    VStack {
+      Text(title)      // Resolved at render time
+      Text(subtitle)
+    }
+  }
 }
 
 // Usage
 CardView(
-	title: "purchases.recent_purchases", // Recent Purchases
-	subtitle: "purchases.items.past_week" // Items from the past week
+  title: "purchases.recent_purchases", // Recent Purchases
+  subtitle: "purchases.items.past_week" // Items from the past week
 )
 ```
 
@@ -173,15 +173,15 @@ Each entry contains:
 
 ```swift
 let title: String = NSLocalizedString(
-	"purchases.recent", // Recent Purchases
-	comment: "Section header"
+  "purchases.recent", // Recent Purchases
+  comment: "Section header"
 )
 
 // With table
 let title: String = NSLocalizedString(
-	"purchases.recent", // Recent Purchases
-	tableName: "Shopping",
-	comment: "Section header"
+  "purchases.recent", // Recent Purchases
+  tableName: "Shopping",
+  comment: "Section header"
 )
 ```
 
@@ -190,9 +190,9 @@ let title: String = NSLocalizedString(
 ```swift
 let customBundle: Bundle = .init(for: MyFramework.self)
 let text: String = customBundle.localizedString(
-	forKey: "common.welcome", // Welcome
-	value: nil,
-	table: "MyFramework"
+  forKey: "common.welcome", // Welcome
+  value: nil,
+  table: "MyFramework"
 )
 ```
 
@@ -231,16 +231,16 @@ let msg: String = .init(localized: "You have \(count) items")
 
 // ✅ CORRECT - safe use of placeholders
 let msg: String = Strings
-	.Shopping.Cart
-	.currentItems(count: count)
+  .Shopping.Cart
+  .currentItems(count: count)
 
 // ❌ WRONG - no context for translator and string literal key
-String(localized: "common.confirm")
+String.localized( "common.confirm")
 
 // ⚠️ CORRECT - clear context but string literal key
 String(
-	localized: "common.confirm", 
-	comment: "Button to confirm deletion"
+  localized: "common.confirm", 
+  comment: "Button to confirm deletion"
 )
 
 // ✅ CORRECT

@@ -8,17 +8,17 @@ Test data patterns, organization, confirmation dialogs, dependency mocking, and 
 
 ```swift
 extension Item {
-    static func test(
-        id: Int = 1,
-        name: String = "Test Item",
-        isEnabled: Bool = true
-    ) -> Self {
-        Self(
-            id: id,
-            name: name,
-            isEnabled: isEnabled
-        )
-    }
+  static func test(
+    id: Int = 1,
+    name: String = "Test Item",
+    isEnabled: Bool = true
+  ) -> Self {
+    Self(
+      id: id,
+      name: name,
+      isEnabled: isEnabled
+    )
+  }
 }
 ```
 
@@ -26,9 +26,9 @@ extension Item {
 
 ```swift
 extension Array where Element == Item {
-    static func test(count: Int = 3) -> [Item] {
-        (1...count).map { Item.test(id: $0, name: "Item \($0)") }
-    }
+  static func test(count: Int = 3) -> [Item] {
+    (1...count).map { Item.test(id: $0, name: "Item \($0)") }
+  }
 }
 ```
 
@@ -39,16 +39,16 @@ Use enum-based ID constants for reproducible tests instead of creating new UUIDs
 ```swift
 // ✅ Good: Consistent test data constants
 enum TestData {
-    static let itemId1: UUID = .init(uuidString: "00000000-0000-0000-0000-000000000001")!
-    static let itemId2: UUID = .init(uuidString: "00000000-0000-0000-0000-000000000002")!
+  static let itemId1: UUID = .init(uuidString: "00000000-0000-0000-0000-000000000001")!
+  static let itemId2: UUID = .init(uuidString: "00000000-0000-0000-0000-000000000002")!
 }
 
 @Test("sets item as favorite")
 func testSetFavorite() async {
-    let setFavoriteCalled = LockIsolated<UUID?>(nil)
-    // Use constant - reproducible
-    await store.send(.view(.onSetFavoriteTapped(TestData.itemId1)))
-    #expect(setFavoriteCalled.value == TestData.itemId1)
+  let setFavoriteCalled = LockIsolated<UUID?>(nil)
+  // Use constant - reproducible
+  await store.send(.view(.onSetFavoriteTapped(TestData.itemId1)))
+  #expect(setFavoriteCalled.value == TestData.itemId1)
 }
 
 // ❌ Avoid: Creating new UUIDs each test run
@@ -64,28 +64,28 @@ let itemId: UUID = .init()  // Different every run, harder to debug
 @MainActor
 struct FeatureNameTests {
 
-    // MARK: - Setup
-    private func makeStore() -> TestStoreOf<Reducer> { ... }
+  // MARK: - Setup
+  private func makeStore() -> TestStoreOf<Reducer> { ... }
 
-    // MARK: - Initialization Tests
-    @Test("initializes with correct default state")
-    func testInitialization() async { ... }
+  // MARK: - Initialization Tests
+  @Test("initializes with correct default state")
+  func testInitialization() async { ... }
 
-    // MARK: - User Interaction Tests
-    @Test("responds to user taps")
-    func testUserInteraction() async { ... }
+  // MARK: - User Interaction Tests
+  @Test("responds to user taps")
+  func testUserInteraction() async { ... }
 
-    // MARK: - Data Loading Tests
-    @Test("loads data on appear")
-    func testDataLoading() async { ... }
+  // MARK: - Data Loading Tests
+  @Test("loads data on appear")
+  func testDataLoading() async { ... }
 
-    // MARK: - Error Handling Tests
-    @Test("handles network errors")
-    func testErrorHandling() async { ... }
+  // MARK: - Error Handling Tests
+  @Test("handles network errors")
+  func testErrorHandling() async { ... }
 
-    // MARK: - Navigation Tests
-    @Test("navigates to detail screen")
-    func testNavigation() async { ... }
+  // MARK: - Navigation Tests
+  @Test("navigates to detail screen")
+  func testNavigation() async { ... }
 }
 ```
 
@@ -110,31 +110,31 @@ When testing features that use `ConfirmationDialogState`, follow these patterns:
 ```swift
 @Test("confirmation dialog action deletes with preserve")
 func testConfirmationDialogAction() async {
-    var state = Feature.State()
-    state.confirmDeleteBundleId = testBundleId
-    state.confirmationDialog = .deleteBundle(name: "Test", itemCount: 2)
+  var state = Feature.State()
+  state.confirmDeleteBundleId = testBundleId
+  state.confirmationDialog = .deleteBundle(name: "Test", itemCount: 2)
 
-    let deleteCalled = LockIsolated<(UUID, Bool)?>(nil)
+  let deleteCalled = LockIsolated<(UUID, Bool)?>(nil)
 
-    let store: TestStoreOf<Feature> = TestStore(initialState: state) {
-        Feature()
-    } withDependencies: {
-        $0.bundleClient.delete = { id, preserveItems in
-            deleteCalled.setValue((id, preserveItems))
-        }
+  let store: TestStoreOf<Feature> = TestStore(initialState: state) {
+    Feature()
+  } withDependencies: {
+    $0.bundleClient.delete = { id, preserveItems in
+      deleteCalled.setValue((id, preserveItems))
     }
+  }
 
-    // Send the presented action and expect BOTH state changes
-    await store.send(.confirmationDialog(.presented(.moveItemsToInbox))) {
-        $0.confirmDeleteBundleId = nil
-        $0.confirmationDialog = nil  // Dialog clears on action
-    }
+  // Send the presented action and expect BOTH state changes
+  await store.send(.confirmationDialog(.presented(.moveItemsToInbox))) {
+    $0.confirmDeleteBundleId = nil
+    $0.confirmationDialog = nil  // Dialog clears on action
+  }
 
-    // CRITICAL: Exhaust effects from .run blocks
-    await store.finish()
+  // CRITICAL: Exhaust effects from .run blocks
+  await store.finish()
 
-    #expect(deleteCalled.value?.0 == testBundleId)
-    #expect(deleteCalled.value?.1 == true)
+  #expect(deleteCalled.value?.0 == testBundleId)
+  #expect(deleteCalled.value?.1 == true)
 }
 ```
 
@@ -146,8 +146,8 @@ func testConfirmationDialogAction() async {
 
 ```swift
 await store.send(.confirmationDialog(.dismiss)) {
-    $0.confirmationDialog = nil
-    // Note: confirmDeleteBundleId stays set (becomes stale but harmless)
+  $0.confirmationDialog = nil
+  // Note: confirmDeleteBundleId stays set (becomes stale but harmless)
 }
 ```
 
@@ -160,22 +160,22 @@ When modifying reducers to call new dependencies, **always update corresponding 
 ```swift
 // Reducer calls TWO dependencies:
 case .view(.saveTapped):
-    return .run { send in
-        try await bundleClient.update(id, name, color)
-        try await bundleClient.updateTemporary(id, isTemporary)  // NEW!
-        await send(.delegate(.saved))
-    }
+  return .run { send in
+    try await bundleClient.update(id, name, color)
+    try await bundleClient.updateTemporary(id, isTemporary)  // NEW!
+    await send(.delegate(.saved))
+  }
 
 // ❌ Test only mocks ONE - will fail with unimplemented dependency
 let store: TestStoreOf<Feature> = TestStore(...) {
-    $0.bundleClient.update = { ... }
-    // Missing: $0.bundleClient.updateTemporary
+  $0.bundleClient.update = { ... }
+  // Missing: $0.bundleClient.updateTemporary
 }
 
 // ✅ Mock ALL dependencies called by the action
 let store: TestStoreOf<Feature> = TestStore(...) {
-    $0.bundleClient.update = { ... }
-    $0.bundleClient.updateTemporary = { _, _ in }  // Added!
+  $0.bundleClient.update = { ... }
+  $0.bundleClient.updateTemporary = { _, _ in }  // Added!
 }
 ```
 
@@ -193,7 +193,7 @@ Use `LockIsolated` for thread-safe value capture in tests.
 // ✅ Preferred: Clean setter
 let capturedId = LockIsolated<UUID?>(nil)
 $0.itemClient.setFavorite = { id in
-    capturedId.setValue(id)
+  capturedId.setValue(id)
 }
 #expect(capturedId.value == expectedId)
 
@@ -207,7 +207,7 @@ callHistory.withLock { $0.append("called") }
 ```swift
 let wasCalled: LockIsolated<Bool> = .init(false)
 $0.client.someMethod = {
-    wasCalled.setValue(true)
+  wasCalled.setValue(true)
 }
 #expect(wasCalled.value == true)
 ```
@@ -221,24 +221,24 @@ When testing effects that modify `@Shared` state, use `store.assert { }` to veri
 ```swift
 @Test("confirm action enables feature via Shared")
 func testConfirmEnablesFeature() async {
-    var state = Feature.State()
-    state.confirmationAlert = FeatureHelper.confirmationAlertState()
+  var state = Feature.State()
+  state.confirmationAlert = FeatureHelper.confirmationAlertState()
 
-    let store: TestStoreOf<Feature> = TestStore(initialState: state) {
-        Feature()
-    } withDependencies: {
-        $0.itemClient.setFavorite = { _ in }
-    }
+  let store: TestStoreOf<Feature> = TestStore(initialState: state) {
+    Feature()
+  } withDependencies: {
+    $0.itemClient.setFavorite = { _ in }
+  }
 
-    // Action triggers effect that modifies @Shared
-    await store.send(.confirmationAlert(.presented(.confirm(itemId: nil)))) {
-        $0.confirmationAlert = nil
-    }
+  // Action triggers effect that modifies @Shared
+  await store.send(.confirmationAlert(.presented(.confirm(itemId: nil)))) {
+    $0.confirmationAlert = nil
+  }
 
-    // Verify @Shared state after effect completes
-    store.assert {
-        $0.$featureEnabled.withLock { $0 = true }
-    }
+  // Verify @Shared state after effect completes
+  store.assert {
+    $0.$featureEnabled.withLock { $0 = true }
+  }
 }
 ```
 

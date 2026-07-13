@@ -179,19 +179,19 @@ Extend `TableColumns` for computed query expressions:
 ```swift
 nonisolated extension Reminder.TableColumns {
   var isCompleted: some QueryExpression<Bool> {
-		self.status.neq(Reminder.Status.incomplete)
+    self.status.neq(Reminder.Status.incomplete)
   }
 
   var isPastDue: some QueryExpression<Bool> {
-		@Dependency(\.date.now)
-		var now: Date
-		return !self.isCompleted && #sql("coalesce(date(\(self.dueDate)) < date(\(now)), 0)")
+    @Dependency(\.date.now)
+    var now: Date
+    return !self.isCompleted && #sql("coalesce(date(\(self.dueDate)) < date(\(now)), 0)")
   }
 
   var isToday: some QueryExpression<Bool> {
-		@Dependency(\.date.now)
-		var now: Date
-		return !self.isCompleted && #sql("coalesce(date(\(self.dueDate)) = date(\(now)), 0)")
+    @Dependency(\.date.now)
+    var now: Date
+    return !self.isCompleted && #sql("coalesce(date(\(self.dueDate)) = date(\(now)), 0)")
   }
 }
 
@@ -205,11 +205,11 @@ Define static properties for common queries:
 
 ```swift
 extension Reminder {
-	static let incomplete = Self.where { !$0.isCompleted }
+  static let incomplete = Self.where { !$0.isCompleted }
 
-	static let withTags = group(by: \.id)
-		.leftJoin(ReminderTag.all) { $0.id.eq($1.reminderID) }
-		.leftJoin(Tag.all) { $1.tagID.eq($2.primaryKey) }
+  static let withTags = group(by: \.id)
+    .leftJoin(ReminderTag.all) { $0.id.eq($1.reminderID) }
+    .leftJoin(Tag.all) { $1.tagID.eq($2.primaryKey) }
 }
 
 // Usage:

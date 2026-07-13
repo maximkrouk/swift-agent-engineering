@@ -6,8 +6,8 @@
 
 ```swift
 .package(
-	url: "https://github.com/capturecontext/cocoa-aliases.git",
-	.upToNextMinor(from: "3.3.0")
+  url: "https://github.com/capturecontext/cocoa-aliases.git",
+  .upToNextMinor(from: "3.3.0")
 )
 ```
 
@@ -15,8 +15,8 @@ Target dependency:
 
 ```swift
 .product(
-	name: "CocoaAliases",
-	package: "cocoa-aliases"
+  name: "CocoaAliases",
+  package: "cocoa-aliases"
 )
 ```
 

@@ -21,9 +21,9 @@ Use this package when shared Apple-platform UI code should talk in Cocoa-prefixe
 import CocoaAliases
 
 extension CocoaView {
-	func rounded() {
-		self.layer.cornerRadius = min(self.bounds.width, self.bounds.height) / 2
-	}
+  func rounded() {
+    self.layer.cornerRadius = min(self.bounds.width, self.bounds.height) / 2
+  }
 }
 ```
 

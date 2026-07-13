@@ -23,10 +23,10 @@ let session: LanguageModelSession = .init()
 
 // With instructions (define model's role)
 let session: LanguageModelSession = .init(
-	instructions: """
-	You are a helpful travel assistant.
-	Respond concisely.
-	"""
+  instructions: """
+  You are a helpful travel assistant.
+  Respond concisely.
+  """
 )
 ```
 
@@ -58,9 +58,9 @@ let second = try await session.respond(to: "Now one about golf")
 
 ```swift
 Button("Generate") {
-	Task {
-		result = try await session.respond(to: "Write a haiku").content
-	}
+  Task {
+    result = try await session.respond(to: "Write a haiku").content
+  }
 }
 .disabled(session.isResponding)
 ```
@@ -71,15 +71,15 @@ First generation takes 1-2s to load. Prewarm before user interaction:
 
 ```swift
 class ViewModel: ObservableObject {
-	private var session: LanguageModelSession?
+  private var session: LanguageModelSession?
 
-	init() {
-		Task { self.session = .init() }
-	}
+  init() {
+    Task { self.session = .init() }
+  }
 
-	func generate(prompt: String) async throws -> String {
-		try await session!.respond(to: prompt).content
-	}
+  func generate(prompt: String) async throws -> String {
+    try await session!.respond(to: prompt).content
+  }
 }
 ```
 
@@ -87,14 +87,14 @@ class ViewModel: ObservableObject {
 
 ```swift
 struct AIFeatureView: View {
-	var body: some View {
-		switch SystemLanguageModel.default.availability {
-		case .available:
-			AIContentView()
-		case .unavailable:
-			Text("AI features require Apple Intelligence")
-		}
-	}
+  var body: some View {
+    switch SystemLanguageModel.default.availability {
+    case .available:
+      AIContentView()
+    case .unavailable:
+      Text("AI features require Apple Intelligence")
+    }
+  }
 }
 ```
 

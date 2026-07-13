@@ -16,13 +16,13 @@ CocoaView().toSwiftUI()
 CocoaViewController().toSwiftUI()
 
 CocoaComponent { 
-	CocoaView()
+  CocoaView()
 }
 
 CocoaComponent {
-	CocoaViewController
+  CocoaViewController
 } update: { context, view in 
-	...
+  ...
 }
 ```
 
@@ -34,80 +34,80 @@ If `Cocoa`-prefixed protocols are not available (requires [`cocoa-aliases`](http
 
 ```swift
 struct WebView: CocoaViewRepresentable {
-	private let url: URL
+  private let url: URL
 
-	@SwiftUI.Binding
-	private var isLoading: Bool
+  @SwiftUI.Binding
+  private var isLoading: Bool
 
-	init(
-		url: URL,
-		isLoading: Binding<Bool>
-	) {
-		self.url = url
-		self._isLoading = isLoading
-	}
+  init(
+    url: URL,
+    isLoading: Binding<Bool>
+  ) {
+    self.url = url
+    self._isLoading = isLoading
+  }
 
-	func makeCocoaView(context: Context) -> WKWebView {
-		let webView: WKWebView = .init()
-		webView.navigationDelegate = context.coordinator
-		return webView
-	}
+  func makeCocoaView(context: Context) -> WKWebView {
+    let webView: WKWebView = .init()
+    webView.navigationDelegate = context.coordinator
+    return webView
+  }
 
-	func updateCocoaView(
-		_ webView: WKWebView,
-		context: Context
-	) {
-		let request: URLRequest = .init(url: self.url)
-		webView.load(request)
-	}
+  func updateCocoaView(
+    _ webView: WKWebView,
+    context: Context
+  ) {
+    let request: URLRequest = .init(url: self.url)
+    webView.load(request)
+  }
 
-	func makeCoordinator() -> Coordinator {
-		Coordinator(isLoading: self.$isLoading)
-	}
+  func makeCoordinator() -> Coordinator {
+    Coordinator(isLoading: self.$isLoading)
+  }
 
-	class Coordinator: NSObject, WKNavigationDelegate {
-		@SwiftUI.Binding
-		private var isLoading: Bool
+  class Coordinator: NSObject, WKNavigationDelegate {
+    @SwiftUI.Binding
+    private var isLoading: Bool
 
-		init(isLoading: Binding<Bool>) {
-			self._isLoading = isLoading
-		}
+    init(isLoading: Binding<Bool>) {
+      self._isLoading = isLoading
+    }
 
-		func webView(
-			_ webView: WKWebView,
-			didStartProvisionalNavigation navigation: WKNavigation!
-		) {
-			self.isLoading = true
-		}
+    func webView(
+      _ webView: WKWebView,
+      didStartProvisionalNavigation navigation: WKNavigation!
+    ) {
+      self.isLoading = true
+    }
 
-		func webView(
-			_ webView: WKWebView,
-			didFinish navigation: WKNavigation!
-		) {
-			self.isLoading = false
-		}
-	}
+    func webView(
+      _ webView: WKWebView,
+      didFinish navigation: WKNavigation!
+    ) {
+      self.isLoading = false
+    }
+  }
 }
 
 // Usage
 struct ArticleWebView: View {
-	private let url: URL
+  private let url: URL
 
-	@SwiftUI.State
-	private var isLoading = false
+  @SwiftUI.State
+  private var isLoading = false
 
-	init(url: URL) {
+  init(url: URL) {
     self.url = url
   }
 
-	var body: some View {
-		WebView(url: url, isLoading: $isLoading)
-			.overlay {
-				if isLoading {
-					ProgressView()
-				}
-			}
-	}
+  var body: some View {
+    WebView(url: url, isLoading: $isLoading)
+      .overlay {
+        if isLoading {
+          ProgressView()
+        }
+      }
+  }
 }
 ```
 
@@ -119,92 +119,92 @@ If `Cocoa`-prefixed protocols are not available (requires [`cocoa-aliases`](http
 
 ```swift
 public struct ImagePicker: CocoaViewControllerRepresentable {
-	@SwiftUI.Binding
-	var image: UIImage?
+  @SwiftUI.Binding
+  var image: UIImage?
 
-	@Environment(\.dismiss)
-	private var dismiss: DismissAction
+  @Environment(\.dismiss)
+  private var dismiss: DismissAction
 
-	func makeUIViewController(context: Context) -> PHPickerViewController {
-		var config: PHPickerConfiguration = .init()
-		config.filter = .images
-		config.selectionLimit = 1
+  func makeUIViewController(context: Context) -> PHPickerViewController {
+    var config: PHPickerConfiguration = .init()
+    config.filter = .images
+    config.selectionLimit = 1
 
-		let picker: PHPickerViewController = .init(configuration: config)
-		picker.delegate = context.coordinator
-		return picker
-	}
+    let picker: PHPickerViewController = .init(configuration: config)
+    picker.delegate = context.coordinator
+    return picker
+  }
 
-	func updateCocoaViewController(
-		_ uiViewController: PHPickerViewController,
-		context: Context
-	) {
-		// No updates needed
-	}
+  func updateCocoaViewController(
+    _ uiViewController: PHPickerViewController,
+    context: Context
+  ) {
+    // No updates needed
+  }
 
-	func makeCoordinator() -> Coordinator {
-		Coordinator(image: self.$image, dismiss: self.dismiss)
-	}
+  func makeCoordinator() -> Coordinator {
+    Coordinator(image: self.$image, dismiss: self.dismiss)
+  }
 
-	class Coordinator: NSObject, PHPickerViewControllerDelegate {
-		let dismiss: DismissAction
+  class Coordinator: NSObject, PHPickerViewControllerDelegate {
+    let dismiss: DismissAction
 
-		@SwiftUI.Binding
-		var image: UIImage?
+    @SwiftUI.Binding
+    var image: UIImage?
 
-		init(
-			image: Binding<UIImage?>,
-			dismiss: DismissAction
-		) {
-			self.dismiss = dismiss
-			self._image = image
-		}
+    init(
+      image: Binding<UIImage?>,
+      dismiss: DismissAction
+    ) {
+      self.dismiss = dismiss
+      self._image = image
+    }
 
-		func picker(
-			_ picker: PHPickerViewController,
-			didFinishPicking results: [PHPickerResult]
-		) {
-			dismiss()
+    func picker(
+      _ picker: PHPickerViewController,
+      didFinishPicking results: [PHPickerResult]
+    ) {
+      dismiss()
 
-			guard
-				let provider = results.first?.itemProvider,
-				provider.canLoadObject(ofClass: UIImage.self) 
-			else { return }
+      guard
+        let provider = results.first?.itemProvider,
+        provider.canLoadObject(ofClass: UIImage.self) 
+      else { return }
 
-			provider.loadObject(ofClass: UIImage.self) { image, _ in
-				DispatchQueue.main.async {
-					self.image = image as? UIImage
-				}
-			}
-		}
-	}
+      provider.loadObject(ofClass: UIImage.self) { image, _ in
+        DispatchQueue.main.async {
+          self.image = image as? UIImage
+        }
+      }
+    }
+  }
 }
 
 // Usage
 struct ProfileEditView: View {
-	@SwiftUI.State
-	private var profileImage: UIImage?
-	
-	@SwiftUI.State
-	private var showImagePicker: Bool = false
+  @SwiftUI.State
+  private var profileImage: UIImage?
+  
+  @SwiftUI.State
+  private var showImagePicker: Bool = false
 
-	var body: some View {
-		VStack {
-			if let image = profileImage {
-				Image(uiImage: image)
-					.resizable()
-					.aspectRatio(contentMode: .fill)
-					.frame(width: 200, height: 200)
-					.clipShape(Circle())
-			}
+  var body: some View {
+    VStack {
+      if let image = profileImage {
+        Image(uiImage: image)
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+          .frame(width: 200, height: 200)
+          .clipShape(Circle())
+      }
 
-			Button("Choose Photo") {
-				showImagePicker = true
-			}
-		}
-		.sheet(isPresented: $showImagePicker) {
-			ImagePicker(image: $profileImage)
-		}
-	}
+      Button("Choose Photo") {
+        showImagePicker = true
+      }
+    }
+    .sheet(isPresented: $showImagePicker) {
+      ImagePicker(image: $profileImage)
+    }
+  }
 }
 ```

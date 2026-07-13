@@ -17,27 +17,27 @@ When updating legacy SwiftUI code to iOS 17+:
 ### Before (iOS 16)
 ```swift
 class UserProfileModel: ObservableObject {
-	@Published
-	var name: String = ""
+  @Published
+  var name: String = ""
 
-	@Published
-	var email: String = ""
+  @Published
+  var email: String = ""
 
-	init() {}
+  init() {}
 }
 
 struct ProfileView: View {
-	@StateObject
-	private var model = UserProfileModel()
+  @StateObject
+  private var model = UserProfileModel()
 
-	init() {}
+  init() {}
 
-	var body: some View {
-		TextField("Name", text: $model.name)
-			.onAppear {
-				Task { await model.load() }
-			}
-	}
+  var body: some View {
+    TextField("Name", text: $model.name)
+      .onAppear {
+        Task { await model.load() }
+      }
+  }
 }
 ```
 
@@ -45,27 +45,27 @@ struct ProfileView: View {
 ```swift
 @Observable
 class UserProfileModel {
-	var name: String
-	var email: String
-	
-	init(
-		name: String = "",
-		email: String = ""
-	) {
-		self.name = name
-		self.email = email
-	}
+  var name: String
+  var email: String
+  
+  init(
+    name: String = "",
+    email: String = ""
+  ) {
+    self.name = name
+    self.email = email
+  }
 }
 
 struct ProfileView: View {
-	@SwiftUI.State
-	private var model: UserProfileModel = .init()
+  @SwiftUI.State
+  private var model: UserProfileModel = .init()
 
-	init() {}
-	
-	var body: some View {
-		TextField("Name", text: $model.name)
-			.task { await model.load() }
-	}
+  init() {}
+  
+  var body: some View {
+    TextField("Name", text: $model.name)
+      .task { await model.load() }
+  }
 }
 ```

@@ -6,8 +6,8 @@
 
 ```swift
 .package(
-	url: "https://github.com/capturecontext/swift-foundation-extensions.git",
-	.upToNextMinor(from: "0.7.0")
+  url: "https://github.com/capturecontext/swift-foundation-extensions.git",
+  .upToNextMinor(from: "0.7.0")
 )
 ```
 
@@ -28,12 +28,12 @@ If the codebase already depends on those narrower packages directly, prefer thei
 
 ```swift
 init(from decoder: Decoder) throws {
-	self = try container.decode(RawCodingKey.self) { container in
-		.init(
-			someProperty1: container.decode("someProperty1"),
-			someProperty2: container.decode("some_property_2")
-		)
-	}
+  self = try container.decode(RawCodingKey.self) { container in
+    .init(
+      someProperty1: container.decode("someProperty1"),
+      someProperty2: container.decode("some_property_2")
+    )
+  }
 }
 ```
 

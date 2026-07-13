@@ -6,44 +6,44 @@
 
 ```swift
 struct ArticleDetailView: View {
-	let articleID: String
-	
-	@SwiftUI.State
-	private var article: Article?
+  let articleID: String
   
-	@SwiftUI.State
-	private var isLoading: Bool = true
-	
-	init(
-		articleID: String
-	) {
-		self.articleID = articleID
-	}
+  @SwiftUI.State
+  private var article: Article?
+  
+  @SwiftUI.State
+  private var isLoading: Bool = true
+  
+  init(
+    articleID: String
+  ) {
+    self.articleID = articleID
+  }
 
-	var body: some View {
-		Group {
-			if let article {
-				ArticleContent(article: article)
-			} else if isLoading {
-				ProgressView()
-			} else {
-				ContentUnavailableView(
-					"Article Not Found",
-					systemImage: "doc.text"
-				)
-			}
-		}
-		.task { await loadArticle() }
-	}
+  var body: some View {
+    Group {
+      if let article {
+        ArticleContent(article: article)
+      } else if isLoading {
+        ProgressView()
+      } else {
+        ContentUnavailableView(
+          "Article Not Found",
+          systemImage: "doc.text"
+        )
+      }
+    }
+    .task { await loadArticle() }
+  }
 
-	private func loadArticle() async {
-		isLoading = true
-		defer { isLoading = false }
+  private func loadArticle() async {
+    isLoading = true
+    defer { isLoading = false }
 
-		await withErrorReporting {
-			self.article = try await articleService.fetchArticle(id: articleId)
-		}
-	}
+    await withErrorReporting {
+      self.article = try await articleService.fetchArticle(id: articleId)
+    }
+  }
 }
 ```
 
@@ -53,21 +53,21 @@ struct ArticleDetailView: View {
 
 ```swift
 struct ArticleListView: View {
-	@SwiftUI.State
-	private var articles: [Article] = []
+  @SwiftUI.State
+  private var articles: [Article] = []
 
-	var body: some View {
-		List(articles) { article in
-			ArticleRow(article: article)
-		}
-		.refreshable { await refreshArticles() }
-	}
+  var body: some View {
+    List(articles) { article in
+      ArticleRow(article: article)
+    }
+    .refreshable { await refreshArticles() }
+  }
 
-	private func refreshArticles() async {
-		await withErrorReporting {
-			self.articles = try await articleService.fetchArticles()
-		}
-	}
+  private func refreshArticles() async {
+    await withErrorReporting {
+      self.articles = try await articleService.fetchArticles()
+    }
+  }
 }
 ```
 
@@ -77,31 +77,31 @@ struct ArticleListView: View {
 
 ```swift
 struct ArticleDetailView: View {
-	let article: Article
+  let article: Article
 
-	@SwiftUI.State
-	private var isSaved = false
+  @SwiftUI.State
+  private var isSaved = false
 
-	init(
-		article: Article
-	) {
-		self.article = article
-	}
+  init(
+    article: Article
+  ) {
+    self.article = article
+  }
 
-	var body: some View {
-		ArticleContent(article: article)
-			.toolbar {
-				Button(isSaved ? "Saved" : "Save") {
-					Task { await saveArticle() }
-				}
-			}
-	}
+  var body: some View {
+    ArticleContent(article: article)
+      .toolbar {
+        Button(isSaved ? "Saved" : "Save") {
+          Task { await saveArticle() }
+        }
+      }
+  }
 
-	private func saveArticle() async {
-		await withErrorReporting {
-			try await articleService.saveArticle(article)
-			isSaved = true
-		}
-	}
+  private func saveArticle() async {
+    await withErrorReporting {
+      try await articleService.saveArticle(article)
+      isSaved = true
+    }
+  }
 }
 ```

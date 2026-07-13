@@ -6,36 +6,36 @@
 ```swift
 @Observable
 class AppSettings {
-	var isDarkMode: Bool
-	
-	public init(
-		isDarkMode: Bool = false
-	) {
-		self.isDarkMode = isDarkMode
-	}
+  var isDarkMode: Bool
+  
+  public init(
+    isDarkMode: Bool = false
+  ) {
+    self.isDarkMode = isDarkMode
+  }
 }
 
 // Inject into environment
 struct MyApp: App {
-	@SwiftUI.State
-	private var settings: AppSettings = .init()
+  @SwiftUI.State
+  private var settings: AppSettings = .init()
 
-	var body: some Scene {
-		WindowGroup {
-			ContentView()
-				.environment(settings)
-		}
-	}
+  var body: some Scene {
+    WindowGroup {
+      ContentView()
+        .environment(settings)
+    }
+  }
 }
 
 // Access in child view
 struct SettingsView: View {
-	@Environment(AppSettings.self)
-	private var settings
+  @Environment(AppSettings.self)
+  private var settings
 
-	var body: some View {
-		Toggle("Dark Mode", isOn: $settings.isDarkMode)
-	}
+  var body: some View {
+    Toggle("Dark Mode", isOn: $settings.isDarkMode)
+  }
 }
 ```
 

@@ -28,60 +28,60 @@
 ### Basic Check
 ```swift
 if #available(iOS 26, *) {
-	content
-		.glassEffect()
+  content
+    .glassEffect()
 } else {
-	content
-		.background(.ultraThinMaterial)
+  content
+    .background(.ultraThinMaterial)
 }
 ```
 
 ### View Modifier Pattern
 ```swift
 extension View {
-	@ViewBuilder
-	func adaptiveGlass() -> some View {
-		if #available(iOS 26, *) {
-			self.glassEffect()
-		} else {
-			self.background(.regularMaterial)
-		}
-	}
+  @ViewBuilder
+  func adaptiveGlass() -> some View {
+    if #available(iOS 26, *) {
+      self.glassEffect()
+    } else {
+      self.background(.regularMaterial)
+    }
+  }
 }
 
 // Usage
 Button("Action") { }
-	.adaptiveGlass()
+  .adaptiveGlass()
 ```
 
 ### Toolbar Spacer Fallback
 ```swift
 extension View {
-	@ViewBuilder
-	func adaptiveToolbar() -> some View {
-		if #available(iOS 26, *) {
-			self.toolbar {
-				ToolbarItemGroup(placement: .topBarTrailing) {
-					Button("Up") { }
-					Button("Down") { }
-					Spacer(.fixed) // iOS 26 feature
-					Button("Settings") { }
-				}
-			}
-		} else {
-			self.toolbar {
-				ToolbarItem(placement: .topBarTrailing) {
-					Button("Up") { }
-				}
-				ToolbarItem(placement: .topBarTrailing) {
-					Button("Down") { }
-				}
-				ToolbarItem(placement: .topBarTrailing) {
-					Button("Settings") { }
-				}
-			}
-		}
-	}
+  @ViewBuilder
+  func adaptiveToolbar() -> some View {
+    if #available(iOS 26, *) {
+      self.toolbar {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+          Button("Up") { }
+          Button("Down") { }
+          Spacer(.fixed) // iOS 26 feature
+          Button("Settings") { }
+        }
+      }
+    } else {
+      self.toolbar {
+        ToolbarItem(placement: .topBarTrailing) {
+          Button("Up") { }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+          Button("Down") { }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+          Button("Settings") { }
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -89,28 +89,28 @@ extension View {
 
 ```swift
 struct ArticleView: View {
-	let url: URL
+  let url: URL
 
-	var body: some View {
-		if #available(iOS 26, *) {
-			WebView(url: url)
-		} else {
-			WebViewRepresentable(url: url) // UIViewRepresentable wrapper
-		}
-	}
+  var body: some View {
+    if #available(iOS 26, *) {
+      WebView(url: url)
+    } else {
+      WebViewRepresentable(url: url) // UIViewRepresentable wrapper
+    }
+  }
 }
 
 // iOS 17/18 fallback
 struct WebViewRepresentable: UIViewRepresentable {
-	let url: URL
+  let url: URL
 
-	func makeUIView(context: Context) -> WKWebView {
-		WKWebView()
-	}
+  func makeUIView(context: Context) -> WKWebView {
+    WKWebView()
+  }
 
-	func updateUIView(_ webView: WKWebView, context: Context) {
-		webView.load(URLRequest(url: url))
-	}
+  func updateUIView(_ webView: WKWebView, context: Context) {
+    webView.load(URLRequest(url: url))
+  }
 }
 ```
 
@@ -120,19 +120,19 @@ struct WebViewRepresentable: UIViewRepresentable {
 #if swift(>=6.0)
 @Animatable
 struct ModernShape: Shape {
-	var progress: Double
+  var progress: Double
 
-	@AnimatableIgnored
-	var style: ShapeStyle
+  @AnimatableIgnored
+  var style: ShapeStyle
 }
 #else
 struct LegacyShape: Shape {
-	var progress: Double
+  var progress: Double
 
-	var animatableData: Double {
-		get { progress }
-		set { progress = newValue }
-	}
+  var animatableData: Double {
+    get { progress }
+    set { progress = newValue }
+  }
 }
 #endif
 ```
@@ -141,14 +141,14 @@ struct LegacyShape: Shape {
 
 ```swift
 TabView {
-	if #available(iOS 26, *) {
-		SearchView()
-			.tabItem { Label("Search", systemImage: "magnifyingglass") }
-			.tabRole(.search)
-	} else {
-		SearchView()
-			.tabItem { Label("Search", systemImage: "magnifyingglass") }
-	}
+  if #available(iOS 26, *) {
+    SearchView()
+      .tabItem { Label("Search", systemImage: "magnifyingglass") }
+      .tabRole(.search)
+  } else {
+    SearchView()
+      .tabItem { Label("Search", systemImage: "magnifyingglass") }
+  }
 }
 ```
 
@@ -156,27 +156,27 @@ TabView {
 
 ```swift
 struct CommentEditor: View {
-	@SwiftUI.State
-	private var richText: AttributedString
+  @SwiftUI.State
+  private var richText: AttributedString
 
-	@SwiftUI.State
-	private var plainText: String
+  @SwiftUI.State
+  private var plainText: String
 
-	init(
-		richText: AttributedString = .init("Comment"),
-		plainText: String = "Comment"
-	) {
-		self._richText = SwiftUI.State(wrappedValue: richText)
-		self._plainText = SwiftUI.State(wrappedValue: plainText)
-	}
+  init(
+    richText: AttributedString = .init("Comment"),
+    plainText: String = "Comment"
+  ) {
+    self._richText = SwiftUI.State(wrappedValue: richText)
+    self._plainText = SwiftUI.State(wrappedValue: plainText)
+  }
 
-	var body: some View {
-		if #available(iOS 26, *) {
-			TextEditor(text: self.$richText) // Rich text support
-		} else {
-			TextEditor(text: self.$plainText) // Plain text only
-		}
-	}
+  var body: some View {
+    if #available(iOS 26, *) {
+      TextEditor(text: self.$richText) // Rich text support
+    } else {
+      TextEditor(text: self.$plainText) // Plain text only
+    }
+  }
 }
 ```
 
@@ -190,14 +190,14 @@ let blurView: UIVisualEffectView = .init(effect: blurEffect)
 
 // After (SwiftUI with fallback)
 extension View {
-	@ViewBuilder
-	func adaptiveMaterial() -> some View {
-		if #available(iOS 26, *) {
-			self.glassEffect()
-		} else {
-			self.background(.regularMaterial)
-		}
-	}
+  @ViewBuilder
+  func adaptiveMaterial() -> some View {
+    if #available(iOS 26, *) {
+      self.glassEffect()
+    } else {
+      self.background(.regularMaterial)
+    }
+  }
 }
 ```
 

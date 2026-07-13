@@ -6,26 +6,26 @@ Basic store-driven views and @Bindable patterns for two-way bindings.
 
 ```swift
 struct CounterView: View {
-    let store: StoreOf<Counter>
+  let store: StoreOf<Counter>
 
-    var body: some View {
-        HStack {
-            Button {
-                store.send(.decrementButtonTapped)
-            } label: {
-                Image(systemName: "minus")
-            }
+  var body: some View {
+    HStack {
+      Button {
+        store.send(.decrementButtonTapped)
+      } label: {
+        Image(systemName: "minus")
+      }
 
-            Text("\(store.count)")
-                .monospacedDigit()
+      Text("\(store.count)")
+        .monospacedDigit()
 
-            Button {
-                store.send(.incrementButtonTapped)
-            } label: {
-                Image(systemName: "plus")
-            }
-        }
+      Button {
+        store.send(.incrementButtonTapped)
+      } label: {
+        Image(systemName: "plus")
+      }
     }
+  }
 }
 ```
 
@@ -35,23 +35,23 @@ Use `@Bindable` to enable SwiftUI controls to bind directly to store state:
 
 ```swift
 struct BindingFormView: View {
-    @Bindable var store: StoreOf<BindingForm>
+  @Bindable var store: StoreOf<BindingForm>
 
-    var body: some View {
-        Form {
-            TextField("Type here", text: $store.text)
+  var body: some View {
+    Form {
+      TextField("Type here", text: $store.text)
 
-            Toggle("Disable other controls", isOn: $store.toggleIsOn)
+      Toggle("Disable other controls", isOn: $store.toggleIsOn)
 
-            Stepper(
-                "Max slider value: \(store.stepCount)",
-                value: $store.stepCount,
-                in: 0...100
-            )
+      Stepper(
+        "Max slider value: \(store.stepCount)",
+        value: $store.stepCount,
+        in: 0...100
+      )
 
-            Slider(value: $store.sliderValue, in: 0...Double(store.stepCount))
-        }
+      Slider(value: $store.sliderValue, in: 0...Double(store.stepCount))
     }
+  }
 }
 ```
 
@@ -61,19 +61,19 @@ For actions that need custom logic on value changes:
 
 ```swift
 struct SettingsView: View {
-    @Bindable var store: StoreOf<Settings>
+  @Bindable var store: StoreOf<Settings>
 
-    var body: some View {
-        Toggle(
-            "Notifications",
-            isOn: $store.notificationsEnabled.sending(\.toggleNotifications)
-        )
+  var body: some View {
+    Toggle(
+      "Notifications",
+      isOn: $store.notificationsEnabled.sending(\.toggleNotifications)
+    )
 
-        Stepper(
-            "\(store.count)",
-            value: $store.count.sending(\.stepperChanged)
-        )
-    }
+    Stepper(
+      "\(store.count)",
+      value: $store.count.sending(\.stepperChanged)
+    )
+  }
 }
 ```
 
@@ -81,27 +81,27 @@ Corresponding reducer:
 
 ```swift
 enum Action: BindableAction {
-    case binding(BindingAction<State>)
-    case toggleNotifications
-    case stepperChanged
+  case binding(BindingAction<State>)
+  case toggleNotifications
+  case stepperChanged
 
-    var body: some ReducerOf<Self> {
-        BindingReducer()
-        Reduce { state, action in
-            switch action {
-            case .toggleNotifications:
-                // Custom logic when toggle changes
-                return .send(.requestNotificationPermission)
+  var body: some ReducerOf<Self> {
+    BindingReducer()
+    Reduce { state, action in
+      switch action {
+      case .toggleNotifications:
+        // Custom logic when toggle changes
+        return .send(.requestNotificationPermission)
 
-            case .stepperChanged:
-                // Custom logic when stepper changes
-                return .send(.trackCountChange)
+      case .stepperChanged:
+        // Custom logic when stepper changes
+        return .send(.trackCountChange)
 
-            case .binding:
-                return .none
-            }
-        }
+      case .binding:
+        return .none
+      }
     }
+  }
 }
 ```
 
@@ -111,19 +111,19 @@ enum Action: BindableAction {
 
 ```swift
 struct StatusView: View {
-    let store: StoreOf<Status>
+  let store: StoreOf<Status>
 
-    var body: some View {
-        VStack {
-            if store.isLoading {
-                ProgressView()
-            } else if let error = store.error {
-                ErrorView(error: error)
-            } else {
-                ContentView(data: store.data)
-            }
-        }
+  var body: some View {
+    VStack {
+      if store.isLoading {
+        ProgressView()
+      } else if let error = store.error {
+        ErrorView(error: error)
+      } else {
+        ContentView(data: store.data)
+      }
     }
+  }
 }
 ```
 
@@ -131,13 +131,13 @@ struct StatusView: View {
 
 ```swift
 struct AnimatedCounterView: View {
-    let store: StoreOf<Counter>
+  let store: StoreOf<Counter>
 
-    var body: some View {
-        Text("\(store.count)")
-            .font(.largeTitle)
-            .animation(.spring(), value: store.count)
-    }
+  var body: some View {
+    Text("\(store.count)")
+      .font(.largeTitle)
+      .animation(.spring(), value: store.count)
+  }
 }
 ```
 
@@ -147,16 +147,16 @@ struct AnimatedCounterView: View {
 
 ```swift
 struct FeatureView: View {
-    let store: StoreOf<Feature>
+  let store: StoreOf<Feature>
 
-    var body: some View {
-        VStack {
-            // Content
-        }
-        .onAppear {
-            store.send(.view(.onAppear))
-        }
+  var body: some View {
+    VStack {
+      // Content
     }
+    .onAppear {
+      store.send(.view(.onAppear))
+    }
+  }
 }
 ```
 
@@ -164,19 +164,19 @@ struct FeatureView: View {
 
 ```swift
 struct FeatureView: View {
-    let store: StoreOf<Feature>
+  let store: StoreOf<Feature>
 
-    var body: some View {
-        VStack {
-            // Content
-        }
-        .task {
-            await store.send(.view(.runTasks)).finish()
-        }
-        .onAppear {
-            store.send(.view(.onAppear))
-        }
+  var body: some View {
+    VStack {
+      // Content
     }
+    .task {
+      await store.send(.view(.runTasks)).finish()
+    }
+    .onAppear {
+      store.send(.view(.onAppear))
+    }
+  }
 }
 ```
 

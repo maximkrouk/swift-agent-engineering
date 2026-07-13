@@ -9,12 +9,12 @@ Core patterns for testing actions, state changes, dependencies, errors, and pres
 ```swift
 @Test("onAppear triggers data loading")
 func testOnAppear() async {
-    let store = makeStore()
+  let store = makeStore()
 
-    await store.send(.view(.onAppear))
-    await store.receive(.loadData) {
-        $0.isLoading = true
-    }
+  await store.send(.view(.onAppear))
+  await store.receive(.loadData) {
+    $0.isLoading = true
+  }
 }
 ```
 
@@ -23,19 +23,19 @@ func testOnAppear() async {
 ```swift
 @Test("successful data loading flow")
 func testSuccessfulDataLoading() async {
-    let testData = [Item(id: 1, name: "Test")]
-    let store = makeStore {
-        $0.apiClient.fetchData = { testData }
-    }
+  let testData = [Item(id: 1, name: "Test")]
+  let store = makeStore {
+    $0.apiClient.fetchData = { testData }
+  }
 
-    await store.send(.view(.onAppear))
-    await store.receive(.loadData) {
-        $0.isLoading = true
-    }
-    await store.receive(.didLoadData(.success(testData))) {
-        $0.isLoading = false
-        $0.data = testData
-    }
+  await store.send(.view(.onAppear))
+  await store.receive(.loadData) {
+    $0.isLoading = true
+  }
+  await store.receive(.didLoadData(.success(testData))) {
+    $0.isLoading = false
+    $0.data = testData
+  }
 }
 ```
 
@@ -44,10 +44,10 @@ func testSuccessfulDataLoading() async {
 ```swift
 @Test("notifies parent on completion")
 func testDelegateNotification() async {
-    let store = makeStore()
+  let store = makeStore()
 
-    await store.send(.view(.didTapSave))
-    await store.receive(.delegate(.userDidCompleteFlow))
+  await store.send(.view(.didTapSave))
+  await store.receive(.delegate(.userDidCompleteFlow))
 }
 ```
 
@@ -73,8 +73,8 @@ The closure in `receive` tells TestStore you expect state mutations. Using `{ _ 
 
 ```swift
 await store.send(.view(.didTapSave)) {
-    $0.isLoading = true
-    $0.canSave = false
+  $0.isLoading = true
+  $0.canSave = false
 }
 ```
 
@@ -82,10 +82,10 @@ await store.send(.view(.didTapSave)) {
 
 ```swift
 await store.receive(.didLoadData(.success(testData))) {
-    $0.isLoading = false
-    $0.data = testData
-    $0.isEmpty = false
-    $0.canSave = true
+  $0.isLoading = false
+  $0.data = testData
+  $0.isEmpty = false
+  $0.canSave = true
 }
 ```
 
@@ -94,16 +94,16 @@ await store.receive(.didLoadData(.success(testData))) {
 ```swift
 @Test("computed properties work correctly")
 func testComputedProperties() async {
-    var state = Reducer.State()
+  var state = Reducer.State()
 
-    // Test empty state
-    #expect(state.isEmpty == true)
-    #expect(state.canSave == false)
+  // Test empty state
+  #expect(state.isEmpty == true)
+  #expect(state.canSave == false)
 
-    // Test with data
-    state.data = [Item(id: 1, name: "Test")]
-    #expect(state.isEmpty == false)
-    #expect(state.canSave == true)
+  // Test with data
+  state.data = [Item(id: 1, name: "Test")]
+  #expect(state.isEmpty == false)
+  #expect(state.canSave == true)
 }
 ```
 
@@ -114,17 +114,17 @@ func testComputedProperties() async {
 ```swift
 @Test("tracks analytics events")
 func testAnalyticsTracking() async {
-    var trackedEvents: [AnalyticsEvent] = []
-    let store = makeStore {
-        $0.analytics = .test { event in
-            trackedEvents.append(event)
-        }
+  var trackedEvents: [AnalyticsEvent] = []
+  let store = makeStore {
+    $0.analytics = .test { event in
+      trackedEvents.append(event)
     }
+  }
 
-    await store.send(.view(.onAppear))
+  await store.send(.view(.onAppear))
 
-    #expect(trackedEvents.count == 1)
-    #expect(trackedEvents.first == .screenViewed)
+  #expect(trackedEvents.count == 1)
+  #expect(trackedEvents.first == .screenViewed)
 }
 ```
 
@@ -133,23 +133,23 @@ func testAnalyticsTracking() async {
 ```swift
 @Test("coordinates multiple dependencies")
 func testMultipleDependencies() async {
-    var analyticsEvents: [AnalyticsEvent] = []
-    var apiCalls: [String] = []
+  var analyticsEvents: [AnalyticsEvent] = []
+  var apiCalls: [String] = []
 
-    let store = makeStore {
-        $0.analytics = .test { event in
-            analyticsEvents.append(event)
-        }
-        $0.apiClient = .test { endpoint in
-            apiCalls.append(endpoint)
-            return TestData()
-        }
+  let store = makeStore {
+    $0.analytics = .test { event in
+      analyticsEvents.append(event)
     }
+    $0.apiClient = .test { endpoint in
+      apiCalls.append(endpoint)
+      return TestData()
+    }
+  }
 
-    await store.send(.view(.onAppear))
+  await store.send(.view(.onAppear))
 
-    #expect(apiCalls.contains("fetchData"))
-    #expect(analyticsEvents.contains(.screenViewed))
+  #expect(apiCalls.contains("fetchData"))
+  #expect(analyticsEvents.contains(.screenViewed))
 }
 ```
 
@@ -160,17 +160,17 @@ func testMultipleDependencies() async {
 ```swift
 @Test("shows error alert on failure")
 func testErrorAlert() async {
-    let error = NetworkError.timeout
-    let store = makeStore {
-        $0.apiClient.fetchData = { throw error }
-    }
+  let error = NetworkError.timeout
+  let store = makeStore {
+    $0.apiClient.fetchData = { throw error }
+  }
 
-    await store.send(.view(.onAppear))
-    await store.receive(.didLoadData(.failure(error))) {
-        $0.alert = .error(error)
-    }
+  await store.send(.view(.onAppear))
+  await store.receive(.didLoadData(.failure(error))) {
+    $0.alert = .error(error)
+  }
 
-    #expect(store.state.alert != nil)
+  #expect(store.state.alert != nil)
 }
 ```
 
@@ -179,26 +179,26 @@ func testErrorAlert() async {
 ```swift
 @Test("can retry after error")
 func testErrorRetry() async {
-    var callCount = 0
-    let store = makeStore {
-        $0.apiClient.fetchData = {
-            callCount += 1
-            if callCount == 1 {
-                throw NetworkError.timeout
-            }
-            return [Item(id: 1, name: "Test")]
-        }
+  var callCount = 0
+  let store = makeStore {
+    $0.apiClient.fetchData = {
+      callCount += 1
+      if callCount == 1 {
+        throw NetworkError.timeout
+      }
+      return [Item(id: 1, name: "Test")]
     }
+  }
 
-    // First attempt fails
-    await store.send(.view(.onAppear))
-    await store.receive(.didLoadData(.failure(NetworkError.timeout)))
+  // First attempt fails
+  await store.send(.view(.onAppear))
+  await store.receive(.didLoadData(.failure(NetworkError.timeout)))
 
-    // Retry succeeds
-    await store.send(.alert(.presented(.retry)))
-    await store.receive(.didLoadData(.success([Item(id: 1, name: "Test")])))
+  // Retry succeeds
+  await store.send(.alert(.presented(.retry)))
+  await store.receive(.didLoadData(.success([Item(id: 1, name: "Test")])))
 
-    #expect(callCount == 2)
+  #expect(callCount == 2)
 }
 ```
 
@@ -209,25 +209,25 @@ func testErrorRetry() async {
 ```swift
 @Test("navigates to detail screen")
 func testNavigationToDetail() async {
-    let store = makeStore()
+  let store = makeStore()
 
-    await store.send(.view(.didTapDetail)) {
-        $0.destination = .detail(DetailReducer.State())
-    }
+  await store.send(.view(.didTapDetail)) {
+    $0.destination = .detail(DetailReducer.State())
+  }
 }
 
 @Test("handles detail completion")
 func testDetailCompletion() async {
-    let store = makeStore()
+  let store = makeStore()
 
-    // Navigate to detail
-    await store.send(.view(.didTapDetail))
+  // Navigate to detail
+  await store.send(.view(.didTapDetail))
 
-    // Complete detail flow
-    await store.send(.destination(.presented(.detail(.delegate(.didComplete))))) {
-        $0.destination = nil
-    }
-    await store.receive(.delegate(.userDidCompleteFlow))
+  // Complete detail flow
+  await store.send(.destination(.presented(.detail(.delegate(.didComplete))))) {
+    $0.destination = nil
+  }
+  await store.receive(.delegate(.userDidCompleteFlow))
 }
 ```
 
@@ -236,16 +236,16 @@ func testDetailCompletion() async {
 ```swift
 @Test("shows confirmation alert")
 func testConfirmationAlert() async {
-    let store = makeStore()
+  let store = makeStore()
 
-    await store.send(.view(.didTapDelete)) {
-        $0.alert = .confirmDelete
-    }
+  await store.send(.view(.didTapDelete)) {
+    $0.alert = .confirmDelete
+  }
 
-    await store.send(.alert(.presented(.confirmDelete))) {
-        $0.alert = nil
-    }
-    await store.receive(.deleteItem)
+  await store.send(.alert(.presented(.confirmDelete))) {
+    $0.alert = nil
+  }
+  await store.receive(.deleteItem)
 }
 ```
 
@@ -256,19 +256,19 @@ func testConfirmationAlert() async {
 ```swift
 @Test("handles async operations")
 func testAsyncOperations() async {
-    let expectation: Expectation = .init(description: "Async operation completes")
-    let store = makeStore {
-        $0.apiClient.fetchData = {
-            try await Task.sleep(nanoseconds: 1_000_000)
-            expectation.fulfill()
-            return [Item(id: 1, name: "Test")]
-        }
+  let expectation: Expectation = .init(description: "Async operation completes")
+  let store = makeStore {
+    $0.apiClient.fetchData = {
+      try await Task.sleep(nanoseconds: 1_000_000)
+      expectation.fulfill()
+      return [Item(id: 1, name: "Test")]
     }
+  }
 
-    await store.send(.view(.onAppear))
-    await store.receive(.didLoadData(.success([Item(id: 1, name: "Test")])))
+  await store.send(.view(.onAppear))
+  await store.receive(.didLoadData(.success([Item(id: 1, name: "Test")])))
 
-    await expectation.await()
+  await expectation.await()
 }
 ```
 
@@ -277,23 +277,23 @@ func testAsyncOperations() async {
 ```swift
 @Test("cancels effects on dismiss")
 func testEffectCancellation() async {
-    var isCancelled = false
-    let store = makeStore {
-        $0.apiClient.fetchData = {
-            try await Task.sleep(nanoseconds: 1_000_000)
-            if Task.isCancelled {
-                isCancelled = true
-                throw CancellationError()
-            }
-            return []
-        }
+  var isCancelled = false
+  let store = makeStore {
+    $0.apiClient.fetchData = {
+      try await Task.sleep(nanoseconds: 1_000_000)
+      if Task.isCancelled {
+        isCancelled = true
+        throw CancellationError()
+      }
+      return []
     }
+  }
 
-    await store.send(.view(.onAppear))
-    await store.send(.view(.onDisappear))
+  await store.send(.view(.onAppear))
+  await store.send(.view(.onDisappear))
 
-    try await Task.sleep(nanoseconds: 2_000_000)
-    #expect(isCancelled == true)
+  try await Task.sleep(nanoseconds: 2_000_000)
+  #expect(isCancelled == true)
 }
 ```
 
@@ -306,12 +306,12 @@ Add `.dependencies` to `@Suite` to ensure each test gets fresh dependencies:
 ```swift
 @MainActor
 @Suite(
-    "SettingsFeature",
-    .dependency(\.continuousClock, ImmediateClock()),
-    .dependencies  // Ensures fresh dependencies per test for determinism
+  "SettingsFeature",
+  .dependency(\.continuousClock, ImmediateClock()),
+  .dependencies  // Ensures fresh dependencies per test for determinism
 )
 struct SettingsFeatureTests {
-    // ...
+  // ...
 }
 ```
 
@@ -324,23 +324,23 @@ Declare `@Shared` variables at test scope to both initialize and verify state:
 ```swift
 @Test("enables notifications when toggled on")
 func testEnablesNotifications() async {
-    // Declare @Shared at test scope for verification
-    @Shared(.appStorage("notificationsEnabled")) var notificationsEnabled = false
+  // Declare @Shared at test scope for verification
+  @Shared(.appStorage("notificationsEnabled")) var notificationsEnabled = false
 
-    let store: TestStoreOf<SettingsFeature> = TestStore(initialState: SettingsFeature.State()) {
-        SettingsFeature()
-    } withDependencies: {
-        $0.notificationClient.requestAuthorization = { true }
-    }
+  let store: TestStoreOf<SettingsFeature> = TestStore(initialState: SettingsFeature.State()) {
+    SettingsFeature()
+  } withDependencies: {
+    $0.notificationClient.requestAuthorization = { true }
+  }
 
-    await store.send(.view(.notificationToggleTapped))
-    await store.receive(\.delegate.notificationsConfigured) {
-        // Assert @Shared mutation in state closure
-        $0.$notificationsEnabled.withLock { $0 = true }
-    }
+  await store.send(.view(.notificationToggleTapped))
+  await store.receive(\.delegate.notificationsConfigured) {
+    // Assert @Shared mutation in state closure
+    $0.$notificationsEnabled.withLock { $0 = true }
+  }
 
-    // Can also verify outside store
-    #expect(notificationsEnabled == true)
+  // Can also verify outside store
+  #expect(notificationsEnabled == true)
 }
 ```
 
@@ -350,10 +350,10 @@ When effects mutate `@Shared` state, assert those changes in the `receive` closu
 
 ```swift
 await store.receive(\.delegate.settingsSaved) {
-    $0.isSaving = false
-    // Assert @Shared mutations using withLock
-    $0.$darkModeEnabled.withLock { $0 = true }
-    $0.$accentColor.withLock { $0 = "blue" }
+  $0.isSaving = false
+  // Assert @Shared mutations using withLock
+  $0.$darkModeEnabled.withLock { $0 = true }
+  $0.$accentColor.withLock { $0 = "blue" }
 }
 ```
 
@@ -364,15 +364,15 @@ await store.receive(\.delegate.settingsSaved) {
 ```swift
 @Test("dark mode toggle updates shared setting")
 func testDarkModeToggle() async {
-    @Shared(.appStorage("darkModeEnabled")) var darkModeEnabled = false
+  @Shared(.appStorage("darkModeEnabled")) var darkModeEnabled = false
 
-    let store: TestStoreOf<AppearanceFeature> = TestStore(initialState: AppearanceFeature.State()) {
-        AppearanceFeature()
-    }
+  let store: TestStoreOf<AppearanceFeature> = TestStore(initialState: AppearanceFeature.State()) {
+    AppearanceFeature()
+  }
 
-    await store.send(.view(.darkModeToggled(true))) {
-        $0.$darkModeEnabled.withLock { $0 = true }
-    }
-    await store.finish()
+  await store.send(.view(.darkModeToggled(true))) {
+    $0.$darkModeEnabled.withLock { $0 = true }
+  }
+  await store.finish()
 }
 ```

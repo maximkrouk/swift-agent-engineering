@@ -22,21 +22,21 @@ Apple Human Interface Guidelines for touch targets, input, navigation, layout, a
 ```swift
 // ✅ Tappable control with label + icon; clear intent
 Button("Add item", systemImage: "plus") {
-	model.add()
+  model.add()
 }
 .buttonStyle(.borderedProminent)
 
 // ✅ TextField with appropriate keyboard
 TextField("Email", text: $email)
-	.keyboardType(.emailAddress)
-	.textInputAutocapitalization(.never)
-	.autocorrectionDisabled()
+  .keyboardType(.emailAddress)
+  .textInputAutocapitalization(.never)
+  .autocorrectionDisabled()
 
 // ❌ Tiny icon-only tap target; poor discoverability
 Image(systemName: "plus")
-	.onTapGesture {
-		model.add()
-	}
+  .onTapGesture {
+    model.add()
+  }
 ```
 
 ## Navigation and Flows
@@ -54,43 +54,43 @@ Image(systemName: "plus")
 ```swift
 // ✅ Predictable drill-in navigation; modal only for creation
 NavigationStack {
-	List(items) { item in
-		NavigationLink(item.title, value: item.id)
-	}
-	.navigationDestination(for: Item.ID.self) { id in
-		ItemDetailView(id: id)
-	}
-	.toolbar {
-		ToolbarItem(placement: .primaryAction) {
-			Button("Add", systemImage: "plus") { model.isPresentingCreate = true }
-		}
-	}
-	.sheet(isPresented: $model.isPresentingCreate) {
-		NavigationStack { CreateItemView() }
-	}
+  List(items) { item in
+    NavigationLink(item.title, value: item.id)
+  }
+  .navigationDestination(for: Item.ID.self) { id in
+    ItemDetailView(id: id)
+  }
+  .toolbar {
+    ToolbarItem(placement: .primaryAction) {
+      Button("Add", systemImage: "plus") { model.isPresentingCreate = true }
+    }
+  }
+  .sheet(isPresented: $model.isPresentingCreate) {
+    NavigationStack { CreateItemView() }
+  }
 }
 
 // ✅ Modal with clear dismiss path
 NavigationStack {
-	CreateItemView()
-		.navigationTitle("New Item")
-		.toolbar {
-			ToolbarItem(placement: .cancellationAction) {
-				Button("Cancel", action: dismiss)
-			}
-			ToolbarItem(placement: .confirmationAction) {
-				Button("Save", action: model.save)
-			}
-		}
+  CreateItemView()
+    .navigationTitle("New Item")
+    .toolbar {
+      ToolbarItem(placement: .cancellationAction) {
+        Button("Cancel", action: dismiss)
+      }
+      ToolbarItem(placement: .confirmationAction) {
+        Button("Save", action: model.save)
+      }
+    }
 }
 
 // ❌ Everything is a modal; unclear back/exit paths
 VStack {
-	Button("Open item") { model.showItem.toggle() }
+  Button("Open item") { model.showItem.toggle() }
 }
 .sheet(isPresented: $model.showItem) {
-	ItemDetailView(id: model.selectedID)
-		.toolbar { Button("Save") {} } // no Cancel, no navigation context
+  ItemDetailView(id: model.selectedID)
+    .toolbar { Button("Save") {} } // no Cancel, no navigation context
 }
 ```
 
@@ -127,45 +127,45 @@ VStack {
 ```swift
 // ✅ Hierarchy + grouping via Sections; one primary action in toolbar
 NavigationStack {
-	List {
-		Section("Details") {
-			TextField("Title", text: $model.title)
-			TextField("Notes", text: $model.notes, axis: .vertical)
-		}
+  List {
+    Section("Details") {
+      TextField("Title", text: $model.title)
+      TextField("Notes", text: $model.notes, axis: .vertical)
+    }
 
-		Section("Metadata") {
-			Toggle("Pinned", isOn: $model.isPinned)
-		}
-	}
-	.navigationTitle("New item")
-	.toolbar {
-		ToolbarItem(placement: .confirmationAction) {
-			Button("Save", action: model.save)
-		}
-	}
+    Section("Metadata") {
+      Toggle("Pinned", isOn: $model.isPinned)
+    }
+  }
+  .navigationTitle("New item")
+  .toolbar {
+    ToolbarItem(placement: .confirmationAction) {
+      Button("Save", action: model.save)
+    }
+  }
 }
 
 // ✅ Clear visual hierarchy with system components
 VStack(spacing: 16) {
-	// Primary action
-	Button("Continue", action: model.continue)
-		.buttonStyle(.borderedProminent)
-		.controlSize(.large)
+  // Primary action
+  Button("Continue", action: model.continue)
+    .buttonStyle(.borderedProminent)
+    .controlSize(.large)
 
-	// Secondary action
-	Button("Skip for now", action: model.skip)
-		.buttonStyle(.borderless)
-		.foregroundStyle(.secondary)
+  // Secondary action
+  Button("Skip for now", action: model.skip)
+    .buttonStyle(.borderless)
+    .foregroundStyle(.secondary)
 }
 
 // ❌ Flat wall-of-controls with unclear priority
 VStack(spacing: 3) {
-	Text("New item").font(.title2)
-	TextField("Title", text: $model.title).padding(1)
-	TextField("Notes", text: $model.notes).padding(23)
-	Toggle("Pinned", isOn: $model.isPinned)
-	Button("Save", action: model.save)
-	Button("Delete", action: model.delete)
+  Text("New item").font(.title2)
+  TextField("Title", text: $model.title).padding(1)
+  TextField("Notes", text: $model.notes).padding(23)
+  Toggle("Pinned", isOn: $model.isPinned)
+  Button("Save", action: model.save)
+  Button("Delete", action: model.delete)
 }
 ```
 

@@ -10,20 +10,20 @@ Use `@FetchAll` and `@FetchOne` directly in SwiftUI views:
 
 ```swift
 struct CountersListView: View {
-	@FetchAll
-	var counters: [Counter]
+  @FetchAll
+  var counters: [Counter]
 
-	@FetchOne(Counter.count())
-	var countersCount: Int = 0
+  @FetchOne(Counter.count())
+  var countersCount: Int = 0
 
-	var body: some View {
-		List {
-			Text("Total: \(self.countersCount)")
-			ForEach(self.counters) { counter in
-				Text("\(counter.count)")
-			}
-		}
-	}
+  var body: some View {
+    List {
+      Text("Total: \(self.countersCount)")
+      ForEach(self.counters) { counter in
+        Text("\(counter.count)")
+      }
+    }
+  }
 }
 ```
 
@@ -31,26 +31,26 @@ struct CountersListView: View {
 
 ```swift
 struct SwiftUIDemo: View {
-	@FetchAll(Fact.order { $0.id.desc() }, animation: .default)
-	private var facts: [Fact]
+  @FetchAll(Fact.order { $0.id.desc() }, animation: .default)
+  private var facts: [Fact]
 
-	@FetchOne(Fact.count(), animation: .default)
-	var factsCount: Int = 0
+  @FetchOne(Fact.count(), animation: .default)
+  var factsCount: Int = 0
 
-	var body: some View {
-		List {
-			Section {
-				Text("Facts: \(self.factsCount)")
-					.font(.largeTitle)
-					.contentTransition(.numericText(value: Double(self.factsCount)))
-			}
-			Section {
-				ForEach(self.facts) { fact in
-					Text(fact.body)
-				}
-			}
-		}
-	}
+  var body: some View {
+    List {
+      Section {
+        Text("Facts: \(self.factsCount)")
+          .font(.largeTitle)
+          .contentTransition(.numericText(value: Double(self.factsCount)))
+      }
+      Section {
+        ForEach(self.facts) { fact in
+          Text(fact.body)
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -81,26 +81,26 @@ Use `@ObservationIgnored` to prevent observation of the fetch wrapper itself:
 @Observable
 @MainActor
 class Model {
-	@ObservationIgnored
-	@FetchAll(Fact.order { $0.id.desc() }, animation: .default)
-	var facts: [Fact]
+  @ObservationIgnored
+  @FetchAll(Fact.order { $0.id.desc() }, animation: .default)
+  var facts: [Fact]
 
-	@ObservationIgnored
-	@FetchOne(Fact.count(), animation: .default)
-	var factsCount: Int = 0
+  @ObservationIgnored
+  @FetchOne(Fact.count(), animation: .default)
+  var factsCount: Int = 0
 
-	@ObservationIgnored
-	@Dependency(\.defaultDatabase)
-	private var database
+  @ObservationIgnored
+  @Dependency(\.defaultDatabase)
+  private var database
 
-	func deleteFact(indices: IndexSet) {
-		withErrorReporting {
-			try self.database.write { db in
-				let ids = indices.map { self.facts[$0].id }
-				try Fact.where { $0.id.in(ids) }.delete().execute(db)
-			}
-		}
-	}
+  func deleteFact(indices: IndexSet) {
+    withErrorReporting {
+      try self.database.write { db in
+        let ids = indices.map { self.facts[$0].id }
+        try Fact.where { $0.id.in(ids) }.delete().execute(db)
+      }
+    }
+  }
 }
 ```
 
@@ -108,20 +108,20 @@ class Model {
 
 ```swift
 struct ObservableModelDemo: View {
-	@SwiftUI.State
-	private var model: Model = .init()
+  @SwiftUI.State
+  private var model: Model = .init()
 
-	var body: some View {
-		List {
-			Text("Facts: \(self.model.factsCount)")
-			ForEach(self.model.facts) { fact in
-				Text(fact.body)
-			}
-			.onDelete { indices in
-				self.model.deleteFact(indices: indices)
-			}
-		}
-	}
+  var body: some View {
+    List {
+      Text("Facts: \(self.model.factsCount)")
+      ForEach(self.model.facts) { fact in
+        Text(fact.body)
+      }
+      .onDelete { indices in
+        self.model.deleteFact(indices: indices)
+      }
+    }
+  }
 }
 ```
 
@@ -138,8 +138,8 @@ var counters: [Counter]
 
 ```swift
 @FetchAll(
-	Reminder.where { !$0.isCompleted },
-	animation: .spring(response: 0.3, dampingFraction: 0.7)
+  Reminder.where { !$0.isCompleted },
+  animation: .spring(response: 0.3, dampingFraction: 0.7)
 )
 var incompleteTasks: [Reminder]
 ```
@@ -150,7 +150,7 @@ Use `.contentTransition()` for smooth number updates:
 
 ```swift
 Text("Count: \(factsCount)")
-	.contentTransition(.numericText(value: Double(factsCount)))
+  .contentTransition(.numericText(value: Double(factsCount)))
 ```
 
 ## Best Practices

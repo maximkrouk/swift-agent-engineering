@@ -33,10 +33,10 @@ Use `DeclarativeConfiguration` when setting up Cocoa views, layers, controls, or
 
 ```swift
 let titleLabel = UILabel() { $0
-	.text("Title")
-	.font(.preferredFont(forTextStyle: .headline))
-	.textColor(.label)
-	.numberOfLines(0)
+  .text("Title")
+  .font(.preferredFont(forTextStyle: .headline))
+  .textColor(.label)
+  .numberOfLines(0)
 }
 ```
 
@@ -44,14 +44,14 @@ let titleLabel = UILabel() { $0
 
 ```swift
 extension Configurator where Base: UILabel {
-	@MainActor
-	static var title: Self {
-		.init { $0
-			.font(.preferredFont(forTextStyle: .headline))
-			.textColor(.label)
-			.numberOfLines(0)
-		}
-	}
+  @MainActor
+  static var title: Self {
+    .init { $0
+      .font(.preferredFont(forTextStyle: .headline))
+      .textColor(.label)
+      .numberOfLines(0)
+    }
+  }
 }
 
 let titleLabel = UILabel().configured(using: .title.text("Welcome"))
@@ -61,13 +61,13 @@ let titleLabel = UILabel().configured(using: .title.text("Welcome"))
 
 ```swift
 let view = UIView() { $0
-	.backgroundColor(.secondarySystemBackground)
-	.layer.scope { $0
-		.cornerRadius(12)
-		.cornerCurve(.continuous)
-		.borderWidth(1)
-		.borderColor(.separator)
-	}
+  .backgroundColor(.secondarySystemBackground)
+  .layer.scope { $0
+    .cornerRadius(12)
+    .cornerCurve(.continuous)
+    .borderWidth(1)
+    .borderColor(.separator)
+  }
 }
 ```
 
@@ -75,8 +75,8 @@ let view = UIView() { $0
 
 ```swift
 let subtitleLabel = UILabel() { $0
-	.text(ifLet: subtitle)
-	.attributedText(ifLet: attributedSubtitle)
+  .text(ifLet: subtitle)
+  .attributedText(ifLet: attributedSubtitle)
 }
 ```
 
@@ -84,10 +84,10 @@ let subtitleLabel = UILabel() { $0
 
 ```swift
 let button = UIButton(type: .system) { $0
-	.configuration.ifLet.scope { $0
-		.title("Continue")
-		.image(ifLet: image)
-	}
+  .configuration.ifLet.scope { $0
+    .title("Continue")
+    .image(ifLet: image)
+  }
 }
 ```
 
@@ -127,7 +127,7 @@ Avoid this shape:
 
 ```swift
 let view: UIView = .init() { $0
-	.backgroundColor(.red)
+  .backgroundColor(.red)
 }
 ```
 
@@ -135,7 +135,7 @@ Prefer:
 
 ```swift
 let view = UIView() { $0
-	.backgroundColor(.red)
+  .backgroundColor(.red)
 }
 ```
 

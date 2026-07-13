@@ -10,62 +10,62 @@
 @Observable
 @MainActor
 final class NavigationCoordinator {
-	var path = NavigationPath()
+  var path = NavigationPath()
 
-	func navigateTo(_ article: Article) {
-		path.append(article)
-	}
+  func navigateTo(_ article: Article) {
+    path.append(article)
+  }
 
-	func navigateToAuthor(_ author: Author) {
-		path.append(author)
-	}
+  func navigateToAuthor(_ author: Author) {
+    path.append(author)
+  }
 
-	func navigateToRoot() {
-		path.removeLast(path.count)
-	}
+  func navigateToRoot() {
+    path.removeLast(path.count)
+  }
 
-	func pop() {
-		if !path.isEmpty {
-			path.removeLast()
-		}
-	}
+  func pop() {
+    if !path.isEmpty {
+      path.removeLast()
+    }
+  }
 }
 
 // App navigation
 struct AppNavigationView: View {
-	@SwiftUI.State
-	private var coordinator: NavigationCoordinator = .init()
+  @SwiftUI.State
+  private var coordinator: NavigationCoordinator = .init()
   
   init() {}
 
-	var body: some View {
-		NavigationStack(path: $coordinator.path) {
-			ArticleListView()
-				.navigationDestination(for: Article.self) { article in
-					ArticleDetailView(article: article)
-				}
-				.navigationDestination(for: Author.self) { author in
-					AuthorProfileView(author: author)
-				}
-				.environment(coordinator)
-		}
-	}
+  var body: some View {
+    NavigationStack(path: $coordinator.path) {
+      ArticleListView()
+        .navigationDestination(for: Article.self) { article in
+          ArticleDetailView(article: article)
+        }
+        .navigationDestination(for: Author.self) { author in
+          AuthorProfileView(author: author)
+        }
+        .environment(coordinator)
+    }
+  }
 }
 
 // Usage in views
 struct ArticleListView: View {
-	@Environment(NavigationCoordinator.self
-	private var coordinator
+  @Environment(NavigationCoordinator.self
+  private var coordinator
 
-	init() {}
+  init() {}
 
-	var body: some View {
-		List(articles) { article in
-			Button { coordinator.navigateTo(article) } label: {
-				ArticleRow(article: article)
-			}
-		}
-	}
+  var body: some View {
+    List(articles) { article in
+      Button { coordinator.navigateTo(article) } label: {
+        ArticleRow(article: article)
+      }
+    }
+  }
 }
 ```
 

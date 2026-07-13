@@ -5,7 +5,7 @@ description: Use when implementing internationalization (i18n), String Catalogs,
 
 # Localization
 
-Modern iOS localization using String Catalogs (.xcstrings) for managing translations, plural forms, and locale-aware content. Supports SwiftUI's LocalizedStringKey and String(localized:) APIs.
+Modern iOS localization using String Catalogs (.xcstrings) for managing translations, plural forms, and locale-aware content. Supports SwiftUI's LocalizedStringKey and String.localized() APIs.
 
 ## Reference Loading Guide
 
@@ -21,7 +21,7 @@ Modern iOS localization using String Catalogs (.xcstrings) for managing translat
 ## Core Workflow
 
 1. Create String Catalog in Xcode (File > New > String Catalog)
-2. Mark strings with `String(localized:comment:)` or use SwiftUI's automatic extraction
+2. Mark strings with `String.localized(comment:)` or use SwiftUI's automatic extraction
 3. Add plural variants in String Catalog editor where needed
 4. Test with pseudo-localization (Scheme > Run > Options > App Language)
 5. Export for translation (File > Export Localizations)
@@ -35,14 +35,14 @@ Button("Continue") { }
 
 // Explicit localization with context
 let title: String = .init(
-	localized: "Settings",
-	comment: "Navigation title"
+  localized: "Settings",
+  comment: "Navigation title"
 )
 
 // Deferred localization for custom views
 struct CardView: View {
-	let title: LocalizedStringResource
-	var body: some View { Text(title) }
+  let title: LocalizedStringResource
+  var body: some View { Text(title) }
 }
 ```
 
@@ -57,7 +57,7 @@ struct CardView: View {
 
 2. **Pseudo-localization not tested** — Not running your app with pseudo-localization (German/Chinese pseudo-locale) means you miss text overflow and RTL issues. Always test with pseudo-localization before translation.
 
-3. **Hardcoded strings anywhere** — Even one hardcoded string outside the String Catalog breaks extraction and automation. Use `String(localized:)` everywhere or use `LocalizedStringResource` for deferred localization.
+3. **Hardcoded strings anywhere** — Even one hardcoded string outside the String Catalog breaks extraction and automation. Use `String.localized()` everywhere or use `LocalizedStringResource` for deferred localization.
 
 4. **Context loss in translations** — Providing no comment for translators means they guess context and get it wrong. Add comments explaining where the string appears and what it means.
 

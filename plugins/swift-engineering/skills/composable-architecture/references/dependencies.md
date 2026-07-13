@@ -16,18 +16,18 @@ Use `@DependencyClient` to declare dependency clients with automatic test value 
 ```swift
 // ❌ Before: Manual unimplemented pattern (requires workaround)
 struct LegacyClient: Sendable {
-    var fetchData: @Sendable () async throws -> Data
+  var fetchData: @Sendable () async throws -> Data
 
-    // nonisolated(unsafe) required in Swift 6 — fragile
-    nonisolated(unsafe) static var unimplemented = LegacyClient(
-        fetchData: { fatalError("unimplemented") }
-    )
+  // nonisolated(unsafe) required in Swift 6 — fragile
+  nonisolated(unsafe) static var unimplemented = LegacyClient(
+    fetchData: { fatalError("unimplemented") }
+  )
 }
 
 // ✅ After: @DependencyClient handles it automatically
 @DependencyClient
 struct ModernClient: Sendable {
-    var fetchData: @Sendable () async throws -> Data
+  var fetchData: @Sendable () async throws -> Data
 }
 // testValue auto-generated, no nonisolated(unsafe) needed
 ```
@@ -37,36 +37,36 @@ struct ModernClient: Sendable {
 ```swift
 @DependencyClient
 struct APIClient: Sendable {
-    var fetchItems: @Sendable () async throws -> [Item]
-    var saveItem: @Sendable (Item) async throws -> Void
-    var deleteItem: @Sendable (UUID) async throws -> Void
+  var fetchItems: @Sendable () async throws -> [Item]
+  var saveItem: @Sendable (Item) async throws -> Void
+  var deleteItem: @Sendable (UUID) async throws -> Void
 }
 
 extension APIClient: DependencyKey {
-    static let liveValue: APIClient = .init(
-        fetchItems: {
-            let (data, _) = try await URLSession.shared.data(from: itemsURL)
-            return try JSONDecoder().decode([Item].self, from: data)
-        },
-        saveItem: { item in
-            var request: URLRequest = .init(url: itemsURL)
-            request.httpMethod = "POST"
-            request.httpBody = try JSONEncoder().encode(item)
-            _ = try await URLSession.shared.data(for: request)
-        },
-        deleteItem: { id in
-            var request: URLRequest = .init(url: itemsURL.appending(path: id.uuidString))
-            request.httpMethod = "DELETE"
-            _ = try await URLSession.shared.data(for: request)
-        }
-    )
+  static let liveValue: APIClient = .init(
+    fetchItems: {
+      let (data, _) = try await URLSession.shared.data(from: itemsURL)
+      return try JSONDecoder().decode([Item].self, from: data)
+    },
+    saveItem: { item in
+      var request: URLRequest = .init(url: itemsURL)
+      request.httpMethod = "POST"
+      request.httpBody = try JSONEncoder().encode(item)
+      _ = try await URLSession.shared.data(for: request)
+    },
+    deleteItem: { id in
+      var request: URLRequest = .init(url: itemsURL.appending(path: id.uuidString))
+      request.httpMethod = "DELETE"
+      _ = try await URLSession.shared.data(for: request)
+    }
+  )
 }
 
 extension DependencyValues {
-    var apiClient: APIClient {
-        get { self[APIClient.self] }
-        set { self[APIClient.self] = newValue }
-    }
+  var apiClient: APIClient {
+    get { self[APIClient.self] }
+    set { self[APIClient.self] = newValue }
+  }
 }
 ```
 
@@ -79,27 +79,27 @@ When dependency clients need typed errors with `Equatable` conformance, wrap `Sw
 ```swift
 @DependencyClient
 struct DataClient: Sendable {
-    enum Error: Swift.Error, Equatable, CustomDebugStringConvertible, Sendable {
-        struct WrappedError: Swift.Error, Equatable, Sendable {
-            let error: Swift.Error
-            var localizedDescription: String { error.localizedDescription }
-            static func == (lhs: Self, rhs: Self) -> Bool {
-                lhs.localizedDescription == rhs.localizedDescription
-            }
-        }
-
-        case networkError(WrappedError)
-        case decodingError(WrappedError)
-
-        var debugDescription: String {
-            switch self {
-            case let .networkError(e): return "Network: \(e.localizedDescription)"
-            case let .decodingError(e): return "Decoding: \(e.localizedDescription)"
-            }
-        }
+  enum Error: Swift.Error, Equatable, CustomDebugStringConvertible, Sendable {
+    struct WrappedError: Swift.Error, Equatable, Sendable {
+      let error: Swift.Error
+      var localizedDescription: String { error.localizedDescription }
+      static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.localizedDescription == rhs.localizedDescription
+      }
     }
 
-    var fetchData: @Sendable () async throws(Error) -> Data
+    case networkError(WrappedError)
+    case decodingError(WrappedError)
+
+    var debugDescription: String {
+      switch self {
+      case let .networkError(e): return "Network: \(e.localizedDescription)"
+      case let .decodingError(e): return "Decoding: \(e.localizedDescription)"
+      }
+    }
+  }
+
+  var fetchData: @Sendable () async throws(Error) -> Data
 }
 ```
 
@@ -110,15 +110,15 @@ struct DataClient: Sendable {
 ```swift
 @Reducer
 public struct FeatureName {
-	
-    @Dependency(\.apiClient)
-    var apiClient
-    @Dependency(\.analytics)
-    var analytics
-    @Dependency(\.dismiss)
-    var dismiss
-    @Dependency(\.continuousClock)
-    var clock
+  
+  @Dependency(\.apiClient)
+  var apiClient
+  @Dependency(\.analytics)
+  var analytics
+  @Dependency(\.dismiss)
+  var dismiss
+  @Dependency(\.continuousClock)
+  var clock
 }
 ```
 
@@ -128,12 +128,12 @@ Override dependencies in tests using `withDependencies`:
 
 ```swift
 let store: TestStoreOf<FeatureReducer> = TestStore(initialState: .init()) {
-    FeatureReducer()
+  FeatureReducer()
 } withDependencies: {
-    $0.apiClient.fetchItems = { [Item(id: 1, name: "Test")] }
-    $0.analytics.track = { _ in }
-    $0.dismiss = DismissEffect { }
-    $0.continuousClock = ImmediateClock()
+  $0.apiClient.fetchItems = { [Item(id: 1, name: "Test")] }
+  $0.analytics.track = { _ in }
+  $0.dismiss = DismissEffect { }
+  $0.continuousClock = ImmediateClock()
 }
 ```
 
@@ -144,40 +144,40 @@ Use `AsyncThrowingStream` for dependencies that provide streaming results:
 ```swift
 @DependencyClient
 struct SpeechClient: Sendable {
-    var authorizationStatus: @Sendable () -> AuthorizationStatus = { .denied }
-    var requestAuthorization: @Sendable () async -> AuthorizationStatus = { .denied }
-    var startTask: @Sendable (_ request: SpeechRequest) async
-        -> AsyncThrowingStream<SpeechRecognitionResult, Error> = { _ in .finished() }
+  var authorizationStatus: @Sendable () -> AuthorizationStatus = { .denied }
+  var requestAuthorization: @Sendable () async -> AuthorizationStatus = { .denied }
+  var startTask: @Sendable (_ request: SpeechRequest) async
+    -> AsyncThrowingStream<SpeechRecognitionResult, Error> = { _ in .finished() }
 }
 
 extension SpeechClient: DependencyKey {
-    static let liveValue: SpeechClient = .init(
-        authorizationStatus: {
-            SFSpeechRecognizer.authorizationStatus()
-        },
-        requestAuthorization: {
-            await SFSpeechRecognizer.requestAuthorization()
-        },
-        startTask: { request in
-            AsyncThrowingStream { continuation in
-                let recognizer: SFSpeechRecognizer? = .init()
-                let task = recognizer?.recognitionTask(with: request) { result, error in
-                    if let result {
-                        continuation.yield(result)
-                    }
-                    if let error {
-                        continuation.finish(throwing: error)
-                    }
-                    if result?.isFinal == true {
-                        continuation.finish()
-                    }
-                }
-                continuation.onTermination = { _ in
-                    task?.cancel()
-                }
-            }
+  static let liveValue: SpeechClient = .init(
+    authorizationStatus: {
+      SFSpeechRecognizer.authorizationStatus()
+    },
+    requestAuthorization: {
+      await SFSpeechRecognizer.requestAuthorization()
+    },
+    startTask: { request in
+      AsyncThrowingStream { continuation in
+        let recognizer: SFSpeechRecognizer? = .init()
+        let task = recognizer?.recognitionTask(with: request) { result, error in
+          if let result {
+            continuation.yield(result)
+          }
+          if let error {
+            continuation.finish(throwing: error)
+          }
+          if result?.isFinal == true {
+            continuation.finish()
+          }
         }
-    )
+        continuation.onTermination = { _ in
+          task?.cancel()
+        }
+      }
+    }
+  )
 }
 ```
 
@@ -185,13 +185,13 @@ Using streaming dependency in reducer:
 
 ```swift
 case .startRecording:
-    return .run { send in
-        let request = createSpeechRequest()
-        for try await result in await speechClient.startTask(request) {
-            await send(.speechResult(result))
-        }
+  return .run { send in
+    let request = createSpeechRequest()
+    for try await result in await speechClient.startTask(request) {
+      await send(.speechResult(result))
     }
-    .cancellable(id: CancelID.speech)
+  }
+  .cancellable(id: CancelID.speech)
 ```
 
 ## Preview Values
@@ -200,14 +200,14 @@ Define `previewValue` for dependencies used in SwiftUI previews:
 
 ```swift
 extension AudioRecorderClient: TestDependencyKey {
-    static let previewValue: AudioRecorderClient = .init(
-        currentTime: { 10.0 },
-        requestRecordPermission: { true },
-        startRecording: { _ in true },
-        stopRecording: { }
-    )
+  static let previewValue: AudioRecorderClient = .init(
+    currentTime: { 10.0 },
+    requestRecordPermission: { true },
+    startRecording: { _ in true },
+    stopRecording: { }
+  )
 
-    static let testValue: AudioRecorderClient = .init()  // Unimplemented by default
+  static let testValue: AudioRecorderClient = .init()  // Unimplemented by default
 }
 ```
 
@@ -215,13 +215,13 @@ Using in previews:
 
 ```swift
 #Preview {
-    FeatureView(
-        store: Store(initialState: Feature.State()) {
-            Feature()
-        } withDependencies: {
-            $0.audioRecorder = .previewValue
-        }
-    )
+  FeatureView(
+    store: Store(initialState: Feature.State()) {
+      Feature()
+    } withDependencies: {
+      $0.audioRecorder = .previewValue
+    }
+  )
 }
 ```
 
@@ -239,28 +239,28 @@ Using in previews:
 ```swift
 @DependencyClient
 struct DataClient: Sendable {
-    var fetchData: @Sendable () async throws -> [Item]
+  var fetchData: @Sendable () async throws -> [Item]
 }
 
 extension DataClient: TestDependencyKey {
-    static let liveValue: DataClient = .init(
-        fetchData: {
-            // Real network call
-            let (data, _) = try await URLSession.shared.data(from: url)
-            return try JSONDecoder().decode([Item].self, from: data)
-        }
-    )
+  static let liveValue: DataClient = .init(
+    fetchData: {
+      // Real network call
+      let (data, _) = try await URLSession.shared.data(from: url)
+      return try JSONDecoder().decode([Item].self, from: data)
+    }
+  )
 
-    static let previewValue: DataClient = .init(
-        fetchData: {
-            // Mock data for previews
-            [
-                Item(id: 1, name: "Preview Item 1"),
-                Item(id: 2, name: "Preview Item 2")
-            ]
-        }
-    )
+  static let previewValue: DataClient = .init(
+    fetchData: {
+      // Mock data for previews
+      [
+        Item(id: 1, name: "Preview Item 1"),
+        Item(id: 2, name: "Preview Item 2")
+      ]
+    }
+  )
 
-    // testValue is auto-generated by @DependencyClient
+  // testValue is auto-generated by @DependencyClient
 }
 ```

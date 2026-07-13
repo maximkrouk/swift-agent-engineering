@@ -6,8 +6,8 @@ Use this reference whenever the codebase depends on `Capture` and closure captur
 
 ```swift
 .package(
-	url: "https://github.com/capturecontext/swift-capture.git",
-	.upToNextMajor(from: "4.0.0")
+  url: "https://github.com/capturecontext/swift-capture.git",
+  .upToNextMajor(from: "4.0.0")
 )
 ```
 
@@ -15,8 +15,8 @@ Target dependency:
 
 ```swift
 .product(
-	name: "Capture",
-	package: "swift-capture"
+  name: "Capture",
+  package: "swift-capture"
 )
 ```
 
@@ -32,8 +32,8 @@ Prefer:
 
 ```swift
 service.fetch { [weak self] value in
-	guard let self else { return }
-	self.value = value
+  guard let self else { return }
+  self.value = value
 }
 ```
 
@@ -41,7 +41,7 @@ to become:
 
 ```swift
 service.fetch(completion: self.capture { _self, value in
-	_self.value = value
+  _self.value = value
 })
 ```
 
@@ -53,7 +53,7 @@ Use the package to remove weak-capture noise while preserving the semantics of â
 
 ```swift
 completion = self.capture { _self in
-	_self.reload()
+  _self.reload()
 }
 ```
 
@@ -61,7 +61,7 @@ completion = self.capture { _self in
 
 ```swift
 network.perform(request, completion: self.capture { _self, response, data, error in
-	_self.handle(response: response, data: data, error: error)
+  _self.handle(response: response, data: data, error: error)
 })
 ```
 
@@ -77,13 +77,13 @@ If it returns a non-optional concrete value, use `orReturn`:
 
 ```swift
 let isEnabled: () -> Bool = self.capture(orReturn: false) { _self in
-	_self.isEnabled
+  _self.isEnabled
 }
 ```
 
 ```swift
 dataSource.numberOfItems = self.capture(orReturn: 0) { _self in
-	_self.items.count
+  _self.items.count
 }
 ```
 
@@ -91,7 +91,7 @@ You can also use the functor form:
 
 ```swift
 let numberOfItems = self.capture.orReturn(0) { _self in
-	_self.items.count
+  _self.items.count
 }
 ```
 
@@ -122,7 +122,7 @@ Default and preferred for most code:
 
 ```swift
 self.capture { _self in
-	_self.update()
+  _self.update()
 }
 ```
 
@@ -132,7 +132,7 @@ Use when the closure must keep the object alive through execution:
 
 ```swift
 self.capture(as: .strong) { _self in
-	_self.performCriticalWork()
+  _self.performCriticalWork()
 }
 ```
 
@@ -140,7 +140,7 @@ Or:
 
 ```swift
 self.capture.as(.strong).orReturn(()) { _self in
-	_self.performCriticalWork()
+  _self.performCriticalWork()
 }
 ```
 
@@ -150,7 +150,7 @@ Use only when the object is guaranteed to outlive the closure:
 
 ```swift
 self.capture(as: .unowned) { _self in
-	_self.fastPath()
+  _self.fastPath()
 }
 ```
 
@@ -162,19 +162,19 @@ The API supports sync, throwing, async, and async-throwing closures.
 
 ```swift
 let f0 = self.capture { _self in
-	_self.work()
+  _self.work()
 }
 
 let f1 = self.capture { _self throws in
-	try _self.throwingWork()
+  try _self.throwingWork()
 }
 
 let f2 = self.capture { _self async in
-	await _self.asyncWork()
+  await _self.asyncWork()
 }
 
 let f3 = self.capture { _self async throws in
-	try await _self.asyncThrowingWork()
+  try await _self.asyncThrowingWork()
 }
 ```
 
@@ -188,20 +188,20 @@ If the underlying type is not statically sendable but the usage is intentionally
 
 ```swift
 let callback: @Sendable () -> Int = self.capture
-	.uncheckedSendable
-	.orReturn(0) { _self in
-		_self.count
-	}
+  .uncheckedSendable
+  .orReturn(0) { _self in
+    _self.count
+  }
 ```
 
 Use `onMainActor` when the closure must preserve `@MainActor` isolation:
 
 ```swift
 let render: @MainActor () -> Void = self.capture
-	.uncheckedSendable
-	.onMainActor { _self in
-		_self.render()
-	}
+  .uncheckedSendable
+  .onMainActor { _self in
+    _self.render()
+  }
 ```
 
 There are `onMainActor(orReturn:)` variants as well.
@@ -214,13 +214,13 @@ The `.capture` property exposes a functor-style interface:
 
 ```swift
 self.capture.orReturn(0) { _self in
-	_self.items.count
+  _self.items.count
 }
 ```
 
 ```swift
 self.capture.as(.strong)(in: { _self in
-	_self.performWork()
+  _self.performWork()
 })
 ```
 
@@ -237,7 +237,7 @@ This valid-looking shape does not currently compile:
 
 ```swift
 self.capture.as(.strong) { _self in
-	_self.performWork()
+  _self.performWork()
 }
 ```
 
@@ -245,19 +245,19 @@ Prefer one of:
 
 ```swift
 self.capture.as(.strong)(in: { _self in
-	_self.performWork()
+  _self.performWork()
 })
 ```
 
 ```swift
 self.capture.as(.strong).orReturn(()) { _self in
-	_self.performWork()
+  _self.performWork()
 }
 ```
 
 ```swift
 self.capture.as(.strong).callAsFunction { _self in
-	_self.performWork()
+  _self.performWork()
 }
 ```
 
@@ -269,7 +269,7 @@ For custom reference types:
 
 ```swift
 final class Worker: CapturableObjectProtocol {
-	var isRunning: Bool = false
+  var isRunning: Bool = false
 }
 ```
 

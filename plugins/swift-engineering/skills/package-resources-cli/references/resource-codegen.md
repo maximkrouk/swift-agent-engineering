@@ -6,12 +6,12 @@
 
 ```swift
 .package(
-	url: "https://github.com/capturecontext/package-resources-cli.git",
-	.upToNextMajor(from: "2.0.0")
+  url: "https://github.com/capturecontext/package-resources-cli.git",
+  .upToNextMajor(from: "2.0.0")
 ),
 .package(
-	url: "https://github.com/capturecontext/swift-package-resources.git",
-	.upToNextMajor(from: "4.0.0")
+  url: "https://github.com/capturecontext/swift-package-resources.git",
+  .upToNextMajor(from: "4.0.0")
 )
 ```
 
@@ -19,20 +19,20 @@
 
 ```swift
 .target(
-	name: "AppUI",
-	dependencies: [
-		.product(
-			name: "PackageResources",
-			package: "swift-package-resources"
-		)
-	],
-	resources: [...],
-	plugins: [
-		.plugin(
-			name: "package-resources-plugin",
-			package: "package-resources-cli"
-		)
-	]
+  name: "AppUI",
+  dependencies: [
+    .product(
+      name: "PackageResources",
+      package: "swift-package-resources"
+    )
+  ],
+  resources: [...],
+  plugins: [
+    .plugin(
+      name: "package-resources-plugin",
+      package: "package-resources-cli"
+    )
+  ]
 )
 ```
 
@@ -40,8 +40,8 @@ Alias alternative:
 
 ```swift
 .product(
-	name: "_ExportedPackageResources",
-	package: "package-resources-cli"
+  name: "_ExportedPackageResources",
+  package: "package-resources-cli"
 )
 ```
 

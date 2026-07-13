@@ -15,13 +15,13 @@ let person: Person = try JSONDecoder().decode(Person.self, from: data) // CRASHE
 ```swift
 @Generable
 struct Person {
-	let name: String
-	let age: Int
+  let name: String
+  let age: Int
 }
 
 let response = try await session.respond(
-	to: "Generate a person",
-	generating: Person.self
+  to: "Generate a person",
+  generating: Person.self
 )
 let person: Person = response.content // Guaranteed valid Person
 ```
@@ -31,17 +31,17 @@ let person: Person = response.content // Guaranteed valid Person
 ```swift
 @Generable
 struct Example {
-	let text: String           // Primitives
-	let count: Int
-	let isActive: Bool
-	let items: [String]        // Arrays
-	let plan: DayPlan          // Nested @Generable types
+  let text: String           // Primitives
+  let count: Int
+  let isActive: Bool
+  let items: [String]        // Arrays
+  let plan: DayPlan          // Nested @Generable types
 }
 
 @Generable
 enum Encounter {               // Enums with associated values
-	case order(item: String)
-	case complaint(reason: String)
+  case order(item: String)
+  case complaint(reason: String)
 }
 ```
 
@@ -50,26 +50,26 @@ enum Encounter {               // Enums with associated values
 ```swift
 @Generable
 struct Character {
-	@Guide(description: "A full name")
-	let name: String
+  @Guide(description: "A full name")
+  let name: String
 
-	@Guide(.range(1...10))
-	let level: Int
+  @Guide(.range(1...10))
+  let level: Int
 
-	@Guide(.count(4))
-	var searchTerms: [String]   // Exactly 4 items
+  @Guide(.count(4))
+  var searchTerms: [String]   // Exactly 4 items
 
-	@Guide(.maximumCount(3))
-	let topics: [String]        // Up to 3 items
+  @Guide(.maximumCount(3))
+  let topics: [String]        // Up to 3 items
 }
 ```
 
 **Regex patterns:**
 ```swift
 @Guide(Regex {
-	ChoiceOf { "Mr"; "Mrs" }
-	". "
-	OneOrMore(.word)
+  ChoiceOf { "Mr"; "Mrs" }
+  ". "
+  OneOrMore(.word)
 })
 let name: String  // Output: "Mrs. Brewster"
 ```
@@ -81,9 +81,9 @@ Properties generate in declaration order. Put summaries last:
 ```swift
 @Generable
 struct Itinerary {
-	var destination: String  // Generated first
-	var days: [DayPlan]      // Generated second
-	var summary: String      // Generated last (references days)
+  var destination: String  // Generated first
+  var days: [DayPlan]      // Generated second
+  var summary: String      // Generated last (references days)
 }
 ```
 
@@ -95,9 +95,9 @@ let first = try await session.respond(to: "Generate person", generating: Person.
 
 // Subsequent - skip schema for 10-20% speedup
 let second = try await session.respond(
-	to: "Generate another",
-	generating: Person.self,
-	options: GenerationOptions(includeSchemaInPrompt: false)
+  to: "Generate another",
+  generating: Person.self,
+  options: GenerationOptions(includeSchemaInPrompt: false)
 )
 ```
 
@@ -105,13 +105,13 @@ let second = try await session.respond(
 
 ```swift
 let session: LanguageModelSession = LanguageModelSession(
-	model: SystemLanguageModel(useCase: .contentTagging)
+  model: SystemLanguageModel(useCase: .contentTagging)
 )
 
 @Generable
 struct TagResult {
-	@Guide(.maximumCount(5))
-	let topics: [String]
+  @Guide(.maximumCount(5))
+  let topics: [String]
 }
 
 let result = try await session.respond(to: article, generating: TagResult.self)

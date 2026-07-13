@@ -17,9 +17,9 @@ Systematic debugging for retain cycles, memory leaks, and deallocation issues. 9
 ```swift
 // 1. Add deinit logging to suspected class
 class PlayerViewModel: ObservableObject {
-	deinit {
-		self.logger.debug("PlayerViewModel deallocated")
-	}
+  deinit {
+    self.logger.debug("PlayerViewModel deallocated")
+  }
 }
 
 // 2. Test deallocation
@@ -64,35 +64,35 @@ Memory growing?
 ```swift
 // WRONG - Timer never invalidated
 class PlayerViewModel: ObservableObject {
-	private var timer: Timer?
+  private var timer: Timer?
 
-	func start() {
-		timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-			self?.update()
-		}
-		// Timer never stopped -> keeps firing forever
-	}
+  func start() {
+    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+      self?.update()
+    }
+    // Timer never stopped -> keeps firing forever
+  }
 }
 
 // CORRECT - Invalidate in deinit
 class PlayerViewModel: ObservableObject {
-	private var timer: Timer?
+  private var timer: Timer?
 
-	func start() {
-		timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-			self?.update()
-		}
-	}
+  func start() {
+    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+      self?.update()
+    }
+  }
 
-	func stop() {
-		timer?.invalidate()
-		timer = nil
-	}
+  func stop() {
+    timer?.invalidate()
+    timer = nil
+  }
 
-	deinit {
-		timer?.invalidate()
-		timer = nil
-	}
+  deinit {
+    timer?.invalidate()
+    timer = nil
+  }
 }
 ```
 
@@ -101,30 +101,30 @@ class PlayerViewModel: ObservableObject {
 ```swift
 // WRONG - Observer never removed
 class PlayerViewModel: ObservableObject {
-	init() {
-		NotificationCenter.default.addObserver(
-			self,
-			selector: #selector(handleChange),
-			name: .audioRouteChanged,
-			object: nil
-		)
-	}
+  init() {
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleChange),
+      name: .audioRouteChanged,
+      object: nil
+    )
+  }
 }
 
 // CORRECT - Use Combine (auto-cleanup)
 class PlayerViewModel: ObservableObject {
-	private var cancellables: Set<AnyCancellable>
+  private var cancellables: Set<AnyCancellable>
 
-	init(
-		cancellables: Set<AnyCancellable> = []
-	) {
-		self.cancellables = cancellables
-		NotificationCenter.default.publisher(for: .audioRouteChanged)
-			.sink { [weak self] _ in
-				self?.handleChange()
-			}
-			.store(in: &self.cancellables)
-	}
+  init(
+    cancellables: Set<AnyCancellable> = []
+  ) {
+    self.cancellables = cancellables
+    NotificationCenter.default.publisher(for: .audioRouteChanged)
+      .sink { [weak self] _ in
+        self?.handleChange()
+      }
+      .store(in: &self.cancellables)
+  }
 }
 ```
 
@@ -133,50 +133,50 @@ class PlayerViewModel: ObservableObject {
 ```swift
 // WRONG - Closure captures self strongly
 class ViewController: UIViewController {
-	var callbacks: [() -> Void]
+  var callbacks: [() -> Void]
 
-	init(
-		callbacks: [() -> Void] = []
-	) {
-		self.callbacks = callbacks
-		super.init(nibName: nil, bundle: nil)
-	}
+  init(
+    callbacks: [() -> Void] = []
+  ) {
+    self.callbacks = callbacks
+    super.init(nibName: nil, bundle: nil)
+  }
 
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 
-	func addCallback() {
-		self.callbacks.append {
-			self.refresh()  // Strong capture
-		}
-	}
+  func addCallback() {
+    self.callbacks.append {
+      self.refresh()  // Strong capture
+    }
+  }
 }
 
 // CORRECT - Use weak self
 class ViewController: UIViewController {
-	var callbacks: [() -> Void]
+  var callbacks: [() -> Void]
 
-	init(
-		callbacks: [() -> Void] = []
-	) {
-		self.callbacks = callbacks
-		super.init(nibName: nil, bundle: nil)
-	}
+  init(
+    callbacks: [() -> Void] = []
+  ) {
+    self.callbacks = callbacks
+    super.init(nibName: nil, bundle: nil)
+  }
 
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 
-	func addCallback() {
-		self.callbacks.append { [weak self] in
-			self?.refresh()
-		}
-	}
+  func addCallback() {
+    self.callbacks.append { [weak self] in
+      self?.refresh()
+    }
+  }
 
-	deinit {
-		self.callbacks.removeAll()
-	}
+  deinit {
+    self.callbacks.removeAll()
+  }
 }
 ```
 
@@ -185,21 +185,21 @@ class ViewController: UIViewController {
 ```swift
 // WRONG - Strong delegate reference
 class Player {
-	var delegate: PlayerDelegate?  // Strong reference
+  var delegate: PlayerDelegate?  // Strong reference
 }
 
 class Controller: PlayerDelegate {
-	var player: Player?
+  var player: Player?
 
-	init() {
-		self.player = .init()
-		self.player?.delegate = self  // Creates cycle
-	}
+  init() {
+    self.player = .init()
+    self.player?.delegate = self  // Creates cycle
+  }
 }
 
 // CORRECT - Weak delegate
 class Player {
-	weak var delegate: PlayerDelegate?
+  weak var delegate: PlayerDelegate?
 }
 ```
 
@@ -250,42 +250,42 @@ vs normal:
 ```swift
 // WRONG - Requests accumulate without cancellation
 func loadImage(asset: PHAsset) {
-	imageManager.requestImage(for: asset, ...) { image, _ in
-		self.imageView.image = image
-	}
+  imageManager.requestImage(for: asset, ...) { image, _ in
+    self.imageView.image = image
+  }
 }
 
 // CORRECT - Cancel in prepareForReuse
 class PhotoCell: UICollectionViewCell {
-	private var requestID: PHImageRequestID
+  private var requestID: PHImageRequestID
 
-	override init(frame: CGRect) {
-		self.requestID = PHInvalidImageRequestID
-		super.init(frame: frame)
-	}
+  override init(frame: CGRect) {
+    self.requestID = PHInvalidImageRequestID
+    super.init(frame: frame)
+  }
 
-	required init?(coder: NSCoder) {
-		self.requestID = PHInvalidImageRequestID
-		super.init(coder: coder)
-	}
+  required init?(coder: NSCoder) {
+    self.requestID = PHInvalidImageRequestID
+    super.init(coder: coder)
+  }
 
-	func configure(asset: PHAsset) {
-		if self.requestID != PHInvalidImageRequestID {
-			PHImageManager.default().cancelImageRequest(self.requestID)
-		}
+  func configure(asset: PHAsset) {
+    if self.requestID != PHInvalidImageRequestID {
+      PHImageManager.default().cancelImageRequest(self.requestID)
+    }
 
-		self.requestID = imageManager.requestImage(for: asset, ...) { [weak self] image, _ in
-			self?.imageView.image = image
-		}
-	}
+    self.requestID = imageManager.requestImage(for: asset, ...) { [weak self] image, _ in
+      self?.imageView.image = image
+    }
+  }
 
-	override func prepareForReuse() {
-		super.prepareForReuse()
-		if self.requestID != PHInvalidImageRequestID {
-			PHImageManager.default().cancelImageRequest(self.requestID)
-			self.requestID = PHInvalidImageRequestID
-		}
-	}
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    if self.requestID != PHInvalidImageRequestID {
+      PHImageManager.default().cancelImageRequest(self.requestID)
+      self.requestID = PHInvalidImageRequestID
+    }
+  }
 }
 ```
 

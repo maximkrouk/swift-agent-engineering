@@ -19,13 +19,13 @@ Concurrent code is more complex. Only introduce it when profiling proves it's ne
 ### ✅ Modern Pattern
 ```swift
 func fetchUser(id: String) async throws -> User {
-	let (data, _) = try await URLSession.shared.data(from: url)
-	return try JSONDecoder().decode(User.self, from: data)
+  let (data, _) = try await URLSession.shared.data(from: url)
+  return try JSONDecoder().decode(User.self, from: data)
 }
 
 // Calling async functions
 Task {
-	let user = try await fetchUser(id: "123")
+  let user = try await fetchUser(id: "123")
 }
 ```
 
@@ -33,9 +33,9 @@ Task {
 ```swift
 // NEVER use completion handlers
 func fetchUser(id: String, completion: @escaping (Result<User, Error>) -> Void) {
-	URLSession.shared.dataTask(with: url) { data, _, error in
-		// ...
-	}.resume()
+  URLSession.shared.dataTask(with: url) { data, _, error in
+    // ...
+  }.resume()
 }
 ```
 
@@ -45,30 +45,30 @@ func fetchUser(id: String, completion: @escaping (Result<User, Error>) -> Void) 
 ```swift
 @MainActor
 class ViewModel: ObservableObject {
-	var items: [Item]
+  var items: [Item]
 
-	init(
-		items: [Item] = []
-	) {
-		self.items = items
-	}
+  init(
+    items: [Item] = []
+  ) {
+    self.items = items
+  }
 
-	func loadItems() async {
-		// Already on main actor — UI updates are safe
-		self.items = try await fetchItems()
-	}
+  func loadItems() async {
+    // Already on main actor — UI updates are safe
+    self.items = try await fetchItems()
+  }
 }
 
 // Or for individual properties
 class Service {
-	@MainActor
-	var uiState: UIState
+  @MainActor
+  var uiState: UIState
 
-	init(
-		uiState: UIState = .idle
-	) {
-		self.uiState = uiState
-	}
+  init(
+    uiState: UIState = .idle
+  ) {
+    self.uiState = uiState
+  }
 }
 ```
 
@@ -76,7 +76,7 @@ class Service {
 ```swift
 // NEVER use DispatchQueue.main.async
 DispatchQueue.main.async {
-	self.items = newItems
+  self.items = newItems
 }
 ```
 
@@ -85,21 +85,21 @@ DispatchQueue.main.async {
 ### ✅ Modern Pattern
 ```swift
 actor DatabaseManager {
-	private var cache: [String: Data]
+  private var cache: [String: Data]
 
-	init(
-		cache: [String: Data] = [:]
-	) {
-		self.cache = cache
-	}
+  init(
+    cache: [String: Data] = [:]
+  ) {
+    self.cache = cache
+  }
 
-	func getData(key: String) -> Data? {
-		self.cache[key]
-	}
+  func getData(key: String) -> Data? {
+    self.cache[key]
+  }
 
-	func setData(_ data: Data, key: String) {
-		self.cache[key] = data
-	}
+  func setData(_ data: Data, key: String) {
+    self.cache[key] = data
+  }
 }
 
 // Usage
@@ -110,20 +110,20 @@ let data = await database.getData(key: "user")
 ```swift
 // NEVER use locks or serial queues
 class DatabaseManager {
-	private let queue: DispatchQueue
-	private var cache: [String: Data]
+  private let queue: DispatchQueue
+  private var cache: [String: Data]
 
-	init(
-		queue: DispatchQueue = .init(label: "db"),
-		cache: [String: Data] = [:]
-	) {
-		self.queue = queue
-		self.cache = cache
-	}
+  init(
+    queue: DispatchQueue = .init(label: "db"),
+    cache: [String: Data] = [:]
+  ) {
+    self.queue = queue
+    self.cache = cache
+  }
 
-	func getData(key: String) -> Data? {
-		self.queue.sync { self.cache[key] }
-	}
+  func getData(key: String) -> Data? {
+    self.queue.sync { self.cache[key] }
+  }
 }
 ```
 
@@ -133,8 +133,8 @@ class DatabaseManager {
 ```swift
 // Value types are implicitly Sendable
 struct User: Sendable {
-	let id: String
-	let name: String
+  let id: String
+  let name: String
 }
 
 // Actors are implicitly Sendable
@@ -142,13 +142,13 @@ actor UserCache { }
 
 // Classes require @unchecked Sendable (use sparingly)
 final class ImmutableConfig: @unchecked Sendable {
-	let apiKey: String
-	let baseURL: URL
+  let apiKey: String
+  let baseURL: URL
 
-	init(apiKey: String, baseURL: URL) {
-		self.apiKey = apiKey
-		self.baseURL = baseURL
-	}
+  init(apiKey: String, baseURL: URL) {
+    self.apiKey = apiKey
+    self.baseURL = baseURL
+  }
 }
 ```
 
@@ -158,8 +158,8 @@ final class ImmutableConfig: @unchecked Sendable {
 class MutableState { var count = 0 }
 
 actor Counter {
-	// ❌ MutableState is not Sendable
-	func update(state: MutableState) { }
+  // ❌ MutableState is not Sendable
+  func update(state: MutableState) { }
 }
 ```
 
@@ -168,7 +168,7 @@ actor Counter {
 ### Network Request
 ```swift
 func loadData() async throws -> Data {
-	try await URLSession.shared.data(from: url).0
+  try await URLSession.shared.data(from: url).0
 }
 ```
 
@@ -176,12 +176,12 @@ func loadData() async throws -> Data {
 ```swift
 @MainActor
 func refresh() async {
-	let data = await Task.detached {
-		// Heavy computation off main actor
-		await processData()
-	}.value
+  let data = await Task.detached {
+    // Heavy computation off main actor
+    await processData()
+  }.value
 
-	// Back on main actor automatically
-	self.items = data
+  // Back on main actor automatically
+  self.items = data
 }
 ```

@@ -39,44 +39,44 @@ import _ComposableArchtiecture
 
 @Reducer
 public struct <#Domain#>Feature {
-	public init() {}
+  public init() {}
 
-	@ObservableState
-	public struct State: Equatable, Sendable {
-		public init() {}
-	}
+  @ObservableState
+  public struct State: Equatable, Sendable {
+    public init() {}
+  }
 
-	@CasePathable
-	public enum Action: SharedBindableAction, Equatable, Sendable {
-		case ui(UI)
-		case event(Event)
-		case delegate(Delegate)
-		case shared(SharedBindingAction<State>)
-		case observation(ObservationAction<Observation>)
-		// <internal business logic actions here>
-		
-		@CasePathable
-		public enum UI: Equatable, Sendable {}
-		
-		@CasePathable
-		public enum Event: Equatable, Sendable {}
-		
-		@CasePathable
-		public enum Delegate: Equatable, Sendable {}
+  @CasePathable
+  public enum Action: SharedBindableAction, Equatable, Sendable {
+    case ui(UI)
+    case event(Event)
+    case delegate(Delegate)
+    case shared(SharedBindingAction<State>)
+    case observation(ObservationAction<Observation>)
+    // <internal business logic actions here>
+    
+    @CasePathable
+    public enum UI: Equatable, Sendable {}
+    
+    @CasePathable
+    public enum Event: Equatable, Sendable {}
+    
+    @CasePathable
+    public enum Delegate: Equatable, Sendable {}
 
-		@CasePathable
-		public enum Observation: Equatable, Sendable {}
-	}
-	
-	public var body: some ReducerOf<Self> {
-		CombineReducers {
-			uiReducer
-		}
-	}
+    @CasePathable
+    public enum Observation: Equatable, Sendable {}
+  }
+  
+  public var body: some ReducerOf<Self> {
+    CombineReducers {
+      uiReducer
+    }
+  }
 
-	private var uiReducer: some ReducerOf<Self> {
-		EmptyReducer() 
-	}
+  private var uiReducer: some ReducerOf<Self> {
+    EmptyReducer() 
+  }
 }
 ```
 
@@ -88,11 +88,11 @@ Sometimes it's useful to extract some logic into a separate component without cr
 import _ComposableArchitecture
 
 extension <#Domain>Feature {
-	@Reducer
-	public struct <#Subdomain#> {
-		// Basically the same structure as `Basic Reducer Template`
-		// The only differences are nesting and type name
-	}
+  @Reducer
+  public struct <#Subdomain#> {
+    // Basically the same structure as `Basic Reducer Template`
+    // The only differences are nesting and type name
+  }
 }
 ```
 
@@ -127,30 +127,30 @@ State should:
 ```swift
 @ObservableState
 public struct State: Equatable, Sendable {
-	public var value1: Int
-	public var value2: Int
-	public var child1: Child1Feature.State
-	public var child2: Child1Feature.State
-		
-	@Presents
-	public var nestedChild: NestedChild.State?
+  public var value1: Int
+  public var value2: Int
+  public var child1: Child1Feature.State
+  public var child2: Child1Feature.State
+    
+  @Presents
+  public var nestedChild: NestedChild.State?
 
-	@Shared(.inMemory(\.someSharedKeyDomain.someEntry))
-	public var sharedValue: Int = 0
-		
-	public init(
-		value1: Int = 0
-		value2: Int = 0,
-		child1: Child1Feature.State = .init(),
-		child2: Child2Feature.State = .init(),
-		nestedChild: NestedChild.State? = nil
-	) {
-		self.value1 = value1
-		self.value2 = value2
-		self.child1 = child1
-		self.child2 = child2
-		self.nestedChild = nestedChild
-	}
+  @Shared(.inMemory(\.someSharedKeyDomain.someEntry))
+  public var sharedValue: Int = 0
+    
+  public init(
+    value1: Int = 0
+    value2: Int = 0,
+    child1: Child1Feature.State = .init(),
+    child2: Child2Feature.State = .init(),
+    nestedChild: NestedChild.State? = nil
+  ) {
+    self.value1 = value1
+    self.value2 = value2
+    self.child1 = child1
+    self.child2 = child2
+    self.nestedChild = nestedChild
+  }
 }
 ```
 
@@ -179,29 +179,29 @@ Actions should:
 ```swift
 @CasePathable
 public enum Action: Equatable, Sendable {
-	case ui(UI)
-	case event(Event)
-	case delegate(Delegate)
-	// case shared(SharedBindingAction<State>) // requres SharedBindableAction conformance
-	// case observation(ObservationAction<Observation>) // requres Observation enum declaration
-	// case binding(BindingAction<State>) // requres BindableAction conformace
-	//
-	// case someChild(PresentationAction<SomeChildFeature.Action>)
-	//
-	// case performWork
+  case ui(UI)
+  case event(Event)
+  case delegate(Delegate)
+  // case shared(SharedBindingAction<State>) // requres SharedBindableAction conformance
+  // case observation(ObservationAction<Observation>) // requres Observation enum declaration
+  // case binding(BindingAction<State>) // requres BindableAction conformace
+  //
+  // case someChild(PresentationAction<SomeChildFeature.Action>)
+  //
+  // case performWork
 
 
-	@CasePathable
-	public enum UI: Equatable, Sendable {}
+  @CasePathable
+  public enum UI: Equatable, Sendable {}
 
-	@CasePathable
-	public enum Event: Equatable, Sendable {}
+  @CasePathable
+  public enum Event: Equatable, Sendable {}
 
-	@CasePathable
-	public enum Delegate: Equatable, Sendable {}
+  @CasePathable
+  public enum Delegate: Equatable, Sendable {}
 
-	@CasePathable
-	public enum Observation: Equatable, Sendable {}
+  @CasePathable
+  public enum Observation: Equatable, Sendable {}
 }
 ```
 
@@ -214,31 +214,31 @@ For actions prefer composition of `Pullback` reducers over `switch` statements
 ```swift 
 // case someSimpleAction
 Pullback(\.someSimpleAction) { state in
-	state.simpleActionsCount += 1
-	return .none
+  state.simpleActionsCount += 1
+  return .none
 }
 ```
 
 ```swift 
 // case updateValue(Int)
 Pullback(\.updateValue) { state, value in 
-	state.value = value
-	return .none
+  state.value = value
+  return .none
 }
 ```
 
 ```swift 
 // case paths to nested actions are also supported
 Pullback(\.ui.submitButtonTap) { state in 
-	return .send(.submit)
+  return .send(.submit)
 }
 ```
 
 ```swift 
 // identified array actions are also supported
 Pullback(\.elements, action: \.delegate.delete) { state, id in
-	state.elements.remove(id: id)
-	return .none
+  state.elements.remove(id: id)
+  return .none
 }
 ```
 
@@ -264,13 +264,13 @@ Main pullback variants:
 // ❌ INCORRECT - Do not add conformances directly
 @Reducer
 struct SomeFeature: Sendable {
-	// ...
+  // ...
 }
 
 // ✅ CORRECT - Use extension for conformances
 @Reducer
 public struct SomeFeature {
-	// ...
+  // ...
 }
 
 extension SomeFeature: Sendable {}
@@ -280,11 +280,11 @@ extension SomeFeature: Sendable {}
 
 ```swift
 extension ParentFeature {
-	@Reducer
-	public enum Destination {
-		case settings(SettingsFeature)
-		case detail(DetailFeature)
-	}
+  @Reducer
+  public enum Destination {
+    case settings(SettingsFeature)
+    case detail(DetailFeature)
+  }
 }
 
 extension ParentFeature.Destination.State: Equatable {}
@@ -300,7 +300,7 @@ Use `Result` types with `Equtated` errors for async operation responses to handl
 ```swift
 @CasePathable
 public enum Event: Equatable, Sendable {
-	case didFinishProcessing(Result<String, Equated<any Error>)
+  case didFinishProcessing(Result<String, Equated<any Error>)
 }
 ```
 
@@ -309,8 +309,8 @@ Tho sometimes it's useful to have semantic separation
 ```swift
 @CasePathable
 public enum Event: Equatable, Sendable {
-	case didLoadItem(Item)
-	case didFailToLoadItem(Equated<any Error>)
+  case didLoadItem(Item)
+  case didFailToLoadItem(Equated<any Error>)
 }
 ```
 
@@ -322,12 +322,12 @@ You can also use the `catch:` parameter in effects:
 
 ```swift
 Pullback(\.loadItem) { state, id in 
-	return .run { send in
-		let item = try await apiClient.fetchItem(id)
-		await send(.event(.didLoadItem(item)))
-	} catch: { error, send in
-		await send(.event(.didFailToLoadItem(.init(error))))
-	}
+  return .run { send in
+    let item = try await apiClient.fetchItem(id)
+    await send(.event(.didLoadItem(item)))
+  } catch: { error, send in
+    await send(.event(.didFailToLoadItem(.init(error))))
+  }
 }
 ```
 
@@ -346,12 +346,12 @@ To omit the error use `withErrorReporting`
 
 ```swift
 Pullback(\.loadItem) { state, id in 
-	return .run { send in
-		await withErrorReporting {
-			let item = try await apiClient.fetchItem(id)
-			await send(.event(.didLoadItem(item)))
-		}
-	}
+  return .run { send in
+    await withErrorReporting {
+      let item = try await apiClient.fetchItem(id)
+      await send(.event(.didLoadItem(item)))
+    }
+  }
 }
 ```
 

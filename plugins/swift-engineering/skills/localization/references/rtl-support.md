@@ -9,8 +9,8 @@ SwiftUI automatically mirrors layouts for RTL languages:
 ```swift
 // Automatically mirrors for Arabic/Hebrew
 HStack {
-	Image(systemName: "chevron.right")
-	Text("Next")
+  Image(systemName: "chevron.right")
+  Text("Next")
 }
 
 // LTR (English): [>] Next
@@ -38,13 +38,13 @@ HStack {
 ```swift
 // CORRECT
 VStack(alignment: .leading) {
-	Text("Title")
-	Text("Subtitle")
+  Text("Title")
+  Text("Subtitle")
 }
 
 // WRONG
 VStack(alignment: .left) {  // Doesn't exist, but conceptually wrong
-	Text("Title")
+  Text("Title")
 }
 ```
 
@@ -56,7 +56,7 @@ VStack(alignment: .left) {  // Doesn't exist, but conceptually wrong
 
 // For non-mirroring needs (rare)
 .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-	.environment(\.layoutDirection, .leftToRight)
+  .environment(\.layoutDirection, .leftToRight)
 ```
 
 ## Images and Icons
@@ -82,11 +82,11 @@ Mark images that should flip:
 ```swift
 // Image should mirror
 Image("backArrow")
-	.flipsForRightToLeftLayoutDirection(true)
+  .flipsForRightToLeftLayoutDirection(true)
 
 // Image should NOT mirror (logos, photos)
 Image("companyLogo")
-	.flipsForRightToLeftLayoutDirection(false)  // Default
+  .flipsForRightToLeftLayoutDirection(false)  // Default
 ```
 
 ### Asset Catalog Settings
@@ -101,11 +101,11 @@ In Asset Catalog:
 ```swift
 // Adapts to layout direction
 Text("Hello")
-	.multilineTextAlignment(.leading)  // Left in LTR, right in RTL
+  .multilineTextAlignment(.leading)  // Left in LTR, right in RTL
 
 // Force specific alignment (rare)
 Text("Code sample")
-	.multilineTextAlignment(.trailing)
+  .multilineTextAlignment(.trailing)
 ```
 
 ### Mixed Content
@@ -124,24 +124,24 @@ Text("\u{200E}$99.99")  // Left-to-right mark
 
 ```swift
 struct DirectionalView: View {
-	@Environment(\.layoutDirection)
-	var layoutDirection
+  @Environment(\.layoutDirection)
+  var layoutDirection
 
-	init() {}
+  init() {}
 
-	var body: some View {
-		HStack {
-			if self.layoutDirection == .rightToLeft {
-				self.trailingContent
-				Spacer()
-				self.leadingContent
-			} else {
-				self.leadingContent
-				Spacer()
-				self.trailingContent
-			}
-		}
-	}
+  var body: some View {
+    HStack {
+      if self.layoutDirection == .rightToLeft {
+        self.trailingContent
+        Spacer()
+        self.leadingContent
+      } else {
+        self.leadingContent
+        Spacer()
+        self.trailingContent
+      }
+    }
+  }
 }
 ```
 
@@ -149,13 +149,13 @@ struct DirectionalView: View {
 
 ```swift
 extension View {
-	@ViewBuilder
-	func rtlAware() -> some View {
-		self.environment(\.layoutDirection,
-			Locale.current.language.characterDirection == .rightToLeft
-				? .rightToLeft
-				: .leftToRight)
-	}
+  @ViewBuilder
+  func rtlAware() -> some View {
+    self.environment(\.layoutDirection,
+      Locale.current.language.characterDirection == .rightToLeft
+        ? .rightToLeft
+        : .leftToRight)
+  }
 }
 ```
 
@@ -164,11 +164,11 @@ extension View {
 ```swift
 // Automatically adapts scroll direction
 ScrollView(.horizontal) {
-	HStack {
-		ForEach(items) { item in
-			ItemView(item: item)
-		}
-	}
+  HStack {
+    ForEach(items) { item in
+      ItemView(item: item)
+    }
+  }
 }
 // LTR: scrolls left-to-right
 // RTL: scrolls right-to-left
@@ -179,9 +179,9 @@ ScrollView(.horizontal) {
 ```swift
 // List disclosure indicators mirror automatically
 List(items) { item in
-	NavigationLink(destination: DetailView(item: item)) {
-		Text(item.name)
-	}
+  NavigationLink(destination: DetailView(item: item)) {
+    Text(item.name)
+  }
 }
 // LTR: Text [>]
 // RTL: [<] Text
@@ -199,17 +199,17 @@ List(items) { item in
 
 ```swift
 struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		Group {
-			ContentView()
-				.previewDisplayName("LTR")
+  static var previews: some View {
+    Group {
+      ContentView()
+        .previewDisplayName("LTR")
 
-			ContentView()
-				.environment(\.layoutDirection, .rightToLeft)
-				.environment(\.locale, Locale(identifier: "ar"))
-				.previewDisplayName("RTL")
-		}
-	}
+      ContentView()
+        .environment(\.layoutDirection, .rightToLeft)
+        .environment(\.locale, Locale(identifier: "ar"))
+        .previewDisplayName("RTL")
+    }
+  }
 }
 ```
 
@@ -224,7 +224,7 @@ Settings > General > Language & Region > Preferred Language Order > Add Arabic/H
 ```swift
 // Check effective layout direction
 if view.effectiveUserInterfaceLayoutDirection == .rightToLeft {
-	// RTL-specific adjustments
+  // RTL-specific adjustments
 }
 
 // Semantic content attribute
@@ -251,7 +251,7 @@ rightAnchor.constraint(equalTo: other.rightAnchor)
 ```swift
 // Progress should typically NOT mirror
 ProgressView(value: 0.7)
-	.environment(\.layoutDirection, .leftToRight)
+  .environment(\.layoutDirection, .leftToRight)
 ```
 
 ### Media Controls
@@ -259,15 +259,15 @@ ProgressView(value: 0.7)
 ```swift
 // Playback controls typically don't mirror
 HStack {
-	Button(action: rewind) {
-		Image(systemName: "backward.fill")
-	}
-	Button(action: playPause) {
-		Image(systemName: "play.fill")
-	}
-	Button(action: forward) {
-		Image(systemName: "forward.fill")
-	}
+  Button(action: rewind) {
+    Image(systemName: "backward.fill")
+  }
+  Button(action: playPause) {
+    Image(systemName: "play.fill")
+  }
+  Button(action: forward) {
+    Image(systemName: "forward.fill")
+  }
 }
 .environment(\.layoutDirection, .leftToRight)
 ```
@@ -277,12 +277,12 @@ HStack {
 ```swift
 // Forms mirror correctly with semantic alignment
 Form {
-	HStack {
-		Text("Email")
-		Spacer()
-		TextField("email@example.com", text: $email)
-			.multilineTextAlignment(.trailing)
-	}
+  HStack {
+    Text("Email")
+    Spacer()
+    TextField("email@example.com", text: $email)
+      .multilineTextAlignment(.trailing)
+  }
 }
 ```
 

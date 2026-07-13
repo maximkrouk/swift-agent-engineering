@@ -7,18 +7,18 @@ Advanced testing techniques including time control, keypath matching, exhaustivi
 ```swift
 @Test("user can save form with valid data")
 func testSaveFormWithValidData() async {
-    // GIVEN: Valid form data
-    let validData = FormData.test()
-    let store = makeStore()
+  // GIVEN: Valid form data
+  let validData = FormData.test()
+  let store = makeStore()
 
-    // WHEN: User submits form
-    await store.send(.view(.didChangeData(validData)))
-    await store.send(.view(.didTapSave))
+  // WHEN: User submits form
+  await store.send(.view(.didChangeData(validData)))
+  await store.send(.view(.didTapSave))
 
-    // THEN: Form is saved successfully
-    await store.receive(.didSaveData(.success(()))) {
-        $0.isSaved = true
-    }
+  // THEN: Form is saved successfully
+  await store.receive(.didSaveData(.success(()))) {
+    $0.isSaved = true
+  }
 }
 ```
 
@@ -27,20 +27,20 @@ func testSaveFormWithValidData() async {
 ```swift
 @Test("transitions through loading states correctly")
 func testLoadingStateTransitions() async {
-    let store = makeStore()
+  let store = makeStore()
 
-    // Initial state
-    #expect(store.state.loadingState == .idle)
+  // Initial state
+  #expect(store.state.loadingState == .idle)
 
-    // Start loading
-    await store.send(.view(.onAppear)) {
-        $0.loadingState = .loading
-    }
+  // Start loading
+  await store.send(.view(.onAppear)) {
+    $0.loadingState = .loading
+  }
 
-    // Load success
-    await store.receive(.didLoadData(.success([]))) {
-        $0.loadingState = .loaded([])
-    }
+  // Load success
+  await store.receive(.didLoadData(.success([]))) {
+    $0.loadingState = .loaded([])
+  }
 }
 ```
 
@@ -49,16 +49,16 @@ func testLoadingStateTransitions() async {
 ```swift
 @Test("handles empty data gracefully")
 func testEmptyData() async {
-    let store = makeStore {
-        $0.apiClient.fetchData = { [] }
-    }
+  let store = makeStore {
+    $0.apiClient.fetchData = { [] }
+  }
 
-    await store.send(.view(.onAppear))
-    await store.receive(.didLoadData(.success([]))) {
-        $0.data = []
-        $0.isEmpty = true
-        $0.showEmptyState = true
-    }
+  await store.send(.view(.onAppear))
+  await store.receive(.didLoadData(.success([]))) {
+    $0.data = []
+    $0.isEmpty = true
+    $0.showEmptyState = true
+  }
 }
 ```
 
@@ -69,17 +69,17 @@ func testEmptyData() async {
 ```swift
 @Test("debounces user input correctly")
 func testDebouncedInput() async {
-    let store = makeStore {
-        $0.continuousClock = ImmediateClock()
-    }
+  let store = makeStore {
+    $0.continuousClock = ImmediateClock()
+  }
 
-    // Send rapid input
-    await store.send(.view(.didChangeText("a")))
-    await store.send(.view(.didChangeText("ab")))
-    await store.send(.view(.didChangeText("abc")))
+  // Send rapid input
+  await store.send(.view(.didChangeText("a")))
+  await store.send(.view(.didChangeText("ab")))
+  await store.send(.view(.didChangeText("abc")))
 
-    // Should only receive debounced action
-    await store.receive(.searchDebounced("abc"))
+  // Should only receive debounced action
+  await store.receive(.searchDebounced("abc"))
 }
 ```
 
@@ -90,36 +90,36 @@ Use `TestClock` when you need precise control over time advancement:
 ```swift
 @Test("timer advances correctly")
 func testTimer() async {
-    let clock: TestClock = .init()
+  let clock: TestClock = .init()
 
-    let store: TestStoreOf<Timer> = TestStore(initialState: Timer.State()) {
-        Timer()
-    } withDependencies: {
-        $0.continuousClock = clock
-    }
+  let store: TestStoreOf<Timer> = TestStore(initialState: Timer.State()) {
+    Timer()
+  } withDependencies: {
+    $0.continuousClock = clock
+  }
 
-    // Start timer
-    await store.send(.toggleTimerButtonTapped) {
-        $0.isTimerActive = true
-    }
+  // Start timer
+  await store.send(.toggleTimerButtonTapped) {
+    $0.isTimerActive = true
+  }
 
-    // Advance time by 1 second
-    await clock.advance(by: .seconds(1))
-    await store.receive(\.timerTick) {
-        $0.secondsElapsed = 1
-    }
+  // Advance time by 1 second
+  await clock.advance(by: .seconds(1))
+  await store.receive(\.timerTick) {
+    $0.secondsElapsed = 1
+  }
 
-    // Advance time by multiple seconds
-    await clock.advance(by: .seconds(3))
-    await store.receive(\.timerTick) {
-        $0.secondsElapsed = 2
-    }
-    await store.receive(\.timerTick) {
-        $0.secondsElapsed = 3
-    }
-    await store.receive(\.timerTick) {
-        $0.secondsElapsed = 4
-    }
+  // Advance time by multiple seconds
+  await clock.advance(by: .seconds(3))
+  await store.receive(\.timerTick) {
+    $0.secondsElapsed = 2
+  }
+  await store.receive(\.timerTick) {
+    $0.secondsElapsed = 3
+  }
+  await store.receive(\.timerTick) {
+    $0.secondsElapsed = 4
+  }
 }
 ```
 
@@ -137,29 +137,29 @@ func testTimer() async {
 // ImmediateClock example - delays complete instantly
 @Test("loads data after delay")
 func testDelayedLoad() async {
-    let store = makeStore {
-        $0.continuousClock = ImmediateClock()
-    }
+  let store = makeStore {
+    $0.continuousClock = ImmediateClock()
+  }
 
-    await store.send(.loadData)
-    await store.receive(\.dataLoaded)  // Immediate, no waiting
+  await store.send(.loadData)
+  await store.receive(\.dataLoaded)  // Immediate, no waiting
 }
 
 // TestClock example - control time advancement
 @Test("polls every 5 seconds")
 func testPolling() async {
-    let clock: TestClock = .init()
-    let store = makeStore {
-        $0.continuousClock = clock
-    }
+  let clock: TestClock = .init()
+  let store = makeStore {
+    $0.continuousClock = clock
+  }
 
-    await store.send(.startPolling)
+  await store.send(.startPolling)
 
-    await clock.advance(by: .seconds(5))
-    await store.receive(\.pollResponse)
+  await clock.advance(by: .seconds(5))
+  await store.receive(\.pollResponse)
 
-    await clock.advance(by: .seconds(5))
-    await store.receive(\.pollResponse)
+  await clock.advance(by: .seconds(5))
+  await store.receive(\.pollResponse)
 }
 ```
 
@@ -170,12 +170,12 @@ Use keypath syntax for more concise action matching:
 ```swift
 // Instead of this:
 await store.receive(.numberFactResponse(.success("Test fact"))) {
-    $0.fact = "Test fact"
+  $0.fact = "Test fact"
 }
 
 // Use this:
 await store.receive(\.numberFactResponse.success) {
-    $0.fact = "Test fact"
+  $0.fact = "Test fact"
 }
 ```
 
@@ -197,17 +197,17 @@ await store.receive(\.path[id: screenID].screenA.didSave)
 ```swift
 // Match any success response
 await store.receive(\.numberFactResponse.success) {
-    $0.fact = "Test fact"
+  $0.fact = "Test fact"
 }
 
 // Match any failure response
 await store.receive(\.numberFactResponse.failure) {
-    $0.alert = AlertState { TextState("Error") }
+  $0.alert = AlertState { TextState("Error") }
 }
 
 // Match delegate action
 await store.receive(\.delegate) {
-    // State changes
+  // State changes
 }
 ```
 
@@ -229,22 +229,22 @@ Use `store.exhaustivity = .off` when:
 ```swift
 @Test("available status triggers sync when identity exists")
 func availableStatusWithIdentity() async {
-    let testIdentity: StoredAppleIdentity = .init(appleUserId: "test-user-id")
+  let testIdentity: StoredAppleIdentity = .init(appleUserId: "test-user-id")
 
-    let store = makeStore {
-        $0.appleIdentityStore.load = { testIdentity }
-    }
+  let store = makeStore {
+    $0.appleIdentityStore.load = { testIdentity }
+  }
 
-    // Turn off exhaustivity - we only care about specific actions being sent
-    store.exhaustivity = .off
+  // Turn off exhaustivity - we only care about specific actions being sent
+  store.exhaustivity = .off
 
-    await store.send(.iCloudAccountStatusChanged(.available))
+  await store.send(.iCloudAccountStatusChanged(.available))
 
-    // Assert only the actions we care about
-    await store.receive(\.fetchUnclaimedShareItems)
-    await store.receive(\.ensureSharedItemSubscription)
+  // Assert only the actions we care about
+  await store.receive(\.fetchUnclaimedShareItems)
+  await store.receive(\.ensureSharedItemSubscription)
 
-    // Other state changes and actions can happen without failing the test
+  // Other state changes and actions can happen without failing the test
 }
 ```
 
@@ -255,19 +255,19 @@ You can still verify specific state even with exhaustivity off:
 ```swift
 @Test("edit mode populates from existing item")
 func editModePopulatesFromExisting() async {
-    let existingItem = makeTestExistingItem()
-    let store = makeStore(initialState: .editing(existingItem))
+  let existingItem = makeTestExistingItem()
+  let store = makeStore(initialState: .editing(existingItem))
 
-    store.exhaustivity = .off
+  store.exhaustivity = .off
 
-    #expect(store.state.mode == .edit(existingItem: existingItem))
-    #expect(store.state.itemTypeEditor != nil)
+  #expect(store.state.mode == .edit(existingItem: existingItem))
+  #expect(store.state.itemTypeEditor != nil)
 
-    // Can check specific state properties without asserting every change
-    if case let .link(linkState) = store.state.itemTypeEditor {
-        #expect(linkState.urlInput == "https://example.com")
-        #expect(linkState.preview?.title == "Example")
-    }
+  // Can check specific state properties without asserting every change
+  if case let .link(linkState) = store.state.itemTypeEditor {
+    #expect(linkState.urlInput == "https://example.com")
+    #expect(linkState.preview?.title == "Example")
+  }
 }
 ```
 
@@ -290,19 +290,19 @@ func editModePopulatesFromExisting() async {
 ```swift
 @Test("onAppear sets default list when no selection")
 func onAppearSetsDefaultList() async {
-    let inboxListID: UUID = .init()
-    let store = makeStore {
-        $0.defaultDatabase.read = { db in
-            return StashItemList(id: inboxListID, name: "Inbox", ...)
-        }
+  let inboxListID: UUID = .init()
+  let store = makeStore {
+    $0.defaultDatabase.read = { db in
+      return StashItemList(id: inboxListID, name: "Inbox", ...)
     }
+  }
 
-    // @FetchOne property wrapper manages its own state internally
-    store.exhaustivity = .off
+  // @FetchOne property wrapper manages its own state internally
+  store.exhaustivity = .off
 
-    await store.send(.view(.onAppear))
-    await store.receive(.setSelectedListID(inboxListID))
+  await store.send(.view(.onAppear))
+  await store.receive(.setSelectedListID(inboxListID))
 
-    // We don't need to assert $selectedList changes because @FetchOne handles it
+  // We don't need to assert $selectedList changes because @FetchOne handles it
 }
 ```

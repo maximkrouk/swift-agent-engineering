@@ -22,7 +22,7 @@ try JSONDecoder().decode(Person.self, from: json.data)
 ```swift
 // BAD - UI freezes
 Button("Go") {
-	let r = try await session.respond(to: prompt) // Frozen!
+  let r = try await session.respond(to: prompt) // Frozen!
 }
 ```
 **Fix:** Wrap in `Task {}`.
@@ -34,14 +34,14 @@ Button("Go") {
 
 ```swift
 do {
-	let response = try await session.respond(to: prompt)
+  let response = try await session.respond(to: prompt)
 } catch LanguageModelSession.GenerationError.exceededContextWindowSize {
-	// Condense transcript, create new session
-	self.session = self.condensedSession(from: self.session)
+  // Condense transcript, create new session
+  self.session = self.condensedSession(from: self.session)
 } catch LanguageModelSession.GenerationError.guardrailViolation {
-	self.showMessage("I can't help with that request")
+  self.showMessage("I can't help with that request")
 } catch LanguageModelSession.GenerationError.unsupportedLanguageOrLocale {
-	self.showMessage("Language not supported")
+  self.showMessage("Language not supported")
 }
 ```
 
@@ -49,13 +49,13 @@ do {
 
 ```swift
 func condensedSession(from prev: LanguageModelSession) -> LanguageModelSession {
-	let entries = prev.transcript.entries
-	guard entries.count > 2
-	else { return prev }
+  let entries = prev.transcript.entries
+  guard entries.count > 2
+  else { return prev }
 
-	// Keep first (instructions) + last (recent)
-	let condensed = [entries.first!, entries.last!]
-	return LanguageModelSession(transcript: Transcript(entries: condensed))
+  // Keep first (instructions) + last (recent)
+  let condensed = [entries.first!, entries.last!]
+  return LanguageModelSession(transcript: Transcript(entries: condensed))
 }
 ```
 
@@ -64,10 +64,10 @@ func condensedSession(from prev: LanguageModelSession) -> LanguageModelSession {
 ```swift
 switch SystemLanguageModel.default.availability {
 case .available:
-	// Proceed
+  // Proceed
 case .unavailable:
-	// Show: "AI requires iPhone 15 Pro+ or M1 iPad/Mac"
-	// Or: "Enable in Settings > Apple Intelligence"
+  // Show: "AI requires iPhone 15 Pro+ or M1 iPad/Mac"
+  // Or: "Enable in Settings > Apple Intelligence"
 }
 ```
 

@@ -5,20 +5,20 @@
 ### ✅ Modern Pattern
 ```swift
 struct SearchView: View {
-	@SwiftUI.State
+  @SwiftUI.State
   private var searchText = ""
 
   init() {}
   
-	var body: some View {
-		TextField("Search", text: $searchText)
-			.onChange(of: searchText) { oldValue, newValue in
-				performSearch(query: newValue)
-		}
-		.onChange(of: searchText, initial: true) { oldValue, newValue in
-			validateInput(newValue)
-		}
-	}
+  var body: some View {
+    TextField("Search", text: $searchText)
+      .onChange(of: searchText) { oldValue, newValue in
+        performSearch(query: newValue)
+    }
+    .onChange(of: searchText, initial: true) { oldValue, newValue in
+      validateInput(newValue)
+    }
+  }
 }
 ```
 
@@ -26,7 +26,7 @@ struct SearchView: View {
 ```swift
 // DEPRECATED: onChange(of:perform:)
 .onChange(of: searchText) { newValue in
-	performSearch(query: newValue)
+  performSearch(query: newValue)
 }
 ```
 
@@ -35,30 +35,30 @@ struct SearchView: View {
 ### ✅ Modern Pattern
 ```swift
 struct UserListView: View {
-	@SwiftUI.State
-	private var users: [User] = []
-	
   @SwiftUI.State
-	private var isLoading = false
+  private var users: [User] = []
+  
+  @SwiftUI.State
+  private var isLoading = false
   
   init() {}
 
-	var body: some View {
-		List(users) { user in
-			UserRow(user: user)
-		}
-		.task { await loadUsers() }
-		.task(id: selectedFilter) {
-			// Cancelled and restarted when selectedFilter changes
-			await loadUsers(filter: selectedFilter)
-		}
-	}
+  var body: some View {
+    List(users) { user in
+      UserRow(user: user)
+    }
+    .task { await loadUsers() }
+    .task(id: selectedFilter) {
+      // Cancelled and restarted when selectedFilter changes
+      await loadUsers(filter: selectedFilter)
+    }
+  }
 
-	func loadUsers() async {
-		isLoading = true
-		users = try? await fetchUsers()
-		isLoading = false
-	}
+  func loadUsers() async {
+    isLoading = true
+    users = try? await fetchUsers()
+    isLoading = false
+  }
 }
 ```
 
@@ -66,6 +66,6 @@ struct UserListView: View {
 ```swift
 // NEVER use .onAppear with Task
 .onAppear {
-	Task { await loadUsers() }
+  Task { await loadUsers() }
 }
 ```

@@ -20,18 +20,18 @@ Apple Human Interface Guidelines for performance, responsiveness, and platform-n
 ```swift
 // ✅ Immediate feedback and non-blocking load
 VStack {
-	if model.isLoading {
-		ProgressView("Loading…")
-	} else {
-		List(model.items) { item in Text(item.title) }
-	}
+  if model.isLoading {
+    ProgressView("Loading…")
+  } else {
+    List(model.items) { item in Text(item.title) }
+  }
 }
 .task { await model.loadIfNeeded() }
 
 // ❌ Heavy synchronous work during view body; causes jank
 var body: some View {
-	let items = model.computeExpensiveListSynchronously()
-	return List(items) { item in Text(item.title) }
+  let items = model.computeExpensiveListSynchronously()
+  return List(items) { item in Text(item.title) }
 }
 ```
 
@@ -72,18 +72,18 @@ var body: some View {
 ```swift
 // ✅ System toolbar placements and familiar labels
 .toolbar {
-	ToolbarItem(placement: .cancellationAction) {
-		Button("Cancel", role: .cancel) { model.cancel() }
-	}
-	ToolbarItem(placement: .confirmationAction) {
-		Button("Done", action: model.done)
-	}
+  ToolbarItem(placement: .cancellationAction) {
+    Button("Cancel", role: .cancel) { model.cancel() }
+  }
+  ToolbarItem(placement: .confirmationAction) {
+    Button("Done", action: model.done)
+  }
 }
 
 // ❌ Custom "Close" / "Okay" in random placements; inconsistent with platform
 .toolbar {
-	ToolbarItem(placement: .automatic) { Button("Okay") {} }
-	ToolbarItem(placement: .automatic) { Button("Close") {} }
+  ToolbarItem(placement: .automatic) { Button("Okay") {} }
+  ToolbarItem(placement: .automatic) { Button("Close") {} }
 }
 ```
 

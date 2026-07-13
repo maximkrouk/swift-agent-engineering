@@ -22,17 +22,17 @@ Ensure view bodies update quickly and only when needed.
 ```swift
 // WRONG - creates every render
 var body: some View {
-	let formatter: NumberFormatter = .init()
-	Text(formatter.string(from: price)!)
+  let formatter: NumberFormatter = .init()
+  Text(formatter.string(from: price)!)
 }
 
 // CORRECT - cache formatters
 class Formatters {
-	static let currency: NumberFormatter = {
-		let f: NumberFormatter = .init()
-		f.numberStyle = .currency
-		return f
-	}()
+  static let currency: NumberFormatter = {
+    let f: NumberFormatter = .init()
+    f.numberStyle = .currency
+    return f
+  }()
 }
 ```
 
@@ -41,26 +41,26 @@ class Formatters {
 ```swift
 // WRONG
 var body: some View {
-	Text("\(data.sorted().last ?? 0)")
+  Text("\(data.sorted().last ?? 0)")
 }
 
 // CORRECT - compute in model
 @Observable
 class ViewModel {
-	var data: [Int] {
-		didSet {
-			self.maxValue = self.data.max() ?? 0
-		}
-	}
-	private(set) var maxValue: Int
+  var data: [Int] {
+    didSet {
+      self.maxValue = self.data.max() ?? 0
+    }
+  }
+  private(set) var maxValue: Int
 
-	init(
-		data: [Int] = [],
-		maxValue: Int = 0
-	) {
-		self.data = data
-		self.maxValue = maxValue
-	}
+  init(
+    data: [Int] = [],
+    maxValue: Int = 0
+  ) {
+    self.data = data
+    self.maxValue = maxValue
+  }
 }
 ```
 
@@ -69,7 +69,7 @@ class ViewModel {
 ```swift
 // NEVER
 var body: some View {
-	let data: Data? = try? .init(contentsOf: url)
+  let data: Data? = try? .init(contentsOf: url)
 }
 
 // CORRECT
@@ -85,17 +85,17 @@ Many small updates add up to miss frame deadline.
 ```swift
 // WRONG - all views depend on whole array
 func isFavorite(_ item: Item) -> Bool {
-	self.favorites.contains(item)  // Depends on entire array
+  self.favorites.contains(item)  // Depends on entire array
 }
 
 // CORRECT - per-item view models
 @Observable
 class ItemViewModel {
-	var isFavorite: Bool
+  var isFavorite: Bool
 }
 
 class ModelData {
-	var itemViewModels: [ID: ItemViewModel] = [:]
+  var itemViewModels: [ID: ItemViewModel] = [:]
 }
 ```
 
@@ -142,7 +142,7 @@ Rebuild with iOS 26 SDK:
 // Each view depends only on its model
 @Observable
 class ItemViewModel {
-	var item: Item
+  var item: Item
 }
 ```
 

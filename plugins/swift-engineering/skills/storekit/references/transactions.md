@@ -8,11 +8,11 @@ Set up at app launch to catch all transaction sources:
 
 ```swift
 func listenForTransactions() -> Task<Void, Never> {
-	Task.detached { [weak self] in
-		for await verificationResult in Transaction.updates {
-			await self?.handleTransaction(verificationResult)
-		}
-	}
+  Task.detached { [weak self] in
+    for await verificationResult in Transaction.updates {
+      await self?.handleTransaction(verificationResult)
+    }
+  }
 }
 ```
 
@@ -24,16 +24,16 @@ Always verify before granting entitlements:
 
 ```swift
 private func handleTransaction(_ result: VerificationResult<Transaction>) async {
-	switch result {
+  switch result {
 
-	case let .verified(transaction):
-		await grantEntitlement(for: transaction)
-		await transaction.finish()
+  case let .verified(transaction):
+    await grantEntitlement(for: transaction)
+    await transaction.finish()
 
-	case let .unverified(transaction, error):
-		print("Unverified: \(error)")
-		await transaction.finish()  // Still finish to clear queue
-	}
+  case let .unverified(transaction, error):
+    print("Unverified: \(error)")
+    await transaction.finish()  // Still finish to clear queue
+  }
 }
 ```
 
@@ -56,24 +56,24 @@ transaction.offer?.type, transaction.offer?.id, transaction.offer?.paymentMode
 
 ```swift
 func grantEntitlement(for transaction: Transaction) async {
-	guard transaction.revocationDate == nil else {
-		await revokeEntitlement(for: transaction.productID)
-		return
-	}
+  guard transaction.revocationDate == nil else {
+    await revokeEntitlement(for: transaction.productID)
+    return
+  }
 
-	switch transaction.productType {
+  switch transaction.productType {
 
-	case .consumable:
-		await addConsumable(productID: transaction.productID)
+  case .consumable:
+    await addConsumable(productID: transaction.productID)
 
-	case .nonConsumable:
-		await unlockFeature(productID: transaction.productID)
+  case .nonConsumable:
+    await unlockFeature(productID: transaction.productID)
 
-	case .autoRenewable:
-		await activateSubscription(productID: transaction.productID)
+  case .autoRenewable:
+    await activateSubscription(productID: transaction.productID)
 
-	default: break
-	}
+  default: break
+  }
 }
 ```
 
@@ -91,17 +91,17 @@ await transaction.finish()
 
 ```swift
 for await result in Transaction.currentEntitlements {
-	guard
-		let transaction = try? result.payloadValue,
-		transaction.revocationDate == nil
-	else { continue }
-	purchased.insert(transaction.productID)
+  guard
+    let transaction = try? result.payloadValue,
+    transaction.revocationDate == nil
+  else { continue }
+  purchased.insert(transaction.productID)
 }
 
 // Check specific product (iOS 18.4+)
 for await result in Transaction.currentEntitlements(for: productID) {
-	if let transaction = try? result.payloadValue,
-	   transaction.revocationDate == nil { return true }
+  if let transaction = try? result.payloadValue,
+    transaction.revocationDate == nil { return true }
 }
 ```
 
@@ -111,8 +111,8 @@ for await result in Transaction.currentEntitlements(for: productID) {
 
 ```swift
 func restorePurchases() async {
-	try? await AppStore.sync()
-	await updatePurchasedProducts()
+  try? await AppStore.sync()
+  await updatePurchasedProducts()
 }
 ```
 
@@ -122,15 +122,15 @@ App Store requires restore functionality for non-consumables and subscriptions.
 
 ```swift
 if let revocationDate = transaction.revocationDate {
-	switch transaction.revocationReason {
+  switch transaction.revocationReason {
 
-	case .developerIssue: // App issue
+  case .developerIssue: // App issue
 
-	case .other:          // Other reason
+  case .other:          // Other reason
 
-	@unknown default: break
-	}
-	await revokeEntitlement(for: transaction.productID)
+  @unknown default: break
+  }
+  await revokeEntitlement(for: transaction.productID)
 }
 ```
 

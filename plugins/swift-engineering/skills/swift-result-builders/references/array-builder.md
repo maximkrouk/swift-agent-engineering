@@ -6,8 +6,8 @@ Use `ArrayBuilder` for declarative array construction.
 
 ```swift
 .package(
-	url: "https://github.com/capturecontext/swift-result-builders.git",
-	.upToNextMinor(from: "0.0.2")
+  url: "https://github.com/capturecontext/swift-result-builders.git",
+  .upToNextMinor(from: "0.0.2")
 )
 ```
 
@@ -15,8 +15,8 @@ Target dependency:
 
 ```swift
 .product(
-	name: "ArrayBuilder",
-	package: "swift-result-builders"
+  name: "ArrayBuilder",
+  package: "swift-result-builders"
 )
 ```
 
@@ -30,9 +30,9 @@ import ArrayBuilder
 
 ```swift
 public init(
-	@ArrayBuilder<Element> elements: () -> [Element]
+  @ArrayBuilder<Element> elements: () -> [Element]
 ) {
-	self.init(elements())
+  self.init(elements())
 }
 ```
 
@@ -40,12 +40,12 @@ Callers can then write:
 
 ```swift
 let values: [String] = Array {
-	"one"
-	"two"
-	if includeMore {
-		"three"
-	}
-	["four", "five"]
+  "one"
+  "two"
+  if includeMore {
+    "three"
+  }
+  ["four", "five"]
 }
 ```
 

@@ -19,23 +19,23 @@ Use this package when the codebase wants array-producing builder blocks instead 
 
 ```swift
 extension IdentifiedArray where Element: Identifiable, ID == Element.ID {
-	@inlinable
-	public init(
-		@ArrayBuilder<Element> uniqueElements: () -> [Element]
-	) {
-		self.init(uniqueElements: uniqueElements())
-	}
+  @inlinable
+  public init(
+    @ArrayBuilder<Element> uniqueElements: () -> [Element]
+  ) {
+    self.init(uniqueElements: uniqueElements())
+  }
 }
 ```
 
 ```swift
 let values: [Int] = Array {
-	1
-	2
-	[3, 4]
-	if includeMore {
-		5
-	}
+  1
+  2
+  [3, 4]
+  if includeMore {
+    5
+  }
 }
 ```
 

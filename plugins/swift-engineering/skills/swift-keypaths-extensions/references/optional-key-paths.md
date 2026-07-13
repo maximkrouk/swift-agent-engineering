@@ -6,8 +6,8 @@
 
 ```swift
 .package(
-	url: "https://github.com/capturecontext/swift-keypaths-extensions.git",
-	.upToNextMajor(from: "0.2.0")
+  url: "https://github.com/capturecontext/swift-keypaths-extensions.git",
+  .upToNextMajor(from: "0.2.0")
 )
 ```
 
@@ -15,8 +15,8 @@ Target dependency:
 
 ```swift
 .product(
-	name: "KeyPathsExtensions",
-	package: "swift-keypaths-extensions"
+  name: "KeyPathsExtensions",
+  package: "swift-keypaths-extensions"
 )
 ```
 

@@ -8,35 +8,35 @@ Use `observe {}` block to react to database changes:
 
 ```swift
 final class UIKitCaseStudyViewController: UICollectionViewController {
-	private var dataSource: UICollectionViewDiffableDataSource<Section, Fact>!
+  private var dataSource: UICollectionViewDiffableDataSource<Section, Fact>!
 
-	@FetchAll(Fact.order { $0.id.desc() }, animation: .default)
-	private var facts: [Fact]
+  @FetchAll(Fact.order { $0.id.desc() }, animation: .default)
+  private var facts: [Fact]
 
-	@Dependency(\.defaultDatabase)
-	var database
+  @Dependency(\.defaultDatabase)
+  var database
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
+  override func viewDidLoad() {
+    super.viewDidLoad()
 
-		// Setup data source
-		self.dataSource = UICollectionViewDiffableDataSource<Section, Fact>(
-			collectionView: self.collectionView
-		) { collectionView, indexPath, item in
-			// Cell configuration
-		}
+    // Setup data source
+    self.dataSource = UICollectionViewDiffableDataSource<Section, Fact>(
+      collectionView: self.collectionView
+    ) { collectionView, indexPath, item in
+      // Cell configuration
+    }
 
-		// Observe database changes
-		observe { [weak self] in
-			guard let self
-			else { return }
+    // Observe database changes
+    observe { [weak self] in
+      guard let self
+      else { return }
 
-			var snapshot: NSDiffableDataSourceSnapshot<Section, Fact> = .init()
-			snapshot.appendSections([.facts])
-			snapshot.appendItems(self.facts, toSection: .facts)
-			self.dataSource.apply(snapshot)
-		}
-	}
+      var snapshot: NSDiffableDataSourceSnapshot<Section, Fact> = .init()
+      snapshot.appendSections([.facts])
+      snapshot.appendItems(self.facts, toSection: .facts)
+      self.dataSource.apply(snapshot)
+    }
+  }
 }
 ```
 
@@ -46,43 +46,43 @@ Update queries dynamically using the projected value:
 
 ```swift
 struct DynamicQueryDemo: View {
-	@Fetch(Facts(), animation: .default)
-	private var facts: Facts.Value = .init()
+  @Fetch(Facts(), animation: .default)
+  private var facts: Facts.Value = .init()
 
-	@SwiftUI.State
-	var query: String = ""
+  @SwiftUI.State
+  var query: String = ""
 
-	var body: some View {
-		List {
-			ForEach(self.facts.facts) { fact in
-				Text(fact.body)
-			}
-		}
-		.searchable(text: self.$query)
-		.task(id: self.query) {
-			await withErrorReporting {
-				try await self.$facts.load(Facts(query: self.query), animation: .default)
-			}
-		}
-	}
+  var body: some View {
+    List {
+      ForEach(self.facts.facts) { fact in
+        Text(fact.body)
+      }
+    }
+    .searchable(text: self.$query)
+    .task(id: self.query) {
+      await withErrorReporting {
+        try await self.$facts.load(Facts(query: self.query), animation: .default)
+      }
+    }
+  }
 
-	private struct Facts: FetchKeyRequest {
-		var query: String = ""
+  private struct Facts: FetchKeyRequest {
+    var query: String = ""
 
-		struct Value {
-			var facts: [Fact]
+    struct Value {
+      var facts: [Fact]
 
-			init(facts: [Fact] = []) {
-				self.facts = facts
-			}
-		}
+      init(facts: [Fact] = []) {
+        self.facts = facts
+      }
+    }
 
-		func fetch(_ db: Database) throws -> Value {
-			try .init(
-				facts: Fact.where { $0.body.contains(self.query) }.fetchAll(db)
-			)
-		}
-	}
+    func fetch(_ db: Database) throws -> Value {
+      try .init(
+        facts: Fact.where { $0.body.contains(self.query) }.fetchAll(db)
+      )
+    }
+  }
 }
 ```
 
@@ -93,20 +93,20 @@ Manually trigger a query refresh in @Observable models:
 ```swift
 @Observable
 class SearchModel {
-	@ObservationIgnored
-	@Fetch(SearchRequest(text: ""), animation: .default)
-	var results: SearchResults = .init()
+  @ObservationIgnored
+  @Fetch(SearchRequest(text: ""), animation: .default)
+  var results: SearchResults = .init()
 
-	var searchText: String = "" {
-		didSet {
-			Task {
-				try await self.$results.load(
-					SearchRequest(text: self.searchText),
-					animation: .default
-				)
-			}
-		}
-	}
+  var searchText: String = "" {
+    didSet {
+      Task {
+        try await self.$results.load(
+          SearchRequest(text: self.searchText),
+          animation: .default
+        )
+      }
+    }
+  }
 }
 ```
 
@@ -117,8 +117,8 @@ Use `@Fetch`/`@FetchOne` directly in TCA `@ObservableState` for reactive queries
 ```swift
 @ObservableState
 struct State: Equatable {
-    @Fetch(ItemsRequest()) var items: [Item] = []
-    @FetchOne(Bundle.where { $0.isActive }) var activeBundle: Bundle?
+  @Fetch(ItemsRequest()) var items: [Item] = []
+  @FetchOne(Bundle.where { $0.isActive }) var activeBundle: Bundle?
 }
 ```
 
@@ -126,22 +126,22 @@ struct State: Equatable {
 
 ```swift
 struct ItemsRequest: FetchKeyRequest {
-    typealias Value = [Item]
+  typealias Value = [Item]
 
-    func fetch(_ db: Database) throws -> [Item] {
-        try Item
-            .where { $0.isArchived == false }
-            .order { $0.createdAt.desc() }
-            .join(ItemDetail.all) { $1.id.eq($0.id) }
-            .select {
-                Item.Columns(
-                    id: $0.id,
-                    title: $1.title,
-                    createdAt: $0.createdAt
-                )
-            }
-            .fetchAll(db)
-    }
+  func fetch(_ db: Database) throws -> [Item] {
+    try Item
+      .where { $0.isArchived == false }
+      .order { $0.createdAt.desc() }
+      .join(ItemDetail.all) { $1.id.eq($0.id) }
+      .select {
+        Item.Columns(
+          id: $0.id,
+          title: $1.title,
+          createdAt: $0.createdAt
+        )
+      }
+      .fetchAll(db)
+  }
 }
 ```
 
@@ -151,39 +151,39 @@ struct ItemsRequest: FetchKeyRequest {
 // WRONG - Creates unnecessary Effect/Action boilerplate
 // Requires manual refetch after every mutation
 private func fetchItems() -> Effect<Action> {
-    .run { send in
-        let items = try await database.read { db in ... }
-        await send(.itemsLoaded(items))
-    }
+  .run { send in
+    let items = try await database.read { db in ... }
+    await send(.itemsLoaded(items))
+  }
 }
 
 case .view(.onAppear):
-    return fetchItems()  // Must call on appear
+  return fetchItems()  // Must call on appear
 
 case .view(.onItemDeleted(let id)):
-    return .run { send in
-        try await database.deleteItem(id)
-        // Must manually refetch after mutation!
-        let items = try await database.read { ... }
-        await send(.itemsLoaded(items))
-    }
+  return .run { send in
+    try await database.deleteItem(id)
+    // Must manually refetch after mutation!
+    let items = try await database.read { ... }
+    await send(.itemsLoaded(items))
+  }
 ```
 
 ```swift
 // RIGHT - Use @Fetch, mutations auto-refresh
 @ObservableState
 struct State: Equatable {
-    @Fetch(ItemsRequest()) var items: [Item] = []
+  @Fetch(ItemsRequest()) var items: [Item] = []
 }
 
 case .view(.onAppear):
-    return .none  // Nothing needed - @Fetch observes automatically
+  return .none  // Nothing needed - @Fetch observes automatically
 
 case .view(.onItemDeleted(let id)):
-    return .run { _ in
-        try await database.deleteItem(id)
-        // No refetch needed - @Fetch updates automatically
-    }
+  return .run { _ in
+    try await database.deleteItem(id)
+    // No refetch needed - @Fetch updates automatically
+  }
 ```
 
 ## Best Practices

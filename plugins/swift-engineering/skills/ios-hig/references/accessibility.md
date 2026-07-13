@@ -17,14 +17,14 @@ Apple Human Interface Guidelines for accessible iOS app design.
 ```swift
 // ✅ Icon-only button with accessible label
 Button(action: model.refresh) {
-	Image(systemName: "arrow.clockwise")
+  Image(systemName: "arrow.clockwise")
 }
 .accessibilityLabel("Refresh")
 .accessibilityHint("Reloads the list")
 
 // ❌ Icon-only control with no label; VoiceOver reads "arrow.clockwise"
 Button(action: model.refresh) {
-	Image(systemName: "arrow.clockwise")
+  Image(systemName: "arrow.clockwise")
 }
 ```
 
@@ -33,23 +33,23 @@ Button(action: model.refresh) {
 ```swift
 // ✅ Dynamic Type with proper layout
 VStack(alignment: .leading, spacing: 8) {
-	Text(item.title)
-		.font(.headline)
-		.lineLimit(2)
+  Text(item.title)
+    .font(.headline)
+    .lineLimit(2)
 
-	if let summary = item.summary {
-		Text(summary)
-			.font(.body)
-			.foregroundStyle(.secondary)
-			.lineLimit(3)
-	}
+  if let summary = item.summary {
+    Text(summary)
+      .font(.body)
+      .foregroundStyle(.secondary)
+      .lineLimit(3)
+  }
 }
 
 // ❌ Hard-coded sizes that don't scale
 VStack(alignment: .leading) {
-	Text(item.title)
-		.font(.system(size: 14))
-		.lineLimit(1)
+  Text(item.title)
+    .font(.system(size: 14))
+    .lineLimit(1)
 }
 ```
 
@@ -61,14 +61,14 @@ VStack(alignment: .leading) {
 var reduceMotion
 
 var body: some View {
-	self.content
-		.animation(self.reduceMotion ? .none : .spring, value: self.isExpanded)
+  self.content
+    .animation(self.reduceMotion ? .none : .spring, value: self.isExpanded)
 }
 
 // ❌ Always animate regardless of setting
 var body: some View {
-	content
-		.animation(.spring, value: isExpanded)
+  content
+    .animation(.spring, value: isExpanded)
 }
 ```
 

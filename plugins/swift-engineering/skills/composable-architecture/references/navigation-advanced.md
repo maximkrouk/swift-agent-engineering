@@ -9,36 +9,36 @@ Multiple navigation patterns, deep linking, and recursive navigation.
 ```swift
 @Reducer
 struct Feature {
-    @Reducer
-    enum Path {
-        case detail(Detail)
-        case settings(Settings)
-    }
+  @Reducer
+  enum Path {
+    case detail(Detail)
+    case settings(Settings)
+  }
 
-    @Reducer
-    enum Destination {
-        case alert(AlertState<Alert>)
-        case sheet(Sheet)
-    }
+  @Reducer
+  enum Destination {
+    case alert(AlertState<Alert>)
+    case sheet(Sheet)
+  }
 
-    @ObservableState
-    struct State: Equatable {
-        var path = StackState<Path.State>()
-        @Presents var destination: Destination.State?
-    }
+  @ObservableState
+  struct State: Equatable {
+    var path = StackState<Path.State>()
+    @Presents var destination: Destination.State?
+  }
 
-    enum Action {
-        case path(StackActionOf<Path>)
-        case destination(PresentationAction<Destination.Action>)
-    }
+  enum Action {
+    case path(StackActionOf<Path>)
+    case destination(PresentationAction<Destination.Action>)
+  }
 
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            // Handle actions
-        }
-        .forEach(\.path, action: \.path)
-        .ifLet(\.$destination, action: \.destination)
+  var body: some Reducer<State, Action> {
+    Reduce { state, action in
+      // Handle actions
     }
+    .forEach(\.path, action: \.path)
+    .ifLet(\.$destination, action: \.destination)
+  }
 }
 ```
 
@@ -46,28 +46,28 @@ View:
 
 ```swift
 struct FeatureView: View {
-    @Bindable var store: StoreOf<Feature>
+  @Bindable var store: StoreOf<Feature>
 
-    var body: some View {
-        NavigationStack(
-            path: $store.scope(state: \.path, action: \.path)
-        ) {
-            RootView()
-        } destination: { store in
-            switch store.case {
-            case let .detail(store):
-                DetailView(store: store)
-            case let .settings(store):
-                SettingsView(store: store)
-            }
-        }
-        .sheet(
-            item: $store.scope(state: \.destination?.sheet, action: \.destination.sheet)
-        ) { store in
-            SheetView(store: store)
-        }
-        .alert($store.scope(state: \.destination?.alert, action: \.destination.alert))
+  var body: some View {
+    NavigationStack(
+      path: $store.scope(state: \.path, action: \.path)
+    ) {
+      RootView()
+    } destination: { store in
+      switch store.case {
+      case let .detail(store):
+        DetailView(store: store)
+      case let .settings(store):
+        SettingsView(store: store)
+      }
     }
+    .sheet(
+      item: $store.scope(state: \.destination?.sheet, action: \.destination.sheet)
+    ) { store in
+      SheetView(store: store)
+    }
+    .alert($store.scope(state: \.destination?.alert, action: \.destination.alert))
+  }
 }
 ```
 
@@ -79,13 +79,13 @@ struct FeatureView: View {
 // Set path on initialization or deep link
 @ObservableState
 struct State: Equatable {
-    var path = StackState<Path.State>()
+  var path = StackState<Path.State>()
 
-    init(deepLink: DeepLink? = nil) {
-        if let deepLink {
-            self.path = deepLink.navigationPath
-        }
+  init(deepLink: DeepLink? = nil) {
+    if let deepLink {
+      self.path = deepLink.navigationPath
     }
+  }
 }
 ```
 
@@ -93,14 +93,14 @@ struct State: Equatable {
 
 ```swift
 case let .deepLinkReceived(deepLink):
-    state.path.removeAll()
-    switch deepLink {
-    case let .detail(id):
-        state.path.append(.detail(Detail.State(id: id)))
-    case .settings:
-        state.path.append(.settings(Settings.State()))
-    }
-    return .none
+  state.path.removeAll()
+  switch deepLink {
+  case let .detail(id):
+    state.path.append(.detail(Detail.State(id: id)))
+  case .settings:
+    state.path.append(.settings(Settings.State()))
+  }
+  return .none
 ```
 
 ## NavigationStack State Inspection
@@ -113,7 +113,7 @@ let isDetailPresented = state.path.contains { $0.is(\.detail) }
 
 // Get specific screen state
 if case let .detail(detailState) = state.path.last {
-    // Access detail state
+  // Access detail state
 }
 
 // Count screens
@@ -127,33 +127,33 @@ For self-referencing navigation (like nested folders):
 ```swift
 @Reducer
 struct Nested {
-    @ObservableState
-    struct State: Equatable, Identifiable {
-        let id: UUID
-        var name: String = ""
-        var rows: IdentifiedArrayOf<State> = []
-    }
+  @ObservableState
+  struct State: Equatable, Identifiable {
+    let id: UUID
+    var name: String = ""
+    var rows: IdentifiedArrayOf<State> = []
+  }
 
-    enum Action {
-        case addRowButtonTapped
-        indirect case rows(IdentifiedActionOf<Nested>)
-    }
+  enum Action {
+    case addRowButtonTapped
+    indirect case rows(IdentifiedActionOf<Nested>)
+  }
 
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            switch action {
-            case .addRowButtonTapped:
-                state.rows.append(State(id: UUID()))
-                return .none
+  var body: some Reducer<State, Action> {
+    Reduce { state, action in
+      switch action {
+      case .addRowButtonTapped:
+        state.rows.append(State(id: UUID()))
+        return .none
 
-            case .rows:
-                return .none
-            }
-        }
-        .forEach(\.rows, action: \.rows) {
-            Self()  // Recursive reference
-        }
+      case .rows:
+        return .none
+      }
     }
+    .forEach(\.rows, action: \.rows) {
+      Self()  // Recursive reference
+    }
+  }
 }
 ```
 
@@ -161,25 +161,25 @@ View:
 
 ```swift
 struct NestedView: View {
-    let store: StoreOf<Nested>
+  let store: StoreOf<Nested>
 
-    var body: some View {
-        Form {
-            TextField("Name", text: $store.name)
+  var body: some View {
+    Form {
+      TextField("Name", text: $store.name)
 
-            Button("Add Row") {
-                store.send(.addRowButtonTapped)
-            }
+      Button("Add Row") {
+        store.send(.addRowButtonTapped)
+      }
 
-            ForEach(
-                store.scope(state: \.rows, action: \.rows)
-            ) { childStore in
-                NavigationLink(state: childStore) {
-                    Text(childStore.name)
-                }
-            }
+      ForEach(
+        store.scope(state: \.rows, action: \.rows)
+      ) { childStore in
+        NavigationLink(state: childStore) {
+          Text(childStore.name)
         }
+      }
     }
+  }
 }
 ```
 

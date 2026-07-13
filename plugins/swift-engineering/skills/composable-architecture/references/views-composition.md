@@ -8,17 +8,17 @@ ForEach scoping, child features, and optional child views.
 
 ```swift
 struct TodosView: View {
-    let store: StoreOf<Todos>
+  let store: StoreOf<Todos>
 
-    var body: some View {
-        List {
-            ForEach(
-                store.scope(state: \.todos, action: \.todos)
-            ) { store in
-                TodoRowView(store: store)
-            }
-        }
+  var body: some View {
+    List {
+      ForEach(
+        store.scope(state: \.todos, action: \.todos)
+      ) { store in
+        TodoRowView(store: store)
+      }
     }
+  }
 }
 ```
 
@@ -27,24 +27,24 @@ Corresponding reducer:
 ```swift
 @Reducer
 struct Todos {
-    @ObservableState
-    struct State: Equatable {
-        var todos: IdentifiedArrayOf<Todo.State> = []
-    }
+  @ObservableState
+  struct State: Equatable {
+    var todos: IdentifiedArrayOf<Todo.State> = []
+  }
 
-    enum Action {
-        case todos(IdentifiedActionOf<Todo>)
-    }
+  enum Action {
+    case todos(IdentifiedActionOf<Todo>)
+  }
 
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            // Parent-level logic
-            return .none
-        }
-        .forEach(\.todos, action: \.todos) {
-            Todo()
-        }
+  var body: some Reducer<State, Action> {
+    Reduce { state, action in
+      // Parent-level logic
+      return .none
     }
+    .forEach(\.todos, action: \.todos) {
+      Todo()
+    }
+  }
 }
 ```
 
@@ -52,17 +52,17 @@ struct Todos {
 
 ```swift
 struct TodosView: View {
-    let store: StoreOf<Todos>
+  let store: StoreOf<Todos>
 
-    var body: some View {
-        List {
-            ForEach(
-                store.scope(state: \.filteredTodos, action: \.todos)
-            ) { store in
-                TodoRowView(store: store)
-            }
-        }
+  var body: some View {
+    List {
+      ForEach(
+        store.scope(state: \.filteredTodos, action: \.todos)
+      ) { store in
+        TodoRowView(store: store)
+      }
     }
+  }
 }
 ```
 
@@ -71,19 +71,19 @@ Corresponding state with computed property:
 ```swift
 @ObservableState
 struct State: Equatable {
-    var todos: IdentifiedArrayOf<Todo.State> = []
-    var filter: Filter = .all
+  var todos: IdentifiedArrayOf<Todo.State> = []
+  var filter: Filter = .all
 
-    var filteredTodos: IdentifiedArrayOf<Todo.State> {
-        switch filter {
-        case .all:
-            return todos
-        case .active:
-            return todos.filter { !$0.isComplete }
-        case .completed:
-            return todos.filter { $0.isComplete }
-        }
+  var filteredTodos: IdentifiedArrayOf<Todo.State> {
+    switch filter {
+    case .all:
+      return todos
+    case .active:
+      return todos.filter { !$0.isComplete }
+    case .completed:
+      return todos.filter { $0.isComplete }
     }
+  }
 }
 ```
 
@@ -93,19 +93,19 @@ struct State: Equatable {
 
 ```swift
 struct TwoCountersView: View {
-    let store: StoreOf<TwoCounters>
+  let store: StoreOf<TwoCounters>
 
-    var body: some View {
-        VStack {
-            CounterView(
-                store: store.scope(state: \.counter1, action: \.counter1)
-            )
+  var body: some View {
+    VStack {
+      CounterView(
+        store: store.scope(state: \.counter1, action: \.counter1)
+      )
 
-            CounterView(
-                store: store.scope(state: \.counter2, action: \.counter2)
-            )
-        }
+      CounterView(
+        store: store.scope(state: \.counter2, action: \.counter2)
+      )
     }
+  }
 }
 ```
 
@@ -114,25 +114,25 @@ Corresponding reducer:
 ```swift
 @Reducer
 struct TwoCounters {
-    @ObservableState
-    struct State: Equatable {
-        var counter1 = Counter.State()
-        var counter2 = Counter.State()
-    }
+  @ObservableState
+  struct State: Equatable {
+    var counter1 = Counter.State()
+    var counter2 = Counter.State()
+  }
 
-    enum Action {
-        case counter1(Counter.Action)
-        case counter2(Counter.Action)
-    }
+  enum Action {
+    case counter1(Counter.Action)
+    case counter2(Counter.Action)
+  }
 
-    var body: some Reducer<State, Action> {
-        Scope(state: \.counter1, action: \.counter1) {
-            Counter()
-        }
-        Scope(state: \.counter2, action: \.counter2) {
-            Counter()
-        }
+  var body: some Reducer<State, Action> {
+    Scope(state: \.counter1, action: \.counter1) {
+      Counter()
     }
+    Scope(state: \.counter2, action: \.counter2) {
+      Counter()
+    }
+  }
 }
 ```
 
@@ -142,21 +142,21 @@ struct TwoCounters {
 
 ```swift
 struct OptionalCounterView: View {
-    let store: StoreOf<OptionalCounter>
+  let store: StoreOf<OptionalCounter>
 
-    var body: some View {
-        VStack {
-            if let store = store.scope(state: \.counter, action: \.counter) {
-                CounterView(store: store)
-            } else {
-                Text("Counter not loaded")
-            }
+  var body: some View {
+    VStack {
+      if let store = store.scope(state: \.counter, action: \.counter) {
+        CounterView(store: store)
+      } else {
+        Text("Counter not loaded")
+      }
 
-            Button("Toggle Counter") {
-                store.send(.toggleCounterButtonTapped)
-            }
-        }
+      Button("Toggle Counter") {
+        store.send(.toggleCounterButtonTapped)
+      }
     }
+  }
 }
 ```
 
@@ -165,31 +165,31 @@ Corresponding reducer:
 ```swift
 @Reducer
 struct OptionalCounter {
-    @ObservableState
-    struct State: Equatable {
-        var counter: Counter.State?
-    }
+  @ObservableState
+  struct State: Equatable {
+    var counter: Counter.State?
+  }
 
-    enum Action {
-        case counter(Counter.Action)
-        case toggleCounterButtonTapped
-    }
+  enum Action {
+    case counter(Counter.Action)
+    case toggleCounterButtonTapped
+  }
 
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            switch action {
-            case .toggleCounterButtonTapped:
-                state.counter = state.counter == nil ? Counter.State() : nil
-                return .none
+  var body: some Reducer<State, Action> {
+    Reduce { state, action in
+      switch action {
+      case .toggleCounterButtonTapped:
+        state.counter = state.counter == nil ? Counter.State() : nil
+        return .none
 
-            case .counter:
-                return .none
-            }
-        }
-        .ifLet(\.counter, action: \.counter) {
-            Counter()
-        }
+      case .counter:
+        return .none
+      }
     }
+    .ifLet(\.counter, action: \.counter) {
+      Counter()
+    }
+  }
 }
 ```
 

@@ -127,8 +127,8 @@ Before String Catalogs, plurals used .stringsdict files:
 ```swift
 // Let String Catalog handle plurals
 let itemLabel: String = .init(
-	localized: "\(itemCount) items",
-	comment: "Shopping cart item count"
+  localized: "\(itemCount) items",
+  comment: "Shopping cart item count"
 )
 
 // For complex cases, use AttributedString
@@ -189,15 +189,15 @@ When exporting for translation, plural forms appear cleanly:
 **Preview Testing**:
 ```swift
 struct ItemCountView_Previews: PreviewProvider {
-	static var previews: some View {
-		Group {
-			ItemCountView(count: 0)
-			ItemCountView(count: 1)
-			ItemCountView(count: 2)
-			ItemCountView(count: 5)
-			ItemCountView(count: 21)  // Tests Russian "one" form
-		}
-	}
+  static var previews: some View {
+    Group {
+      ItemCountView(count: 0)
+      ItemCountView(count: 1)
+      ItemCountView(count: 2)
+      ItemCountView(count: 5)
+      ItemCountView(count: 21)  // Tests Russian "one" form
+    }
+  }
 }
 ```
 

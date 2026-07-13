@@ -18,25 +18,25 @@ setup -> preparing -> waiting <-> ready -> failed/cancelled
 
 ```swift
 connection.stateUpdateHandler = { [weak self] state in
-	switch state {
-	case .preparing:
-		self?.updateUI(.connecting)
+  switch state {
+  case .preparing:
+    self?.updateUI(.connecting)
 
-	case let .waiting(error):
-		// DON'T fail here - framework retries when network returns
-		self?.updateUI(.waiting(error))
+  case let .waiting(error):
+    // DON'T fail here - framework retries when network returns
+    self?.updateUI(.waiting(error))
 
-	case .ready:
-		self?.startCommunication()
+  case .ready:
+    self?.startCommunication()
 
-	case let .failed(error):
-		self?.showError(error)
+  case let .failed(error):
+    self?.showError(error)
 
-	case .cancelled:
-		self?.cleanup()
+  case .cancelled:
+    self?.cleanup()
 
-	@unknown default: break
-	}
+  @unknown default: break
+  }
 }
 ```
 
@@ -44,27 +44,27 @@ connection.stateUpdateHandler = { [weak self] state in
 
 ```swift
 Task {
-	for await state in connection.states {
-		switch state {
+  for await state in connection.states {
+    switch state {
 
-		case .preparing:
-			self.updateStatus("Connecting...")
+    case .preparing:
+      self.updateStatus("Connecting...")
 
-		case let .waiting(error):
-			self.updateStatus("Waiting: \(error)")
+    case let .waiting(error):
+      self.updateStatus("Waiting: \(error)")
 
-		case .ready:
-			await self.startCommunication()
+    case .ready:
+      await self.startCommunication()
 
-		case let .failed(error):
-			self.handleError(error)
+    case let .failed(error):
+      self.handleError(error)
 
-		case .cancelled:
-			self.handleCancellation()
+    case .cancelled:
+      self.handleCancellation()
 
-		@unknown default: break
-		}
-	}
+    @unknown default: break
+    }
+  }
 }
 ```
 
@@ -75,21 +75,21 @@ Task {
 ```swift
 // WRONG - Poor UX
 case .waiting:
-	showError("Connection failed")
+  showError("Connection failed")
 
 // CORRECT
 case .waiting:
-	showStatus("Waiting for network...")
+  showStatus("Waiting for network...")
 ```
 
 ## Viability Updates
 
 ```swift
 connection.viabilityUpdateHandler = { isViable in
-	if !isViable {
-		// Don't tear down! May recover when network returns
-		showStatus("Connection interrupted...")
-	}
+  if !isViable {
+    // Don't tear down! May recover when network returns
+    showStatus("Connection interrupted...")
+  }
 }
 ```
 
@@ -97,9 +97,9 @@ connection.viabilityUpdateHandler = { isViable in
 
 ```swift
 connection.betterPathUpdateHandler = { betterPathAvailable in
-	if betterPathAvailable {
-		migrateToNewConnection()
-	}
+  if betterPathAvailable {
+    migrateToNewConnection()
+  }
 }
 ```
 
@@ -125,14 +125,14 @@ parameters.multipathServiceType = .handover  // Seamless WiFi/cellular transitio
 ```swift
 let monitor: NWPathMonitor = .init()
 monitor.pathUpdateHandler = { path in
-	if path.status == .satisfied {
-		if path.usesInterfaceType(.wifi) {
-			print("WiFi")
-		}
-		if path.isExpensive {
-			print("Cellular/hotspot")
-		}
-	}
+  if path.status == .satisfied {
+    if path.usesInterfaceType(.wifi) {
+      print("WiFi")
+    }
+    if path.isExpensive {
+      print("Cellular/hotspot")
+    }
+  }
 }
 monitor.start(queue: .main)
 ```

@@ -17,13 +17,13 @@ Apple Human Interface Guidelines for color, materials, and contrast.
 ```swift
 // ✅ Semantic styles that adapt automatically
 HStack {
-	Image(systemName: "link")
-		.foregroundStyle(.tint)
-	Text("Open link")
-		.foregroundStyle(.primary)
-	Spacer()
-	Text("Optional")
-		.foregroundStyle(.secondary)
+  Image(systemName: "link")
+    .foregroundStyle(.tint)
+  Text("Open link")
+    .foregroundStyle(.primary)
+  Spacer()
+  Text("Optional")
+    .foregroundStyle(.secondary)
 }
 .padding()
 .background(.thinMaterial)
@@ -31,8 +31,8 @@ HStack {
 
 // ❌ Hard-coded colors that can break contrast in dark mode
 HStack {
-	Text("Open link")
-		.foregroundStyle(Color.white)
+  Text("Open link")
+    .foregroundStyle(Color.white)
 }
 .padding()
 .background(Color.yellow)
@@ -44,19 +44,19 @@ HStack {
 ```swift
 // ✅ Adapts to light/dark mode automatically
 VStack {
-	Text("Title")
-		.foregroundStyle(.primary)
-	Text("Subtitle")
-		.foregroundStyle(.secondary)
+  Text("Title")
+    .foregroundStyle(.primary)
+  Text("Subtitle")
+    .foregroundStyle(.secondary)
 }
 .background(.background)
 
 // ❌ Hard-coded colors don't adapt
 VStack {
-	Text("Title")
-		.foregroundStyle(Color.black)
-	Text("Subtitle")
-		.foregroundStyle(Color.gray)
+  Text("Title")
+    .foregroundStyle(Color.black)
+  Text("Subtitle")
+    .foregroundStyle(Color.gray)
 }
 .background(Color.white)
 ```
@@ -66,12 +66,12 @@ VStack {
 ```swift
 // ✅ Color reinforces meaning with text/icon
 Label("Error occurred", systemImage: "exclamationmark.triangle")
-	.foregroundStyle(.red)
+  .foregroundStyle(.red)
 
 // ❌ Color alone conveys meaning
 Circle()
-	.fill(Color.red)
-	.frame(width: 8, height: 8)
+  .fill(Color.red)
+  .frame(width: 8, height: 8)
 ```
 
 ## Summary

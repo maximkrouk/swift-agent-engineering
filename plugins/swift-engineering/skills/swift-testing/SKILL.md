@@ -44,16 +44,16 @@ import Testing
 
 @Suite
 struct FeatureTests {
-	let sut: FeatureType
+  let sut: FeatureType
     
-	init() throws {
-		sut = FeatureType()
-	}
+  init() throws {
+    sut = FeatureType()
+  }
 
-	@Test("Description of behavior")
-	func testBehavior() async throws {
-		#expect(sut.someProperty == expected)
-	}
+  @Test("Description of behavior")
+  func testBehavior() async throws {
+    #expect(sut.someProperty == expected)
+  }
 }
 ```
 
@@ -94,11 +94,11 @@ struct FeatureTests {
 
 ```swift
 @Test("Validates inputs", arguments: zip(
-	["a", "b", "c"],
-	[1, 2, 3]
+  ["a", "b", "c"],
+  [1, 2, 3]
 ))
 func testInputs(input: String, expected: Int) {
-	#expect(process(input) == expected)
+  #expect(process(input) == expected)
 }
 ```
 
@@ -110,8 +110,8 @@ Since test functions should always be marked as `async throws` - async tests are
 
 ```swift
 @Test func testAsync() async throws {
-	let result = try await fetchData()
-	#expect(!result.isEmpty)
+  let result = try await fetchData()
+  #expect(!result.isEmpty)
 }
 ```
 
@@ -119,10 +119,10 @@ Since test functions should always be marked as `async throws` - async tests are
 
 ```swift
 @Test func testCallback() async throws {
-	await confirmation("callback received") { confirm in
-		let sut = SomeType { confirm() }
-		sut.triggerCallback()
-	}
+  await confirmation("callback received") { confirm in
+    let sut = SomeType { confirm() }
+    sut.triggerCallback()
+  }
 }
 ```
 
@@ -130,8 +130,8 @@ Since test functions should always be marked as `async throws` - async tests are
 
 ```swift
 extension Tag {
-	@Tag static var fast: Self
-	@Tag static var networking: Self
+  @Tag static var fast: Self
+  @Tag static var networking: Self
 }
 
 @Test(.tags(.fast, .networking))

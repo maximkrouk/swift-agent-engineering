@@ -31,9 +31,9 @@ Use `Capture` when working with reference-type closure captures and the codebase
 
 ```swift
 apiClient.loadItems(
-	completion: self.capture { _self, items in
-		_self.items = items
-	}
+  completion: self.capture { _self, items in
+    _self.items = items
+  }
 )
 ```
 
@@ -41,7 +41,7 @@ apiClient.loadItems(
 
 ```swift
 dataSource.numberOfItems = self.capture(orReturn: 0) { _self in
-	_self.items.count
+  _self.items.count
 }
 ```
 
@@ -55,7 +55,7 @@ dataSource.numberOfItems = self.capture(orReturn: 0, in: \.items.count)
 
 ```swift
 self.capture(as: .strong) { _self in
-	_self.performCriticalWork()
+  _self.performCriticalWork()
 }
 ```
 
@@ -63,7 +63,7 @@ self.capture(as: .strong) { _self in
 
 ```swift
 self.capture.as(.strong).orReturn(()) { _self in
-	_self.performWork()
+  _self.performWork()
 }
 ```
 
@@ -71,10 +71,10 @@ self.capture.as(.strong).orReturn(()) { _self in
 
 ```swift
 let updateUI: @MainActor () -> Void = self.capture
-	.uncheckedSendable
-	.onMainActor { _self in
-		_self.render()
-	}
+  .uncheckedSendable
+  .onMainActor { _self in
+    _self.render()
+  }
 ```
 
 ## Workflow
@@ -116,7 +116,7 @@ Avoid this currently broken trailing-closure shape:
 
 ```swift
 self.capture.as(.strong) { _self in
-	_self.performWork()
+  _self.performWork()
 }
 ```
 
@@ -124,7 +124,7 @@ Prefer:
 
 ```swift
 self.capture.as(.strong)(in: { _self in
-	_self.performWork()
+  _self.performWork()
 })
 ```
 
@@ -132,6 +132,6 @@ Or:
 
 ```swift
 self.capture.as(.strong).orReturn(()) { _self in
-	_self.performWork()
+  _self.performWork()
 }
 ```

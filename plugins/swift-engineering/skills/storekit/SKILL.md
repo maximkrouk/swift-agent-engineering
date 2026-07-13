@@ -33,21 +33,21 @@ StoreKit 2 patterns for implementing in-app purchases with async/await APIs, aut
 ```swift
 @MainActor
 final class StoreManager: ObservableObject {
-	@Published
-	private(set) var products: [Product]
-	@Published
-	private(set) var purchasedProductIDs: Set<String>
-	private var transactionListener: Task<Void, Never>?
+  @Published
+  private(set) var products: [Product]
+  @Published
+  private(set) var purchasedProductIDs: Set<String>
+  private var transactionListener: Task<Void, Never>?
 
-	init(
-		products: [Product] = [],
-		purchasedProductIDs: Set<String> = []
-	) {
-		self.products = products
-		self.purchasedProductIDs = purchasedProductIDs
-		self.transactionListener = self.listenForTransactions()
-		Task { await self.loadProducts() }
-	}
+  init(
+    products: [Product] = [],
+    purchasedProductIDs: Set<String> = []
+  ) {
+    self.products = products
+    self.purchasedProductIDs = purchasedProductIDs
+    self.transactionListener = self.listenForTransactions()
+    Task { await self.loadProducts() }
+  }
 }
 ```
 

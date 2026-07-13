@@ -6,8 +6,8 @@
 
 ```swift
 .package(
-	url: "https://github.com/capturecontext/swift-cocoa-extensions.git",
-	.upToNextMinor(from: "0.5.0")
+  url: "https://github.com/capturecontext/swift-cocoa-extensions.git",
+  .upToNextMinor(from: "0.5.0")
 )
 ```
 

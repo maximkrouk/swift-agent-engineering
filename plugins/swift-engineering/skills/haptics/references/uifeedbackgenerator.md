@@ -12,29 +12,29 @@ Physical collision or impact sensation.
 
 ```swift
 class MyViewController: UIViewController {
-	private let impactGenerator: UIImpactFeedbackGenerator
+  private let impactGenerator: UIImpactFeedbackGenerator
 
-	init(
-		impactGenerator: UIImpactFeedbackGenerator = .init(style: .medium)
-	) {
-		self.impactGenerator = impactGenerator
-		super.init(nibName: nil, bundle: nil)
-	}
+  init(
+    impactGenerator: UIImpactFeedbackGenerator = .init(style: .medium)
+  ) {
+    self.impactGenerator = impactGenerator
+    super.init(nibName: nil, bundle: nil)
+  }
 
-	required init?(coder: NSCoder) {
-		self.impactGenerator = .init(style: .medium)
-		super.init(coder: coder)
-	}
+  required init?(coder: NSCoder) {
+    self.impactGenerator = .init(style: .medium)
+    super.init(coder: coder)
+  }
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		self.impactGenerator.prepare() // Reduces latency
-	}
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    self.impactGenerator.prepare() // Reduces latency
+  }
 
-	@objc
-	func buttonTapped() {
-		self.impactGenerator.impactOccurred()
-	}
+  @objc
+  func buttonTapped() {
+    self.impactGenerator.impactOccurred()
+  }
 }
 
 // Intensity variation (iOS 13+): 0.0 to 1.0
@@ -49,11 +49,11 @@ Discrete selection changes. Feels like clicking a physical wheel.
 private let selectionGenerator: UISelectionFeedbackGenerator = .init()
 
 func pickerView(
-	_ picker: UIPickerView,
-	didSelectRow row: Int,
-	inComponent component: Int
+  _ picker: UIPickerView,
+  didSelectRow row: Int,
+  inComponent component: Int
 ) {
-	selectionGenerator.selectionChanged()
+  selectionGenerator.selectionChanged()
 }
 ```
 
@@ -67,9 +67,9 @@ System-level success/warning/error feedback.
 let notificationGenerator: UINotificationFeedbackGenerator = .init()
 
 func submitForm() {
-	notificationGenerator.notificationOccurred(
-		isValid ? .success : .error
-	)
+  notificationGenerator.notificationOccurred(
+    isValid ? .success : .error
+  )
 }
 ```
 
@@ -83,12 +83,12 @@ Call `prepare()` before the haptic to reduce latency (~1 second window).
 // Good: Prepare on touch down, fire on touch up
 @IBAction
 func buttonTouchDown(_ sender: UIButton) {
-	self.impactGenerator.prepare()
+  self.impactGenerator.prepare()
 }
 
 @IBAction
 func buttonTouchUpInside(_ sender: UIButton) {
-	self.impactGenerator.impactOccurred() // Immediate
+  self.impactGenerator.impactOccurred() // Immediate
 }
 ```
 
@@ -98,33 +98,33 @@ func buttonTouchUpInside(_ sender: UIButton) {
 
 ```swift
 class HapticButton: UIButton {
-	private let impactGenerator: UIImpactFeedbackGenerator
+  private let impactGenerator: UIImpactFeedbackGenerator
 
-	override init(frame: CGRect) {
-		self.impactGenerator = .init(style: .medium)
-		super.init(frame: frame)
-	}
+  override init(frame: CGRect) {
+    self.impactGenerator = .init(style: .medium)
+    super.init(frame: frame)
+  }
 
-	required init?(coder: NSCoder) {
-		self.impactGenerator = .init(style: .medium)
-		super.init(coder: coder)
-	}
+  required init?(coder: NSCoder) {
+    self.impactGenerator = .init(style: .medium)
+    super.init(coder: coder)
+  }
 
-	override func touchesBegan(
-		_ touches: Set<UITouch>,
-		with event: UIEvent?
-	) {
-		super.touchesBegan(touches, with: event)
-		self.impactGenerator.prepare()
-	}
+  override func touchesBegan(
+    _ touches: Set<UITouch>,
+    with event: UIEvent?
+  ) {
+    super.touchesBegan(touches, with: event)
+    self.impactGenerator.prepare()
+  }
 
-	override func touchesEnded(
-		_ touches: Set<UITouch>,
-		with event: UIEvent?
-	) {
-		super.touchesEnded(touches, with: event)
-		self.impactGenerator.impactOccurred()
-	}
+  override func touchesEnded(
+    _ touches: Set<UITouch>,
+    with event: UIEvent?
+  ) {
+    super.touchesEnded(touches, with: event)
+    self.impactGenerator.impactOccurred()
+  }
 }
 ```
 
@@ -132,28 +132,28 @@ class HapticButton: UIButton {
 
 ```swift
 class HapticSlider: UISlider {
-	private let selectionGenerator: UISelectionFeedbackGenerator
-	private var lastValue: Float
+  private let selectionGenerator: UISelectionFeedbackGenerator
+  private var lastValue: Float
 
-	override init(frame: CGRect) {
-		self.selectionGenerator = UISelectionFeedbackGenerator()
-		self.lastValue = 0
-		super.init(frame: frame)
-	}
+  override init(frame: CGRect) {
+    self.selectionGenerator = UISelectionFeedbackGenerator()
+    self.lastValue = 0
+    super.init(frame: frame)
+  }
 
-	required init?(coder: NSCoder) {
-		self.selectionGenerator = UISelectionFeedbackGenerator()
-		self.lastValue = 0
-		super.init(coder: coder)
-	}
+  required init?(coder: NSCoder) {
+    self.selectionGenerator = UISelectionFeedbackGenerator()
+    self.lastValue = 0
+    super.init(coder: coder)
+  }
 
-	@objc
-	func valueChanged() {
-		if abs(self.value - self.lastValue) >= 0.1 {
-			self.selectionGenerator.selectionChanged()
-			self.lastValue = self.value
-		}
-	}
+  @objc
+  func valueChanged() {
+    if abs(self.value - self.lastValue) >= 0.1 {
+      self.selectionGenerator.selectionChanged()
+      self.lastValue = self.value
+    }
+  }
 }
 ```
 
@@ -161,11 +161,11 @@ class HapticSlider: UISlider {
 
 ```swift
 func scrollViewDidScroll(_ scrollView: UIScrollView) {
-	if scrollView.contentOffset.y <= -100 && !isRefreshing {
-		impactGenerator.impactOccurred()
-		isRefreshing = true
-		beginRefresh()
-	}
+  if scrollView.contentOffset.y <= -100 && !isRefreshing {
+    impactGenerator.impactOccurred()
+    isRefreshing = true
+    beginRefresh()
+  }
 }
 ```
 
@@ -173,12 +173,12 @@ func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
 ```swift
 func handleServerResponse(_ result: Result<Data, Error>) {
-	let generator: UINotificationFeedbackGenerator = .init()
-	switch result {
-	case .success: 
-		generator.notificationOccurred(.success)
-	case .failure:
-		generator.notificationOccurred(.error)
-	}
+  let generator: UINotificationFeedbackGenerator = .init()
+  switch result {
+  case .success: 
+    generator.notificationOccurred(.success)
+  case .failure:
+    generator.notificationOccurred(.error)
+  }
 }
 ```

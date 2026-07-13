@@ -7,10 +7,10 @@ Swift 6's strict concurrency checking eliminates data races at compile time.
 ### Package.swift
 ```swift
 .target(
-	name: "MyTarget",
-	swiftSettings: [
-		.enableUpcomingFeature("StrictConcurrency")
-	]
+  name: "MyTarget",
+  swiftSettings: [
+    .enableUpcomingFeature("StrictConcurrency")
+  ]
 )
 ```
 
@@ -31,37 +31,37 @@ Specify the exact error type a function throws.
 ### Basic Typed Throws
 ```swift
 enum ValidationError: Error {
-	case tooShort
-	case invalidFormat
+  case tooShort
+  case invalidFormat
 }
 
 func validate(_ input: String) throws(ValidationError) {
-	guard input.count > 5 else {
-		throw ValidationError.tooShort
-	}
+  guard input.count > 5 else {
+    throw ValidationError.tooShort
+  }
 }
 
 // Caller knows exact error type
 do {
-	try validate("abc")
+  try validate("abc")
 } catch {
-	// error is ValidationError, not any Error
-	switch error {
+  // error is ValidationError, not any Error
+  switch error {
 
-	case .tooShort:
-		self.handleTooShortError()
+  case .tooShort:
+    self.handleTooShortError()
 
-	case .invalidFormat:
-		self.handleInvalidFormatError()
-	}
+  case .invalidFormat:
+    self.handleInvalidFormatError()
+  }
 }
 ```
 
 ### Never Throws
 ```swift
 func parseInteger(_ string: String) throws(Never) -> Int {
-	// Compiler knows this never throws
-	Int(string) ?? 0
+  // Compiler knows this never throws
+  Int(string) ?? 0
 }
 
 // No try needed
@@ -71,10 +71,10 @@ let value = parseInteger("123")
 ### Generic Throws
 ```swift
 func transform<E: Error>(
-	_ value: String,
-	using: (String) throws(E) -> Int
+  _ value: String,
+  using: (String) throws(E) -> Int
 ) throws(E) -> Int {
-	try using(value)
+  try using(value)
 }
 ```
 
@@ -87,13 +87,13 @@ var sharedCache: [String: Data] = [:]
 
 // ✅ Use actor
 actor SharedCache {
-	private var cache: [String: Data]
+  private var cache: [String: Data]
 
-	init(
-		cache: [String: Data] = [:]
-	) {
-		self.cache = cache
-	}
+  init(
+    cache: [String: Data] = [:]
+  ) {
+    self.cache = cache
+  }
 }
 
 // ✅ Or @MainActor for UI state
@@ -104,38 +104,38 @@ var currentTheme: Theme = .light
 ### Closures Capturing Non-Sendable
 ```swift
 class ViewModel {
-	var items: [Item]
+  var items: [Item]
 
-	init(
-		items: [Item] = []
-	) {
-		self.items = items
-	}
+  init(
+    items: [Item] = []
+  ) {
+    self.items = items
+  }
 
-	func load() {
-		// ❌ Error: Capturing non-Sendable self
-		Task {
-			self.items = await self.fetch()
-		}
-	}
+  func load() {
+    // ❌ Error: Capturing non-Sendable self
+    Task {
+      self.items = await self.fetch()
+    }
+  }
 }
 
 // ✅ Make ViewModel @MainActor
 @MainActor
 class ViewModel {
-	var items: [Item]
+  var items: [Item]
 
-	init(
-		items: [Item] = []
-	) {
-		self.items = items
-	}
+  init(
+    items: [Item] = []
+  ) {
+    self.items = items
+  }
 
-	func load() {
-		Task {
-			self.items = await fetch()
-		}
-	}
+  func load() {
+    Task {
+      self.items = await fetch()
+    }
+  }
 }
 ```
 
@@ -143,12 +143,12 @@ class ViewModel {
 ```swift
 // ❌ Error: Non-Sendable closure
 func runAsync(_ action: () -> Void) async {
-	action()
+  action()
 }
 
 // ✅ Require Sendable
 func runAsync(_ action: @Sendable () -> Void) async {
-	action()
+  action()
 }
 ```
 
@@ -163,13 +163,13 @@ Swift 6 automatically infers Sendable for:
 ```swift
 // Automatically Sendable
 struct User {
-	let id: String
-	let name: String
+  let id: String
+  let name: String
 }
 
 // NOT automatically Sendable (has var)
 struct MutableUser {
-	var name: String
+  var name: String
 }
 ```
 
@@ -180,18 +180,18 @@ When your type contains types from external packages that aren't yet Sendable, u
 ```swift
 @Reducer
 public struct FeatureTracking {
-	public struct Tracker: Sendable {
-		// TODO: @unchecked Sendable - Contains LegacyRecord (LegacySDK) and CLLocation (CoreLocation)
-		// which are not marked Sendable. Revisit when LegacySDK is modernized to Swift 6.
-		public enum Event: Equatable, @unchecked Sendable {
-			case operationRequested(
-				record: LegacyRecord,    // External type — not Sendable
-				location: CLLocation?    // Apple type — not Sendable
-			)
-			case operationSuccess
-			case operationFailure(String)
-		}
-	}
+  public struct Tracker: Sendable {
+    // TODO: @unchecked Sendable - Contains LegacyRecord (LegacySDK) and CLLocation (CoreLocation)
+    // which are not marked Sendable. Revisit when LegacySDK is modernized to Swift 6.
+    public enum Event: Equatable, @unchecked Sendable {
+      case operationRequested(
+        record: LegacyRecord,    // External type — not Sendable
+        location: CLLocation?    // Apple type — not Sendable
+      )
+      case operationSuccess
+      case operationFailure(String)
+    }
+  }
 }
 ```
 

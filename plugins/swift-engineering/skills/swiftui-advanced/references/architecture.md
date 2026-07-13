@@ -27,8 +27,8 @@ Task { isLoading = true; await work(); isLoading = false }
 // CORRECT - synchronous state changes for animation
 withAnimation { isLoading = true }
 Task {
-	await work()
-	withAnimation { isLoading = false }
+  await work()
+  withAnimation { isLoading = false }
 }
 ```
 
@@ -37,52 +37,52 @@ Task {
 ```swift
 // Model - domain logic
 struct Pet: Identifiable {
-	let id: UUID
-	var name: String
-	
-	init(
-		id: UUID,
-		name: String
-	) {
-		self.id = id
-		self.name = name
-	}
-	
-	mutating func giveAward() { hasAward = true }
+  let id: UUID
+  var name: String
+  
+  init(
+    id: UUID,
+    name: String
+  ) {
+    self.id = id
+    self.name = name
+  }
+  
+  mutating func giveAward() { hasAward = true }
 }
 
 // ViewModel - presentation logic
 @Observable
 class PetListViewModel {
-	private let petsService: PetsService
-	var searchText: String
+  private let petsService: PetsService
+  var searchText: String
 
-	init(
-		searchText: String = ""
-	) {
-		self.searchText = searchText
-	}
+  init(
+    searchText: String = ""
+  ) {
+    self.searchText = searchText
+  }
 
-	var filteredPets: [Pet] {
-		petsService.myPets.filter {
-			searchText.isEmpty || $0.name.contains(searchText)
-		}
-	}
+  var filteredPets: [Pet] {
+    petsService.myPets.filter {
+      searchText.isEmpty || $0.name.contains(searchText)
+    }
+  }
 }
 
 // View - UI only
 struct PetListView: View {
-	@Bindable
-	var viewModel: PetListViewModel
-	
-	init(_ viewModel: PetListViewModel) {
-		self._viewModel = Bindable(wrappedValue: viewModel)
-	}
+  @Bindable
+  var viewModel: PetListViewModel
+  
+  init(_ viewModel: PetListViewModel) {
+    self._viewModel = Bindable(wrappedValue: viewModel)
+  }
 
-	var body: some View {
-		List(viewModel.filteredPets) { PetRow(pet: $0) }
-			.searchable(text: $viewModel.searchText)
-	}
+  var body: some View {
+    List(viewModel.filteredPets) { PetRow(pet: $0) }
+      .searchable(text: $viewModel.searchText)
+  }
 }
 ```
 
@@ -100,14 +100,14 @@ struct PetListView: View {
 ```swift
 // WRONG - formatter created every render
 var body: some View {
-	let formatter: NumberFormatter = .init()
-	Text(formatter.string(from: price)!)
+  let formatter: NumberFormatter = .init()
+  Text(formatter.string(from: price)!)
 }
 
 // CORRECT - cache in model
 class ViewModel {
-	private let formatter: NumberFormatter = .init()
-	func format(_ price: Decimal) -> String { ... }
+  private let formatter: NumberFormatter = .init()
+  func format(_ price: Decimal) -> String { ... }
 }
 ```
 
@@ -115,8 +115,8 @@ class ViewModel {
 ```swift
 // WRONG - @State copies, loses parent changes
 struct DetailView: View {
-	@SwiftUI.State
-	var item: Item
+  @SwiftUI.State
+  var item: Item
 }
 
 // CORRECT

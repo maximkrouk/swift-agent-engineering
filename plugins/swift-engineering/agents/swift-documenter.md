@@ -48,8 +48,8 @@ Only for complex or non-obvious logic:
 ///   - lastActivityTime: Time of user's last interaction
 /// - Returns: Recommended refresh interval in seconds
 func calculateRefreshInterval(
-    networkQuality: NetworkQuality,
-    lastActivityTime: Date
+  networkQuality: NetworkQuality,
+  lastActivityTime: Date
 ) -> TimeInterval
 ```
 

@@ -9,34 +9,34 @@ Common patterns for migrating legacy Swift code to modern best practices.
 ```swift
 // Before: Delegate pattern
 protocol LocationManagerDelegate: AnyObject {
-	func locationManager(
-		_ manager: LocationManager,
-		didUpdateLocation location: Location
-	)
+  func locationManager(
+    _ manager: LocationManager,
+    didUpdateLocation location: Location
+  )
 }
 
 class LocationManager {
-	weak var delegate: LocationManagerDelegate?
+  weak var delegate: LocationManagerDelegate?
 }
 
 // After: AsyncStream
 class LocationManager {
-	var locations: AsyncStream<Location> {
-		AsyncStream { continuation in
-			// Setup location updates
-			self.onLocationUpdate = { location in
-				continuation.yield(location)
-			}
-			continuation.onTermination = { _ in
-				// Cleanup
-			}
-		}
-	}
+  var locations: AsyncStream<Location> {
+    AsyncStream { continuation in
+      // Setup location updates
+      self.onLocationUpdate = { location in
+        continuation.yield(location)
+      }
+      continuation.onTermination = { _ in
+        // Cleanup
+      }
+    }
+  }
 }
 
 // Usage
 for await location in locationManager.locations {
-	updateUI(with: location)
+  updateUI(with: location)
 }
 ```
 
@@ -52,37 +52,37 @@ for await location in locationManager.locations {
 ```swift
 // Before: UIKit
 class ProfileViewController: UIViewController {
-	@IBOutlet
-	weak var nameLabel: UILabel!
-	@IBOutlet
-	weak var avatarImageView: UIImageView!
+  @IBOutlet
+  weak var nameLabel: UILabel!
+  @IBOutlet
+  weak var avatarImageView: UIImageView!
 
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		nameLabel.text = user.name
-		avatarImageView.load(url: user.avatarURL)
-	}
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    nameLabel.text = user.name
+    avatarImageView.load(url: user.avatarURL)
+  }
 }
 
 // After: SwiftUI
 struct ProfileView: View {
-	let user: User
+  let user: User
 
-	var body: some View {
-		VStack {
-			AsyncImage(url: user.avatarURL) { image in
-				image.resizable()
-					.aspectRatio(contentMode: .fill)
-			} placeholder: {
-				ProgressView()
-			}
-			.frame(width: 100, height: 100)
-			.clipShape(Circle())
+  var body: some View {
+    VStack {
+      AsyncImage(url: user.avatarURL) { image in
+        image.resizable()
+          .aspectRatio(contentMode: .fill)
+      } placeholder: {
+        ProgressView()
+      }
+      .frame(width: 100, height: 100)
+      .clipShape(Circle())
 
-			Text(user.name)
-				.font(.headline)
-		}
-	}
+      Text(user.name)
+        .font(.headline)
+    }
+  }
 }
 ```
 

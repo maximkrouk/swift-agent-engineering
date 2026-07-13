@@ -11,23 +11,23 @@ For complex queries that need multiple database operations in a single transacti
 private var facts: Facts.Value = .init()
 
 private struct Facts: FetchKeyRequest {
-	var query: String = ""
+  var query: String = ""
 
-	struct Value {
-		var facts: [Fact]
-		var searchCount: Int
-		var totalCount: Int
+  struct Value {
+    var facts: [Fact]
+    var searchCount: Int
+    var totalCount: Int
 
-		init(
-			facts: [Fact] = [],
-			searchCount: Int = 0,
-			totalCount: Int = 0
-		) {
-			self.facts = facts
-			self.searchCount = searchCount
-			self.totalCount = totalCount
-		}
-	}
+    init(
+      facts: [Fact] = [],
+      searchCount: Int = 0,
+      totalCount: Int = 0
+    ) {
+      self.facts = facts
+      self.searchCount = searchCount
+      self.totalCount = totalCount
+    }
+  }
 
   func fetch(_ db: Database) throws -> Value {
     let search = Fact
@@ -104,32 +104,32 @@ Query hierarchical data like trees or org charts:
 ```swift
 @Table
 nonisolated struct Category: Identifiable {
-	let id: UUID
-	var name: String
-	var parentID: UUID?  // Self-referential
+  let id: UUID
+  var name: String
+  var parentID: UUID?  // Self-referential
 
-	init(
-		id: UUID,
-		name: String = "",
-		parentID: UUID? = nil
-	) {
-		self.id = id
-		self.name = name
-		self.parentID = parentID
-	}
+  init(
+    id: UUID,
+    name: String = "",
+    parentID: UUID? = nil
+  ) {
+    self.id = id
+    self.name = name
+    self.parentID = parentID
+  }
 }
 
 // Get all descendants of a category
 let descendants: [Category] = try With {
-	// Base case: start with root
-	Category.where { $0.id.eq(rootCategoryId) }
+  // Base case: start with root
+  Category.where { $0.id.eq(rootCategoryId) }
 } recursiveUnion: { cte in
-	// Recursive case: join children to CTE
-	Category.all
-		.join(cte) { $0.parentID.eq($1.id) }
-		.select { $0 }
+  // Recursive case: join children to CTE
+  Category.all
+    .join(cte) { $0.parentID.eq($1.id) }
+    .select { $0 }
 } query: { cte in
-	cte.order(by: \.name)
+  cte.order(by: \.name)
 }
 .fetchAll(db)
 ```
@@ -138,13 +138,13 @@ let descendants: [Category] = try With {
 
 ```swift
 let ancestors: [Category] = try With {
-	Category.where { $0.id.eq(childCategoryId) }
+  Category.where { $0.id.eq(childCategoryId) }
 } recursiveUnion: { cte in
-	Category.all
-		.join(cte) { $0.id.eq($1.parentID) }
-		.select { $0 }
+  Category.all
+    .join(cte) { $0.id.eq($1.parentID) }
+    .select { $0 }
 } query: { cte in
-	cte.all
+  cte.all
 }
 .fetchAll(db)
 ```
@@ -153,15 +153,15 @@ let ancestors: [Category] = try With {
 
 ```swift
 let thread = try With {
-    Comment
-        .where { $0.parentID.is(nil) && $0.postID.eq(postId) }
-        .select { ($0, 0) }  // depth = 0 for root
+  Comment
+    .where { $0.parentID.is(nil) && $0.postID.eq(postId) }
+    .select { ($0, 0) }  // depth = 0 for root
 } recursiveUnion: { cte in
-    Comment.all
-        .join(cte) { $0.parentID.eq($1.id) }
-        .select { ($0, $1.depth + 1) }
+  Comment.all
+    .join(cte) { $0.parentID.eq($1.id) }
+    .select { ($0, $1.depth + 1) }
 } query: { cte in
-    cte.order { ($0.depth, $0.createdAt) }
+  cte.order { ($0.depth, $0.createdAt) }
 }
 .fetchAll(db)
 ```

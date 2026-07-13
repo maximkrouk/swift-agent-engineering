@@ -22,8 +22,8 @@ Forces function to **always run on background thread pool**.
 ```swift
 @concurrent
 func decodeImage(_ data: Data) async -> Image {
-	// Always runs on background — good for image processing, parsing
-	return processImageData(data)
+  // Always runs on background — good for image processing, parsing
+  return processImageData(data)
 }
 
 // Usage — automatically offloads
@@ -37,29 +37,29 @@ let image = await decodeImage(data)
 ```swift
 @MainActor
 class ImageModel {
-	var cache: [URL: Image]
+  var cache: [URL: Image]
 
-	init(
-		cache: [URL: Image] = [:]
-	) {
-		self.cache = cache
-	}
+  init(
+    cache: [URL: Image] = [:]
+  ) {
+    self.cache = cache
+  }
 
-	@concurrent
-	func decode(_ data: Data, url: URL) async -> Image {
-		if let img = self.cache[url] { return img }  // ❌ Error: main actor access!
-		return processImageData(data)
-	}
+  @concurrent
+  func decode(_ data: Data, url: URL) async -> Image {
+    if let img = self.cache[url] { return img }  // ❌ Error: main actor access!
+    return processImageData(data)
+  }
 }
 ```
 
 **Fix: Move access to caller** (preferred):
 ```swift
 func fetchAndDisplay(url: URL) async throws {
-	if let img = self.cache[url] { self.view.displayImage(img); return }  // ✅ On main actor
-	let data: Data = try await URLSession.shared.data(from: url).0
-	let image = await decode(data)  // @concurrent — no cache access needed
-	self.view.displayImage(image)
+  if let img = self.cache[url] { self.view.displayImage(img); return }  // ✅ On main actor
+  let data: Data = try await URLSession.shared.data(from: url).0
+  let image = await decode(data)  // @concurrent — no cache access needed
+  self.view.displayImage(image)
 }
 ```
 
@@ -76,7 +76,7 @@ Use when you **know** access is safe but compiler cannot prove it.
 
 ```swift
 class LegacyCache {
-	nonisolated(unsafe) var sharedState: [String: Data] = [:]  // ⚠️ Prove safety first
+  nonisolated(unsafe) var sharedState: [String: Data] = [:]  // ⚠️ Prove safety first
 }
 ```
 
@@ -89,20 +89,20 @@ For static sorting comparators, prefer `static let` with `@Sendable` closures ov
 ```swift
 // ❌ Before: Requires nonisolated(unsafe)
 extension SortableItem {
-	nonisolated(unsafe) static var dateAscending: (SortableItem, SortableItem) -> Bool = { lhs, rhs in
-		lhs.date < rhs.date
-	}
+  nonisolated(unsafe) static var dateAscending: (SortableItem, SortableItem) -> Bool = { lhs, rhs in
+    lhs.date < rhs.date
+  }
 }
 
 // ✅ After: Use static let with @Sendable
 extension SortableItem {
-	static let dateAscending: @Sendable (SortableItem, SortableItem) -> Bool = { lhs, rhs in
-		lhs.date < rhs.date
-	}
+  static let dateAscending: @Sendable (SortableItem, SortableItem) -> Bool = { lhs, rhs in
+    lhs.date < rhs.date
+  }
 
-	static let priorityDescending: @Sendable (SortableItem, SortableItem) -> Bool = { lhs, rhs in
-		lhs.priority > rhs.priority
-	}
+  static let priorityDescending: @Sendable (SortableItem, SortableItem) -> Bool = { lhs, rhs in
+    lhs.priority > rhs.priority
+  }
 }
 
 // Usage — works with standard library sorting
@@ -117,34 +117,34 @@ let sorted = items.sorted(by: SortableItem.dateAscending)
 // ❌ Problem: Network manager on main actor causes thread hopping
 @MainActor
 class ImageModel {
-	let network: NetworkManager
+  let network: NetworkManager
 
-	init(
-		network: NetworkManager = .init()
-	) {
-		self.network = network
-	}
+  init(
+    network: NetworkManager = .init()
+  ) {
+    self.network = network
+  }
 
-	func fetch(url: URL) async throws {
-		let conn = await self.network.open(for: url)  // ❌ Hops to main
-	}
+  func fetch(url: URL) async throws {
+    let conn = await self.network.open(for: url)  // ❌ Hops to main
+  }
 }
 ```
 
 ```swift
 // ✅ Fix: Extract to separate actor
 actor NetworkManager {
-	private var connections: [URL: Connection]
+  private var connections: [URL: Connection]
 
-	init(
-		connections: [URL: Connection] = [:]
-	) {
-		self.connections = connections
-	}
+  init(
+    connections: [URL: Connection] = [:]
+  ) {
+    self.connections = connections
+  }
 
-	func open(for url: URL) -> Connection {
-		self.connections[url] ?? Connection()
-	}
+  func open(for url: URL) -> Connection {
+    self.connections[url] ?? Connection()
+  }
 }
 ```
 
@@ -160,10 +160,10 @@ When `nonisolated` delegate needs to update `@MainActor` state:
 
 ```swift
 nonisolated func delegate(_ param: SomeType) {
-	let value = param.value  // Step 1: Capture BEFORE Task
-	Task { @MainActor in
-		self.property = value  // Step 2: Safe on MainActor
-	}
+  let value = param.value  // Step 1: Capture BEFORE Task
+  Task { @MainActor in
+    self.property = value  // Step 2: Safe on MainActor
+  }
 }
 ```
 
@@ -174,7 +174,7 @@ protocol Exportable { func export() }
 
 // ✅ Conform with explicit isolation
 extension PhotoProcessor: @MainActor Exportable {
-	func export() { exportAsPNG() }  // Safe: both on MainActor
+  func export() { exportAsPNG() }  // Safe: both on MainActor
 }
 ```
 
@@ -191,9 +191,9 @@ extension PhotoProcessor: @MainActor Exportable {
 // Finish mutations before sending
 @concurrent
 func processImage() async {
-	let image = loadImage()
-	image.scale(by: 0.5)  // All mutations here
-	await view.displayImage(image)  // ✅ Send AFTER done
+  let image = loadImage()
+  image.scale(by: 0.5)  // All mutations here
+  await view.displayImage(image)  // ✅ Send AFTER done
 }
 ```
 

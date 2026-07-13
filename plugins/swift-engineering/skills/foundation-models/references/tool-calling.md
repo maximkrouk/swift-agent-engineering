@@ -15,10 +15,10 @@ Tools let the model call your code to fetch real data.
 
 ```swift
 protocol Tool {
-	var name: String { get }
-	var description: String { get }
-	associatedtype Arguments: Generable
-	func call(arguments: Arguments) async throws -> ToolOutput
+  var name: String { get }
+  var description: String { get }
+  associatedtype Arguments: Generable
+  func call(arguments: Arguments) async throws -> ToolOutput
 }
 ```
 
@@ -26,20 +26,20 @@ protocol Tool {
 
 ```swift
 struct GetWeatherTool: Tool {
-	let name: String = "getWeather"
-	let description: String = "Get current weather for a city"
+  let name: String = "getWeather"
+  let description: String = "Get current weather for a city"
 
-	@Generable
-	struct Arguments {
-		@Guide(description: "City name")
-		var city: String
-	}
+  @Generable
+  struct Arguments {
+    @Guide(description: "City name")
+    var city: String
+  }
 
-	func call(arguments: Arguments) async throws -> ToolOutput {
-		let places = try await CLGeocoder().geocodeAddressString(arguments.city)
-		let weather = try await WeatherService.shared.weather(for: places.first!.location!)
-		return ToolOutput("Temperature: \(weather.currentWeather.temperature.value)F")
-	}
+  func call(arguments: Arguments) async throws -> ToolOutput {
+    let places = try await CLGeocoder().geocodeAddressString(arguments.city)
+    let weather = try await WeatherService.shared.weather(for: places.first!.location!)
+    return ToolOutput("Temperature: \(weather.currentWeather.temperature.value)F")
+  }
 }
 ```
 
@@ -47,8 +47,8 @@ struct GetWeatherTool: Tool {
 
 ```swift
 let session: LanguageModelSession = LanguageModelSession(
-	tools: [GetWeatherTool()],
-	instructions: "Help with weather forecasts."
+  tools: [GetWeatherTool()],
+  instructions: "Help with weather forecasts."
 )
 
 let response = try await session.respond(to: "What's the temperature in Cupertino?")
@@ -70,22 +70,22 @@ Use `class` to track state across calls:
 
 ```swift
 class FindContactTool: Tool {
-	var pickedContacts: Set<String>
+  var pickedContacts: Set<String>
 
-	init(
-		pickedContacts: Set<String> = []
-	) {
-		self.pickedContacts = pickedContacts
-	}
+  init(
+    pickedContacts: Set<String> = []
+  ) {
+    self.pickedContacts = pickedContacts
+  }
 
-	func call(arguments: Arguments) async throws -> ToolOutput {
-		self.contacts.removeAll(where: { self.pickedContacts.contains($0.name) })
-		guard let picked = self.contacts.randomElement()
-		else { return ToolOutput("No more contacts") }
+  func call(arguments: Arguments) async throws -> ToolOutput {
+    self.contacts.removeAll(where: { self.pickedContacts.contains($0.name) })
+    guard let picked = self.contacts.randomElement()
+    else { return ToolOutput("No more contacts") }
 
-		self.pickedContacts.insert(picked.name)
-		return ToolOutput(picked.name)
-	}
+    self.pickedContacts.insert(picked.name)
+    return ToolOutput(picked.name)
+  }
 }
 ```
 
@@ -93,8 +93,8 @@ class FindContactTool: Tool {
 
 ```swift
 let session: LanguageModelSession = LanguageModelSession(
-	tools: [GetWeatherTool(), FindRestaurantTool(), FindHotelTool()],
-	instructions: "Plan travel itineraries."
+  tools: [GetWeatherTool(), FindRestaurantTool(), FindHotelTool()],
+  instructions: "Plan travel itineraries."
 )
 // Model autonomously decides which tools to call
 ```

@@ -13,24 +13,24 @@
 import Network
 
 let connection: NWConnection = .init(
-	host: NWEndpoint.Host("api.example.com"),
-	port: NWEndpoint.Port(integerLiteral: 443),
-	using: .tls
+  host: NWEndpoint.Host("api.example.com"),
+  port: NWEndpoint.Port(integerLiteral: 443),
+  using: .tls
 )
 
 connection.stateUpdateHandler = { [weak self] state in
-	switch state {
-	case .ready:
-		self?.sendRequest()
+  switch state {
+  case .ready:
+    self?.sendRequest()
 
-	case let .waiting(error):
-		self?.showStatus("Waiting: \(error)")
+  case let .waiting(error):
+    self?.showStatus("Waiting: \(error)")
 
-	case let .failed(error):
-		self?.showError(error)
+  case let .failed(error):
+    self?.showError(error)
 
-	default: break
-	}
+  default: break
+  }
 }
 
 connection.start(queue: .main)
@@ -42,14 +42,14 @@ connection.start(queue: .main)
 
 ```swift
 let connection: NetworkConnection = .init(
-	to: .hostPort(host: "api.example.com", port: 443)
+  to: .hostPort(host: "api.example.com", port: 443)
 ) {
-	TLS()  // TCP and IP inferred
+  TLS()  // TCP and IP inferred
 }
 
 func communicate() async throws {
-	try await connection.send(Data("Hello".utf8))
-	let response = try await connection.receive(exactly: 100).content
+  try await connection.send(Data("Hello".utf8))
+  let response = try await connection.receive(exactly: 100).content
 }
 ```
 
@@ -61,7 +61,7 @@ let udp: NWConnection = .init(host: "game.example.com", port: 9000, using: .udp)
 
 // iOS 26+
 let udp: NetworkConnection = .init(to: .hostPort(host: "game.example.com", port: 9000)) {
-	UDP()
+  UDP()
 }
 ```
 
@@ -77,8 +77,8 @@ parameters.prohibitExpensivePaths = true    // Don't use cellular
 
 ```swift
 connection.send(content: data, completion: .contentProcessed { [weak self] error in
-	// contentProcessed = network consumed data, NOW send next chunk
-	self?.sendNextChunk()
+  // contentProcessed = network consumed data, NOW send next chunk
+  self?.sendNextChunk()
 })
 ```
 
@@ -86,11 +86,11 @@ connection.send(content: data, completion: .contentProcessed { [weak self] error
 
 ```swift
 connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) {
-	[weak self] data, context, isComplete, error in
-	if let data = data {
-		self?.processData(data)
-		self?.receiveMore()
-	}
+  [weak self] data, context, isComplete, error in
+  if let data = data {
+    self?.processData(data)
+    self?.receiveMore()
+  }
 }
 ```
 
@@ -98,12 +98,12 @@ connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) {
 
 ```swift
 connection.batch {
-	for frame in frames {
-		connection.send(
-			content: frame,
-			completion: .contentProcessed { _ in }
-		)
-	}
+  for frame in frames {
+    connection.send(
+      content: frame,
+      completion: .contentProcessed { _ in }
+    )
+  }
 }  // 100 datagrams = ~1 syscall
 ```
 

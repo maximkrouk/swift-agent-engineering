@@ -9,8 +9,8 @@ Use `@Shared(.appStorage)` for UserDefaults-backed persistent state:
 ```swift
 @ObservableState
 struct State: Equatable {
-    @Shared(.appStorage("sortOrder")) var sortOrder: String = "date"
-    @Shared(.appStorage("showCompleted")) var showCompleted: Bool = true
+  @Shared(.appStorage("sortOrder")) var sortOrder: String = "date"
+  @Shared(.appStorage("showCompleted")) var showCompleted: Bool = true
 }
 ```
 
@@ -20,12 +20,12 @@ Use `.withLock` for thread-safe mutations of @Shared state:
 
 ```swift
 case .view(.onChangeSortOrder(let order)):
-    state.$sortOrder.withLock { $0 = order }
-    return .none
+  state.$sortOrder.withLock { $0 = order }
+  return .none
 
 case .view(.onToggleCompleted):
-    state.$showCompleted.withLock { $0.toggle() }
-    return .none
+  state.$showCompleted.withLock { $0.toggle() }
+  return .none
 ```
 
 ## Animated Mutations
@@ -34,10 +34,10 @@ Wrap `.withLock` in `withAnimation` for animated changes:
 
 ```swift
 case .view(.onChangeTheme(let theme)):
-    withAnimation {
-        state.$themeRawValue.withLock { $0 = theme.rawValue }
-    }
-    return .none
+  withAnimation {
+    state.$themeRawValue.withLock { $0 = theme.rawValue }
+  }
+  return .none
 ```
 
 ## Type-Safe Access with Computed Properties
@@ -47,11 +47,11 @@ Use computed properties for type-safe access to raw-value backed state:
 ```swift
 @ObservableState
 struct State: Equatable {
-    @Shared(.appStorage("themeRawValue")) var themeRawValue: String = "system"
+  @Shared(.appStorage("themeRawValue")) var themeRawValue: String = "system"
 
-    var selectedTheme: Theme {
-        Theme(rawValue: themeRawValue) ?? .system
-    }
+  var selectedTheme: Theme {
+    Theme(rawValue: themeRawValue) ?? .system
+  }
 }
 ```
 
@@ -62,8 +62,8 @@ Use `@Shared` without a persistence strategy for in-memory shared state:
 ```swift
 @ObservableState
 struct State: Equatable {
-    @Shared
-    var userSession: UserSession
+  @Shared
+  var userSession: UserSession
 }
 ```
 
@@ -71,10 +71,10 @@ Pass the same `@Shared` reference to child features to share state:
 
 ```swift
 case .view(.onShowSettings):
-    state.destination = .settings(
-        SettingsFeature.State(userSession: state.$userSession)
-    )
-    return .none
+  state.destination = .settings(
+    SettingsFeature.State(userSession: state.$userSession)
+  )
+  return .none
 ```
 
 ## FileStorageKey for Persistent Data
@@ -84,40 +84,40 @@ Use `FileStorageKey` to persist shared state to disk as JSON:
 ```swift
 // Define the shared key
 extension SharedKey where Self == FileStorageKey<IdentifiedArrayOf<SyncUp>>.Default {
-    static var syncUps: Self {
-        Self[
-            .fileStorage(.documentsDirectory.appending(component: "sync-ups.json")),
-            default: []
-        ]
-    }
+  static var syncUps: Self {
+    Self[
+      .fileStorage(.documentsDirectory.appending(component: "sync-ups.json")),
+      default: []
+    ]
+  }
 }
 
 // Use in state
 @ObservableState
 struct State: Equatable {
-    @Shared(.syncUps) var syncUps
+  @Shared(.syncUps) var syncUps
 }
 
 // Mutate with .withLock
 case .view(.didAddSyncUp(let syncUp)):
-    state.$syncUps.withLock { $0.append(syncUp) }
-    return .none
+  state.$syncUps.withLock { $0.append(syncUp) }
+  return .none
 
 case .view(.didDeleteSyncUp(let id)):
-    state.$syncUps.withLock { $0.remove(id: id) }
-    return .none
+  state.$syncUps.withLock { $0.remove(id: id) }
+  return .none
 ```
 
 ### Custom File Locations
 
 ```swift
 extension SharedKey where Self == FileStorageKey<AppSettings>.Default {
-    static var appSettings: Self {
-        Self[
-            .fileStorage(.applicationSupportDirectory.appending(component: "settings.json")),
-            default: AppSettings()
-        ]
-    }
+  static var appSettings: Self {
+    Self[
+      .fileStorage(.applicationSupportDirectory.appending(component: "settings.json")),
+      default: AppSettings()
+    ]
+  }
 }
 ```
 
@@ -134,21 +134,21 @@ Use `InMemoryKey` for state shared across features without persistence:
 ```swift
 // Define the shared key
 extension SharedKey where Self == InMemoryKey<Stats> {
-    static var stats: Self {
-        inMemory("stats")
-    }
+  static var stats: Self {
+    inMemory("stats")
+  }
 }
 
 // Use in state
 @ObservableState
 struct State: Equatable {
-    @Shared(.stats) var stats = Stats()
+  @Shared(.stats) var stats = Stats()
 }
 
 // Mutate with .withLock
 case .view(.didIncrement):
-    state.$stats.withLock { $0.increment() }
-    return .none
+  state.$stats.withLock { $0.increment() }
+  return .none
 ```
 
 ### When to Use InMemoryKey
@@ -163,9 +163,9 @@ case .view(.didIncrement):
 ```swift
 @ObservableState
 struct State: Equatable {
-    @Shared(.appStorage("theme")) var theme: String = "system"  // UserDefaults
-    @Shared(.syncUps) var syncUps: IdentifiedArrayOf<SyncUp>   // File storage
-    @Shared(.stats) var stats = Stats()                         // In-memory
+  @Shared(.appStorage("theme")) var theme: String = "system"  // UserDefaults
+  @Shared(.syncUps) var syncUps: IdentifiedArrayOf<SyncUp>   // File storage
+  @Shared(.stats) var stats = Stats()                         // In-memory
 }
 ```
 
@@ -178,21 +178,21 @@ struct State: Equatable {
 ```swift
 // Overly complex - requires capturing state in closure
 static func enableFeature(
-    featureEnabled: Shared<Bool>,
-    itemId: UUID?
+  featureEnabled: Shared<Bool>,
+  itemId: UUID?
 ) async throws {
-    featureEnabled.withLock { $0 = true }
-    // ...
+  featureEnabled.withLock { $0 = true }
+  // ...
 }
 
 // Caller must capture state
 case .enableTapped:
-    return .run { [featureEnabled = state.$featureEnabled] _ in
-        try await FeatureHelper.enableFeature(
-            featureEnabled: featureEnabled,
-            itemId: itemId
-        )
-    }
+  return .run { [featureEnabled = state.$featureEnabled] _ in
+    try await FeatureHelper.enableFeature(
+      featureEnabled: featureEnabled,
+      itemId: itemId
+    )
+  }
 ```
 
 ### ✅ Good: Access @Shared Directly Inside Function
@@ -200,16 +200,16 @@ case .enableTapped:
 ```swift
 // Cleaner - function is self-contained
 static func enableFeature(itemId: UUID?) async throws {
-    @Shared(.appStorage("featureEnabled")) var featureEnabled
-    $featureEnabled.withLock { $0 = true }
-    // ...
+  @Shared(.appStorage("featureEnabled")) var featureEnabled
+  $featureEnabled.withLock { $0 = true }
+  // ...
 }
 
 // Caller is simple
 case .enableTapped:
-    return .run { _ in
-        try await FeatureHelper.enableFeature(itemId: itemId)
-    }
+  return .run { _ in
+    try await FeatureHelper.enableFeature(itemId: itemId)
+  }
 ```
 
 ### Why This Works

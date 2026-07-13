@@ -6,7 +6,7 @@
 ```swift
 // WRONG - Race condition
 if SCNetworkReachabilityGetFlags(reachability, &flags).contains(.reachable) {
-	connection.start()
+  connection.start()
 }
 ```
 **Fix**: Use `.waiting` state instead.
@@ -97,7 +97,7 @@ openssl s_client -connect example.com:443 | openssl x509 -noout -dates
 ```swift
 #if DEBUG
 sec_protocol_options_set_verify_block(tlsOptions.securityProtocolOptions,
-	{ _, _, complete in complete(true) }, .main)
+  { _, _, complete in complete(true) }, .main)
 #endif
 ```
 

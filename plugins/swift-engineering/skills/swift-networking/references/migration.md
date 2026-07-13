@@ -24,7 +24,7 @@ connect(sock, &addr, addrlen);  // BLOCKS
 // CORRECT
 let connection: NWConnection = .init(host: "example.com", port: 443, using: .tls)
 connection.stateUpdateHandler = { [weak self] state in
-	if case .ready = state { self?.sendData() }
+  if case .ready = state { self?.sendData() }
 }
 connection.start(queue: .main)  // Non-blocking
 ```
@@ -34,9 +34,9 @@ connection.start(queue: .main)  // Non-blocking
 ```swift
 // WRONG - Race condition
 if SCNetworkReachabilityGetFlags(reachability, &flags) {
-	if flags.contains(.reachable) {
-		connection.start()  // Network may change!
-	}
+  if flags.contains(.reachable) {
+    connection.start()  // Network may change!
+  }
 }
 
 // CORRECT - Use waiting state
@@ -44,17 +44,17 @@ connection.stateUpdateHandler = { state in
 switch state {
 
 case .waiting:
-	showStatus("Waiting for network...")
+  showStatus("Waiting for network...")
 
 case .ready:
-	startCommunication()
+  startCommunication()
 
 case .failed:
-	showError("Failed")
+  showError("Failed")
 
 default:
-	break
-	}
+  break
+  }
 }
 ```
 
@@ -68,8 +68,8 @@ getaddrinfo("example.com", "443", &hints, &results);
 ```swift
 // CORRECT - Framework handles DNS, IPv4/IPv6 racing
 let connection: NWConnection = .init(
-	host: NWEndpoint.Host("example.com"),  // Hostname, not IP
-	port: 443, using: .tls
+  host: NWEndpoint.Host("example.com"),  // Hostname, not IP
+  port: 443, using: .tls
 )
 ```
 
@@ -98,16 +98,16 @@ try await connection.send(data)
 ```swift
 // Before
 connection.stateUpdateHandler = { [weak self] state in
-	if case .ready = state { self?.sendData() }
+  if case .ready = state { self?.sendData() }
 }
 
 // After
 Task {
-	for await state in connection.states {
-		if case .ready = state {
-			try await connection.send(data)
-		}
-	}
+  for await state in connection.states {
+    if case .ready = state {
+      try await connection.send(data)
+    }
+  }
 }
 ```
 

@@ -16,16 +16,16 @@ Apple Human Interface Guidelines for requesting permissions and handling sensiti
 ```swift
 // ✅ Ask in context and handle denial gracefully
 Button("Enable notifications") {
-	model.requestNotifications()
+  model.requestNotifications()
 }
 // On denial: show a non-blocking explanation + "Open Settings" action
 
 // ❌ Permission request on launch with no context
 struct AppStart {
-	func start() {
-		model.requestNotifications()
-		model.requestLocation()
-	}
+  func start() {
+    model.requestNotifications()
+    model.requestLocation()
+  }
 }
 ```
 
@@ -34,50 +34,50 @@ struct AppStart {
 ```swift
 // ✅ Full permission flow with context and fallback
 struct NotificationSettingsView: View {
-	@SwiftUI.State
-	private var showingDeniedAlert: Bool
+  @SwiftUI.State
+  private var showingDeniedAlert: Bool
 
-	init(
-		showingDeniedAlert: Bool = false
-	) {
-		self._showingDeniedAlert = SwiftUI.State(wrappedValue: showingDeniedAlert)
-	}
+  init(
+    showingDeniedAlert: Bool = false
+  ) {
+    self._showingDeniedAlert = SwiftUI.State(wrappedValue: showingDeniedAlert)
+  }
 
-	var body: some View {
-		VStack(spacing: 16) {
-			Text("Get notified when items are shared with you")
-				.font(.headline)
+  var body: some View {
+    VStack(spacing: 16) {
+      Text("Get notified when items are shared with you")
+        .font(.headline)
 
-			Text("Turn on notifications to stay updated when friends share links and notes.")
-				.font(.body)
-				.foregroundStyle(.secondary)
+      Text("Turn on notifications to stay updated when friends share links and notes.")
+        .font(.body)
+        .foregroundStyle(.secondary)
 
-			Button("Enable Notifications") {
-				Task {
-					let granted = await self.requestNotificationPermission()
-					if !granted {
-						self.showingDeniedAlert = true
-					}
-				}
-			}
-			.buttonStyle(.borderedProminent)
-		}
-		.alert("Notifications Disabled", isPresented: self.$showingDeniedAlert) {
-			Button("Open Settings") {
-				if let url = URL(string: UIApplication.openSettingsURLString) {
-					UIApplication.shared.open(url)
-				}
-			}
-			Button("Not Now", role: .cancel) {}
-		} message: {
-			Text("To receive notifications, enable them in Settings.")
-		}
-	}
+      Button("Enable Notifications") {
+        Task {
+          let granted = await self.requestNotificationPermission()
+          if !granted {
+            self.showingDeniedAlert = true
+          }
+        }
+      }
+      .buttonStyle(.borderedProminent)
+    }
+    .alert("Notifications Disabled", isPresented: self.$showingDeniedAlert) {
+      Button("Open Settings") {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+          UIApplication.shared.open(url)
+        }
+      }
+      Button("Not Now", role: .cancel) {}
+    } message: {
+      Text("To receive notifications, enable them in Settings.")
+    }
+  }
 
-	func requestNotificationPermission() async -> Bool {
-		let center: UNUserNotificationCenter = .current()
-		return (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
-	}
+  func requestNotificationPermission() async -> Bool {
+    let center: UNUserNotificationCenter = .current()
+    return (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+  }
 }
 ```
 
@@ -140,7 +140,7 @@ struct NotificationSettingsView: View {
 ```swift
 // Request with UNUserNotificationCenter
 let granted: Bool = try await UNUserNotificationCenter.current()
-	.requestAuthorization(options: [.alert, .sound, .badge])
+  .requestAuthorization(options: [.alert, .sound, .badge])
 ```
 
 **When to ask**: Before subscribing to notification topics or when user enables a notification-dependent feature

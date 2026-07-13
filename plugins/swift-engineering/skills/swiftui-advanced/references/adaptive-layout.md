@@ -25,8 +25,8 @@ SwiftUI picks the first variant that fits.
 
 ```swift
 ViewThatFits {
-	HStack { Image(systemName: "star"); Text("Favorite"); Button("Add") { } }
-	VStack { Image(systemName: "star"); Text("Favorite"); Button("Add") { } }
+  HStack { Image(systemName: "star"); Text("Favorite"); Button("Add") { } }
+  VStack { Image(systemName: "star"); Text("Favorite"); Button("Add") { } }
 }
 ```
 
@@ -39,14 +39,14 @@ Animated transitions between layouts.
 var sizeClass
 
 var layout: AnyLayout {
-	sizeClass == .compact
-		? AnyLayout(VStackLayout(spacing: 12))
-		: AnyLayout(HStackLayout(spacing: 20))
+  sizeClass == .compact
+    ? AnyLayout(VStackLayout(spacing: 12))
+    : AnyLayout(HStackLayout(spacing: 20))
 }
 
 var body: some View {
-	layout { content }
-		.animation(.default, value: sizeClass)
+  layout { content }
+    .animation(.default, value: sizeClass)
 }
 ```
 
@@ -59,17 +59,17 @@ Read dimensions without GeometryReader side effects.
 private var columnCount: Int = 2
 
 LazyVGrid(
-	columns: Array(
-		repeating: GridItem(.flexible()),
-		count: columnCount
-	)
+  columns: Array(
+    repeating: GridItem(.flexible()),
+    count: columnCount
+  )
 ) {
-	ForEach(items) { ItemView(item: $0) }
+  ForEach(items) { ItemView(item: $0) }
 }
 .onGeometryChange(for: Int.self) { proxy in
-	max(1, Int(proxy.size.width / 150))
+  max(1, Int(proxy.size.width / 150))
 } action: { 
-	self.columnCount = $0
+  self.columnCount = $0
 }
 ```
 
@@ -123,7 +123,7 @@ GeometryReader { geo in Text("\(geo.size)") }
 
 // CORRECT - constrain it
 GeometryReader { geo in Text("\(geo.size)") }
-	.frame(height: 44)
+  .frame(height: 44)
 ```
 
 ## iOS 26 Changes

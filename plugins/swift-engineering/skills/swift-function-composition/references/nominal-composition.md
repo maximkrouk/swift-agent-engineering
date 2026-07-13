@@ -6,9 +6,9 @@
 
 ```swift
 .package(
-	url: "https://github.com/capturecontext/swift-function-composition.git",
-	.upToNextMinor(from: "0.0.1"),
-	traits: ["NominalTypes", "Operators", "Methods", "Functions", "Currying"]
+  url: "https://github.com/capturecontext/swift-function-composition.git",
+  .upToNextMinor(from: "0.0.1"),
+  traits: ["NominalTypes", "Operators", "Methods", "Functions", "Currying"]
 )
 ```
 
@@ -16,8 +16,8 @@ Target dependency:
 
 ```swift
 .product(
-	name: "FunctionComposition",
-	package: "swift-function-composition"
+  name: "FunctionComposition",
+  package: "swift-function-composition"
 )
 ```
 
@@ -54,11 +54,11 @@ import FunctionComposition
 
 ```swift
 let sendable = SyncFunc<Int, Bool> { $0 != 0 }
-	.uncheckedSendable()
+  .uncheckedSendable()
 ```
 
 ```swift
 let mainActor = SendableSyncFunc<Bool, String> { $0 ? "true" : "false" }
-	.mainActor()
+  .mainActor()
 ```
 

@@ -223,12 +223,12 @@ let names: [String] = ["Angstrom", "Zebra", "Apple", "aardvark"]
 
 // Locale-aware sort
 let sorted = names.sorted { (lhs, rhs) in
-	lhs.localizedStandardCompare(rhs) == .orderedAscending
+  lhs.localizedStandardCompare(rhs) == .orderedAscending
 }
 
 // Case-insensitive, locale-aware
 let sorted2 = names.sorted {
-	$0.localizedCaseInsensitiveCompare($1) == .orderedAscending
+  $0.localizedCaseInsensitiveCompare($1) == .orderedAscending
 }
 ```
 
@@ -238,27 +238,27 @@ let sorted2 = names.sorted {
 
 ```swift
 struct PriceView: View {
-	let price: Decimal
+  let price: Decimal
 
-	var body: some View {
-		Text(price, format: .currency(code: "USD"))
-	}
+  var body: some View {
+    Text(price, format: .currency(code: "USD"))
+  }
 }
 
 struct DateView: View {
-	let date: Date
+  let date: Date
 
-	var body: some View {
-		Text(date, format: .dateTime.month().day().year())
-	}
+  var body: some View {
+    Text(date, format: .dateTime.month().day().year())
+  }
 }
 
 struct CountView: View {
-	let count: Int
+  let count: Int
 
-	var body: some View {
-		Text(count, format: .number)
-	}
+  var body: some View {
+    Text(count, format: .number)
+  }
 }
 ```
 
@@ -266,21 +266,21 @@ struct CountView: View {
 
 ```swift
 struct FormattedView: View {
-	@Environment(\.locale)
-	var locale
+  @Environment(\.locale)
+  var locale
 
-	var body: some View {
-		// Format using environment locale
-		Text(Date(), format: .dateTime.locale(locale))
-	}
+  var body: some View {
+    // Format using environment locale
+    Text(Date(), format: .dateTime.locale(locale))
+  }
 }
 
 // Preview with specific locale
 struct FormattedView_Previews: PreviewProvider {
-	static var previews: some View {
-		FormattedView()
-			.environment(\.locale, Locale(identifier: "fr_FR"))
-	}
+  static var previews: some View {
+    FormattedView()
+      .environment(\.locale, Locale(identifier: "fr_FR"))
+  }
 }
 ```
 
@@ -297,12 +297,12 @@ struct FormattedView_Previews: PreviewProvider {
 ```swift
 // Unit test with specific locale
 func testGermanCurrency() {
-	let formatter: NumberFormatter = .init()
-	formatter.locale = .init(identifier: "de_DE")
-	formatter.numberStyle = .currency
+  let formatter: NumberFormatter = .init()
+  formatter.locale = .init(identifier: "de_DE")
+  formatter.numberStyle = .currency
 
-	let result = formatter.string(from: 1234.56)
-	XCTAssertEqual(result, "1.234,56 EUR")
+  let result = formatter.string(from: 1234.56)
+  XCTAssertEqual(result, "1.234,56 EUR")
 }
 ```
 

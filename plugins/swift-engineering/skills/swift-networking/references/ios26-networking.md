@@ -14,14 +14,14 @@
 
 ```swift
 let connection: NetworkConnection = .init(
-	to: .hostPort(host: "api.example.com", port: 443)
+  to: .hostPort(host: "api.example.com", port: 443)
 ) {
-	TLS()  // TCP and IP inferred
+  TLS()  // TCP and IP inferred
 }
 
 func communicate() async throws {
-	try await connection.send(Data("Hello".utf8))
-	let response = try await connection.receive(exactly: 100).content
+  try await connection.send(Data("Hello".utf8))
+  let response = try await connection.receive(exactly: 100).content
 }
 ```
 
@@ -29,27 +29,27 @@ func communicate() async throws {
 
 ```swift
 Task {
-	for await state in connection.states {
-		switch state {
+  for await state in connection.states {
+    switch state {
 
-		case .preparing:
-			self.updateStatus("Connecting...")
+    case .preparing:
+      self.updateStatus("Connecting...")
 
-		case let .waiting(error):
-			self.updateStatus("Waiting: \(error)")
+    case let .waiting(error):
+      self.updateStatus("Waiting: \(error)")
 
-		case .ready:
-			await self.startCommunication()
+    case .ready:
+      await self.startCommunication()
 
-		case let .failed(error):
-			self.handleError(error)
+    case let .failed(error):
+      self.handleError(error)
 
-		case .cancelled:
-			self.handleCancellation()
+    case .cancelled:
+      self.handleCancellation()
 
-		@unknown default: break
-		}
-	}
+    @unknown default: break
+    }
+  }
 }
 ```
 
@@ -59,12 +59,12 @@ TCP doesn't preserve message boundaries. TLV (Type-Length-Value) solves this:
 
 ```swift
 enum GameMessage: Int {
-	case character = 0
-	case move = 1
+  case character = 0
+  case move = 1
 }
 
 let connection: NetworkConnection = .init(to: endpoint) {
-	TLV { TLS() }
+  TLV { TLS() }
 }
 
 // Send typed message
@@ -80,7 +80,7 @@ case .character: // decode character
 case .move: // decode move
 
 case .none:
-	self.handleUnknownType()
+  self.handleUnknownType()
 }
 ```
 
@@ -90,12 +90,12 @@ Eliminates JSON boilerplate:
 
 ```swift
 enum GameMessage: Codable {
-	case character(String)
-	case move(row: Int, column: Int)
+  case character(String)
+  case move(row: Int, column: Int)
 }
 
 let connection: NetworkConnection = .init(to: endpoint) {
-	Coder(GameMessage.self, using: .json) { TLS() }
+  Coder(GameMessage.self, using: .json) { TLS() }
 }
 
 // Send Codable directly
@@ -109,11 +109,11 @@ let message = try await connection.receive().content  // Returns GameMessage!
 
 ```swift
 try await NetworkListener {
-	Coder(GameMessage.self, using: .json) { TLS() }
+  Coder(GameMessage.self, using: .json) { TLS() }
 }.run { connection in
-	for try await (message, _) in connection.messages {
-		// Handle each message
-	}
+  for try await (message, _) in connection.messages {
+    // Handle each message
+  }
 }
 ```
 
@@ -123,9 +123,9 @@ try await NetworkListener {
 import WiFiAware
 
 let endpoint: NetworkBrowser = try await .init(
-	for: .wifiAware(.connecting(to: .allPairedDevices, from: .myService))
+  for: .wifiAware(.connecting(to: .allPairedDevices, from: .myService))
 ).run { endpoints in
-	.finish(endpoints.first!)
+  .finish(endpoints.first!)
 }
 
 let connection: NetworkConnection = .init(to: endpoint) { TLS() }
@@ -144,21 +144,21 @@ try await connection.receive(as: UInt32.self).content  // Network byte order
 ```swift
 // Before (NWConnection)
 connection.stateUpdateHandler = { [weak self] state in
-	if case .ready = state { self?.sendData() }
+  if case .ready = state { self?.sendData() }
 }
 func sendData() {
-	connection.send(content: data, completion: .contentProcessed { [weak self] _ in
-		self?.receiveData()
-	})
+  connection.send(content: data, completion: .contentProcessed { [weak self] _ in
+    self?.receiveData()
+  })
 }
 
 // After (NetworkConnection)
 Task {
-	for await state in connection.states {
-		if case .ready = state {
-			try await connection.send(data)
-			let response = try await connection.receive(exactly: 100).content
-		}
-	}
+  for await state in connection.states {
+    if case .ready = state {
+      try await connection.send(data)
+      let response = try await connection.receive(exactly: 100).content
+    }
+  }
 }
 ```
